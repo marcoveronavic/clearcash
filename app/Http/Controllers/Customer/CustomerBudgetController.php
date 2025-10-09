@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Budget;
-use App\Models\BudgetCategory;
 use App\Models\BankAccount;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -13,143 +12,121 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomerBudgetController extends Controller
 {
-
     public function index()
     {
-        // Get the most recent budget period
-        $mainBudget = Budget::where('user_id', Auth::user()->id)
-            ->latest('budget_start_date')
+        $userId = Auth::id();
+
+        // 1) Periodo di budget corrente (ignora salary/uncategorised per scegliere il periodo)
+        $mainBudget = Budget::where('user_id', $userId)
             ->where('category_name', '!=', 'uncategorised')
             ->where('category_name', '!=', 'salary')
+            ->latest('budget_start_date')
             ->first();
 
-        // dd($mainBudget);
-
         $budgetStartDate = $mainBudget ? $mainBudget->budget_start_date : Carbon::now();
-        $budgetEndDate = $mainBudget ? $mainBudget->budget_end_date : Carbon::now()->addMonth();
+        $budgetEndDate   = $mainBudget ? $mainBudget->budget_end_date   : Carbon::now()->addMonth();
 
-        // Get all budget items within the date range
-        $budgetItems = Budget::where('user_id', Auth::user()->id)
+        // 2) Tutti i budget items del periodo ESCLUDENDO 'uncategorised' e 'salary'
+        $budgetItems = Budget::where('user_id', $userId)
             ->whereBetween('budget_start_date', [$budgetStartDate, $budgetEndDate])
             ->where('category_name', '!=', 'salary')
+            ->where('category_name', '!=', 'uncategorised')
             ->get();
-        // ->where('category_name', '!=', 'uncategorised')
-        // dd($budgetItems);
 
-
+        // 3) Totali base
         $totalBudget = $budgetItems->sum('amount');
 
-        $amountSpent = Transaction::where('user_id', Auth::user()->id)
+        $amountSpent = Transaction::where('user_id', $userId)
             ->where('date', '<=', $budgetEndDate)
             ->where('transaction_type', 'expense')
             ->sum('amount');
 
         $remainingBudget = $totalBudget - $amountSpent;
 
-
+        // 4) Dettagli per card categoria (solo categorie "vere")
         $categoryDetails = [];
-
         foreach ($budgetItems as $budgetItem) {
+            // Budget della categoria (stesso id record)
+            $budget = Budget::where('user_id', $userId)
+                ->where('id', $budgetItem->id)
+                ->whereDate('budget_end_date', '>=', Carbon::today()->format('Y-m-d'))
+                ->where('amount', '>', 0)
+                ->where('category_name', '!=', 'salary')
+                ->where('category_name', '!=', 'uncategorised')
+                ->first();
 
+            if ($budget) {
+                // NB: qui lasci la logica originaria con category_id = id del budget
+                $transactions = Transaction::where('user_id', $userId)
+                    ->where('category_id', $budgetItem->id)
+                    ->where('transaction_type', 'expense')
+                    ->get();
 
-            if ($budgetItem->category_name == "uncategorised") {
-                // Fetch the exact budget for this category (not the first available one)
-                $budget = Budget::where('user_id', Auth::user()->id)
-                    ->where('category_name', 'uncategorised') // Get budget by category ID
-                    ->whereDate('budget_end_date', '>=', Carbon::today()->format('Y-m-d'))
-                    ->first();
-                // ->where('category_name', '!=', 'uncategorised')
+                $budgetTotalSpent = $transactions->sum('amount');
 
-                if ($budget) {
-                    $transactions = Transaction::where('user_id', Auth::user()->id)
-                        ->where('category_name', 'uncategorised')
-                        ->where('transaction_type', 'expense')
-                        ->whereBetween('created_at', [$budgetStartDate, $budgetEndDate])
-                        ->get();
+                $startingBudgetAmount = $budget->amount;
+                $remainingAmount = $startingBudgetAmount - $budgetTotalSpent;
+                $spentPercentage = $startingBudgetAmount > 0
+                    ? ($budgetTotalSpent / $startingBudgetAmount) * 100
+                    : 0;
 
+                $totalTransactions = Transaction::where('user_id', $userId)
+                    ->where('category_id', $budgetItem->id)
+                    ->get();
 
-                    $budgetTotalSpent = $transactions->sum('amount');
-
-                    $startingBudgetAmount = $budget->amount; // Ensure this is category-specific
-
-                    $remainingAmount = $startingBudgetAmount - $budgetTotalSpent;
-                    $spentPercentage = $startingBudgetAmount > 0
-                        ? ($budgetTotalSpent / $startingBudgetAmount) * 100
-                        : 0;
-
-                    $totalTransactions = Transaction::where('user_id', Auth::user()->id)
-                        ->where('category_name', 'uncategorised')->whereBetween('created_at', [$budgetStartDate, $budgetEndDate])->get();
-
-                    $categoryDetails[] = [
-                        'budgetItem' => $budgetItem,
-                        'budget' => $budget,
-                        'transactions' => $totalTransactions,
-                        'totalSpent' => $budgetTotalSpent,
-                        'startingBudgetAmount' => $startingBudgetAmount,
-                        'remainingAmount' => $remainingAmount,
-                        'spentPercentage' => round($spentPercentage, 2),
-                    ];
-                }
-            } else {
-                // Fetch the exact budget for this category (not the first available one)
-                $budget = Budget::where('user_id', Auth::user()->id)
-                    ->where('id', $budgetItem->id) // Get budget by category ID
-                    ->whereDate('budget_end_date', '>=', Carbon::today()->format('Y-m-d'))
-                    ->where('amount', '>', 0)
-                    ->where('category_name', '!=', 'salary')
-                    ->first();
-                // ->where('category_name', '!=', 'uncategorised')
-
-                if ($budget) {
-                    $transactions = Transaction::where('user_id', Auth::user()->id)
-                        ->where('category_id', $budgetItem->id)->where('transaction_type', 'expense')
-                        ->get();
-
-                    $budgetTotalSpent = $transactions->sum('amount');
-
-                    $startingBudgetAmount = $budget->amount; // Ensure this is category-specific
-
-                    $remainingAmount = $startingBudgetAmount - $budgetTotalSpent;
-                    $spentPercentage = $startingBudgetAmount > 0
-                        ? ($budgetTotalSpent / $startingBudgetAmount) * 100
-                        : 0;
-
-                    $totalTransactions = Transaction::where('user_id', Auth::user()->id)
-                        ->where('category_id', $budgetItem->id)->get();
-
-                    $categoryDetails[] = [
-                        'budgetItem' => $budgetItem,
-                        'budget' => $budget,
-                        'transactions' => $totalTransactions,
-                        'totalSpent' => $budgetTotalSpent,
-                        'startingBudgetAmount' => $startingBudgetAmount,
-                        'remainingAmount' => $remainingAmount,
-                        'spentPercentage' => round($spentPercentage, 2),
-                    ];
-                }
+                $categoryDetails[] = [
+                    'budgetItem'           => $budgetItem,
+                    'budget'               => $budget,
+                    'transactions'         => $totalTransactions,
+                    'totalSpent'           => $budgetTotalSpent,
+                    'startingBudgetAmount' => $startingBudgetAmount,
+                    'remainingAmount'      => $remainingAmount,
+                    'spentPercentage'      => round($spentPercentage, 2),
+                ];
             }
         }
 
-        $income = Transaction::where('user_id', Auth::user()->id)
-            ->where('transaction_type', 'income')
-            ->sum('amount');
+        // 5) Income & ClearCash balance
+        $income = BankAccount::where('user_id', $userId)->sum('starting_balance');
 
-        $income = BankAccount::where('user_id', Auth::user()->id)->sum('starting_balance');
+        // ✅ Clear Cash Balance = Income - Expenses (dove Expenses = somma budget)
+        $clearCashBalance = $income - $totalBudget;
 
-
-        $income > 0 ? $clearCashBalance = $income - $amountSpent : $clearCashBalance = 0;
-
-
-        // dd($budgetStartDate,$budgetEndDate);
-
-
+        // 6) Giorni rimasti a fine periodo
         $budgetEndDate = Carbon::parse($budgetEndDate);
         $today = Carbon::now();
+        $daysLeft = $today->diffInDays($budgetEndDate, false);
 
-        // Difference in days (budgetEndDate - today)
-        $daysLeft = $today->diffInDays($budgetEndDate, false);;
+        // 7) UNCATEGORISED: mostra solo se esistono spese senza categoria nel periodo
+        $uncategorisedSpent = Transaction::where('user_id', $userId)
+            ->where('transaction_type', 'expense')
+            ->where(function ($q) {
+                $q->whereNull('category_id')
+                    ->orWhereRaw("LOWER(category_name) = 'uncategorised'");
+            })
+            ->whereBetween('date', [$budgetStartDate, $budgetEndDate])
+            ->sum('amount');
 
-        return view('customer.pages.budget.index', compact('budgetStartDate', 'budgetEndDate', 'budgetItems', 'totalBudget', 'amountSpent', 'remainingBudget', 'categoryDetails', 'income', 'clearCashBalance', 'daysLeft'));
+        $showUncategorised = (float) $uncategorisedSpent > 0;
+
+        // 8) Render
+        return view(
+            'customer.pages.budget.index',
+            compact(
+                'budgetStartDate',
+                'budgetEndDate',
+                'budgetItems',
+                'totalBudget',
+                'amountSpent',
+                'remainingBudget',
+                'categoryDetails',
+                'income',
+                'clearCashBalance',
+                'daysLeft',
+                'showUncategorised',
+                'uncategorisedSpent'
+            )
+        );
     }
 
     public function update(Request $request, string $id)
@@ -158,10 +135,7 @@ class CustomerBudgetController extends Controller
             ->where('user_id', Auth::user()->id)
             ->first();
 
-
-        $budget->update([
-            'amount' => $request->amount,
-        ]);
+        $budget->update(['amount' => $request->amount]);
 
         return redirect()->route('budget.index')->with('success', 'Budget updated.');
     }
@@ -172,9 +146,7 @@ class CustomerBudgetController extends Controller
             ->where('user_id', Auth::user()->id)
             ->first();
 
-        $budget->update([
-            'amount' => 0,
-        ]);
+        $budget->update(['amount' => 0]);
 
         return redirect()->route('budget.index')->with('success', 'Budget reset.');
     }
@@ -193,11 +165,11 @@ class CustomerBudgetController extends Controller
     public function updateCategoryList(Request $request)
     {
         $validatedData = $request->validate([
-            'budget_items.*.id' => ['nullable', 'exists:budgets,id'],
+            'budget_items.*.id'            => ['nullable', 'exists:budgets,id'],
             'budget_items.*.category_name' => ['nullable', 'string', 'max:255'],
-            'budget_items.*.amount' => ['required', 'numeric', 'min:0'],
-            'new_items.*.category_name' => ['required', 'string', 'max:255'],
-            'new_items.*.amount' => ['required', 'numeric', 'min:0'],
+            'budget_items.*.amount'        => ['required', 'numeric', 'min:0'],
+            'new_items.*.category_name'    => ['required', 'string', 'max:255'],
+            'new_items.*.amount'           => ['required', 'numeric', 'min:0'],
         ]);
 
         $existingBudget = Budget::where('user_id', Auth::user()->id)
@@ -205,29 +177,29 @@ class CustomerBudgetController extends Controller
             ->first();
 
         $budgetStartDate = $existingBudget ? $existingBudget->budget_start_date : Carbon::today();
-        $budgetEndDate = $existingBudget ? $existingBudget->budget_end_date : Carbon::today()->addMonth();
+        $budgetEndDate   = $existingBudget ? $existingBudget->budget_end_date   : Carbon::today()->addMonth();
 
-        // ✅ Update existing budget items including category_name
+        // update esistenti
         if (!empty($validatedData['budget_items'])) {
             foreach ($validatedData['budget_items'] as $itemData) {
                 Budget::where('id', $itemData['id'])
                     ->where('user_id', Auth::user()->id)
                     ->update([
                         'category_name' => $itemData['category_name'],
-                        'amount' => $itemData['amount'],
+                        'amount'        => $itemData['amount'],
                     ]);
             }
         }
 
-        // Add new budget items
+        // crea nuovi
         if (!empty($validatedData['new_items'])) {
             foreach ($validatedData['new_items'] as $newItem) {
                 Budget::create([
-                    'user_id' => Auth::user()->id,
-                    'category_name' => $newItem['category_name'],
-                    'amount' => $newItem['amount'],
+                    'user_id'           => Auth::user()->id,
+                    'category_name'     => $newItem['category_name'],
+                    'amount'            => $newItem['amount'],
                     'budget_start_date' => $budgetStartDate,
-                    'budget_end_date' => $budgetEndDate,
+                    'budget_end_date'   => $budgetEndDate,
                 ]);
             }
         }
@@ -235,34 +207,30 @@ class CustomerBudgetController extends Controller
         return redirect()->route('budget.index')->with('success', 'Budget updated.');
     }
 
-
     public function globalAddNewBudget(Request $request)
     {
-
         $existingBudget = Budget::where('user_id', Auth::user()->id)
             ->latest('budget_end_date')
             ->first();
 
         $budgetStartDate = $existingBudget ? $existingBudget->budget_start_date : Carbon::today();
-        $budgetEndDate = $existingBudget ? $existingBudget->budget_end_date : Carbon::today()->addMonth();
+        $budgetEndDate   = $existingBudget ? $existingBudget->budget_end_date   : Carbon::today()->addMonth();
 
         $validatedData = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name'   => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0'],
         ]);
 
         Budget::create([
-            'category_name' => $validatedData['name'],
-            'amount' => $validatedData['amount'],
+            'category_name'     => $validatedData['name'],
+            'amount'            => $validatedData['amount'],
             'budget_start_date' => $budgetStartDate,
-            'budget_end_date' => $budgetEndDate,
-            'user_id' => Auth::user()->id,
+            'budget_end_date'   => $budgetEndDate,
+            'user_id'           => Auth::user()->id,
         ]);
 
         return redirect()->back()->with('success', 'Budget added.');
     }
-
-
 
     public function destroy(string $id) {}
 }
