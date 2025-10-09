@@ -1,0 +1,110 @@
+.myAccountBox {
+    .inner {
+        background-color: $darkBackground;
+        border: 0;
+        border-radius: 12px;
+        padding: 2rem;
+    }
+
+    form {
+
+        .row {
+            margin-bottom: 1.5rem;
+
+            label {
+                color: $white;
+                display: block;
+                font-family: $medium;
+                font-size: 1rem;
+                margin-bottom: .5rem;
+                width: 100%;
+            }
+            input[type='text'],
+            input[type='number'],
+            input[type='date'],
+            input[type='email'],
+            select {
+                background-color: $formBgs;
+                border: 1px solid $formBgs;
+                color: $white;
+                display: block;
+                font-family: $reg;
+                font-size: 1rem;
+                height: 50px;
+                padding-left: .5rem;
+                padding-right: .5rem;
+                @include transition(all .4s ease-in-out);
+                width: 100%;
+
+                &:focus {
+                    border: 1px solid $lightBlue;
+                    box-shadow: none;
+                    outline: none;
+                }
+            }
+
+            .changePasswordBtn {
+                background-color: transparent;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+                color: $lightBlue;
+                font-family: $reg;
+                font-size: 1rem;
+                padding: 0;
+                text-align: left;
+                text-decoration: underline;
+                @include transition(all .4s ease-in-out);
+
+                &:hover {
+                    background-color: transparent;
+                    border: 0;
+                    border-radius: 0;
+                    box-shadow: none;
+                    color: $green;
+                    outline: none;
+                    text-decoration: underline;
+                }
+            }
+
+
+            .input-group {
+                align-items: center;
+                display: flex;
+                flex-direction: row;
+                gap: .5rem;
+
+                label {
+                    margin-bottom: 0;
+                    width: auto;
+                }
+            }
+
+            button[type='submit'] {
+                display: block;
+
+                width: 100%;
+            }
+        }
+    }
+
+    .accountDeletionBanner {
+        background-color: $darkBackground;
+        border: 1px solid red;
+        border-radius: 12px;
+        margin: 2rem 0;
+        padding: 2rem;
+
+        h3 {
+            color: red;
+            font-family: $bold;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: $white;
+            font-family: $reg;
+            font-size: 1rem;
+        }
+    }
+}

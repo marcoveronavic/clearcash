@@ -1,0 +1,278 @@
+.modal {
+    .modal-dialog {
+        .modal-content {
+            background-color: $darkBackground;
+            .modal-header {
+                background-color: $darkBackground;
+                border: 0;
+                overflow: hidden;
+
+                button.btn-close {
+                    background: none;
+                    color: $white !important;
+                    font-size: 1.25rem;
+                    opacity: 1;
+                }
+            }
+            .modal-body {
+                background-color: $darkBackground;
+
+                h1 {
+                    color: $white;
+                    font-family: $bold;
+                    font-size: 2rem;
+                    margin-bottom: 2rem;
+                    margin-top: -.75rem;
+                    text-align: center;
+                }
+                form {
+
+                    .row {
+                        margin-bottom: 1.5rem;
+
+                        label {
+                            color: $white;
+                            display: block;
+                            font-family: $medium;
+                            font-size: 1rem;
+                            margin-bottom: .5rem;
+                            width: 100%;
+                        }
+                        input[type='text'],
+                        input[type='number'],
+                        input[type='date'],
+                        input[type='password']{
+                            background-color: $formBgs;
+                            border: 1px solid $formBgs;
+                            color: $white;
+                            display: block;
+                            font-family: $reg;
+                            font-size: 1rem;
+                            height: 50px;
+                            padding-left: .5rem;
+                            padding-right: .5rem;
+                            @include transition(all .4s ease-in-out);
+                            width: 100% !important;
+
+                            &:focus {
+                                border: 1px solid $lightBlue;
+                                box-shadow: none;
+                                outline: none;
+                            }
+                        }
+                        select {
+                            background-color: $formBgs;
+                            border: 1px solid $formBgs;
+                            color: $white;
+                            display: block;
+                            font-family: $reg;
+                            font-size: 1rem;
+                            height: 50px;
+                            @include transition(all .4s ease-in-out);
+                            width: 100%;
+
+                            &:focus {
+                                border: 1px solid $lightBlue;
+                                box-shadow: none;
+                                outline: none;
+                            }
+                        }
+
+
+                        .input-group {
+                            align-items: center;
+                            display: flex;
+                            flex-direction: row;
+                            gap: .5rem;
+
+                            label {
+                                margin-bottom: 0;
+                                width: auto;
+                            }
+                        }
+
+                        button[type='submit'] {
+                            display: block;
+
+                            width: 100%;
+                        }
+                    }
+                    .addBudgetItem {
+                        border-bottom: 1px solid lighten($surfaceCard, 10%);
+                        padding: 1.5rem 0;
+
+                        .input-group {
+                            align-items: center;
+                            background-color: $formBgs;
+                            border: 1px solid $formBgs;
+                            border-radius: 5px;
+                            display: flex;
+                            flex-direction: row;
+                            height: 50px;
+                            overflow: hidden;
+                            @include transition(all .4s ease-in-out);
+                            width: 90%;
+
+                            label {
+                                color: rgba(255, 255,255, 0.65);
+                                font-family: $reg;
+                                font-size: 1rem;
+                                height: 50px;
+                                padding: 12px 0 20px 5px;
+                                text-align: right;
+                                width: 7%;
+                            }
+                            input[type='number'] {
+                                background-color: transparent;
+                                border: 0;
+                                color: rgba(255, 255,255, 0.65);
+                                display: inline-block;
+                                font-family: $reg;
+                                font-size: 1rem;
+                                height: 100%;
+                                margin-left: 0;
+                                padding-left: 0;
+                                width: 90% !important;
+
+                                &::placeholder {
+                                    color: rgba(255, 255,255, 0.65);
+                                }
+
+                                &:focus,
+                                &:hover {
+                                    box-shadow: none;
+                                    outline: none;
+                                }
+                            }
+
+                            &:focus-within {
+                                border: 1px solid $lightBlue;
+
+                                .input-group-text,
+                                input.form-control {
+                                    border: 0;
+                                    box-shadow: none;
+                                    outline: none;
+                                    text-decoration: none;
+                                }
+                            }
+
+                            /*align-items: center;
+
+
+                            input[type='number'] {
+                                background-color: lighten($surfaceCard, 20%);
+                                border: 0;
+                                border-radius: 0;
+                                box-shadow: none;
+                                color: rgba(255, 255,255, 0.65);
+                                display: inline-block;
+                                font-family: $reg;
+                                font-size: 1rem;
+                                margin-left: 0 !important;
+                                outline: none;
+                                padding-left: 0;
+                                width: 85% !important;
+
+                                &::placeholder {
+                                    color: rgba(255, 255,255, 0.65);
+                                }
+                            }
+
+                            &:focus-within {
+                                border: 1px solid $lightBlue;
+                                .input-group-text,
+                                input.form-control {
+                                    border: 0;
+                                    box-shadow: none;
+                                    outline: none;
+                                    text-decoration: none;
+                                }
+                            }*/
+                        }
+                        input[type='text']{
+                            background-color: lighten($surfaceCard, 20%);
+                            border: 0;
+                            border-radius: 5px;
+                            box-shadow: none;
+                            color: rgba(255, 255,255, 0.65);
+                            font-family: $reg;
+                            font-size: 1rem;
+                            height: 50px;
+                            margin-left: 0 !important;
+                            outline: none;
+                            padding: .5rem;
+
+                            &::placeholder {
+                                color: rgba(255, 255,255, 0.65);
+                            }
+                        }
+                        p {
+                            color: $white;
+                            font-family: $reg;
+                            font-size: 1rem;
+                            margin-bottom: 0;
+                            opacity: 1;
+                        }
+                        span.confirmAmount {
+                            color: $offWhite;
+                            font-family: $reg;
+                            font-size: 1rem;
+
+                            a.editBtn {
+                                color: $lightBlue;
+                                display: inline-block;
+                                font-size: 1rem;
+                                margin-left: 5px;
+                                margin-top: 0;
+                                opacity: 1;
+                            }
+                        }
+                        &:first-of-type {
+                            padding-top: 0;
+                        }
+                        &:last-of-type {
+                            border-bottom: 0;
+                            padding-bottom: 0;
+                        }
+
+                        a,
+                        button.add-expense{
+                            background-color: transparent;
+                            border: 0;
+                            box-shadow: none;
+                            color: $lightBlue;
+                            font-family: $reg;
+                            font-size: 1rem;
+                            display: block;
+                            margin: 1rem auto 0 auto;
+                            text-align: center;
+                            text-decoration: none;
+                            @include transition(all .4s ease-in-out);
+
+                            &:hover {
+                                box-shadow: none;
+                                color: $green;
+                                outline: none;
+                                text-decoration: none;
+                            }
+                        }
+                        .expenseItemInner {
+                            margin-bottom: 1rem;
+                        }
+                    }
+                }
+            }
+            .modal-footer {
+                background-color: $darkBackground;
+                border: 0;
+                border-radius: 0;
+                display: flex;
+                justify-content: start;
+                padding-top: 0;
+
+
+            }
+        }
+    }
+}

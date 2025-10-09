@@ -1,0 +1,13 @@
+main.dashboardMain {
+    background-color: $baseColour;
+    min-height: 100svh;
+    margin-left: auto;
+    padding: 4rem 10rem;
+    width: calc(100% - 20%);
+
+    &.full {
+        margin: 0;
+        padding: 4rem 1rem;
+        width: 100%;
+    }
+}

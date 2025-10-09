@@ -1,0 +1,112 @@
+{
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf": {
+    "file": "assets/fa-brands-400-DHHcbFjz.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-Ch568Ea9.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf": {
+    "file": "assets/fa-regular-400-C54-fRIQ.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-9VThgXHM.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf": {
+    "file": "assets/fa-solid-900-Cm9M9sZB.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-QWY35r5r.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf": {
+    "file": "assets/fa-v4compatibility-DLBX5pNp.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2": {
+    "file": "assets/fa-v4compatibility-BRdYr4HJ.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
+  },
+  "resources/fonts/PlusJakartaSans-Bold.ttf": {
+    "file": "assets/PlusJakartaSans-Bold-K_68Q89b.ttf",
+    "src": "resources/fonts/PlusJakartaSans-Bold.ttf"
+  },
+  "resources/fonts/PlusJakartaSans-ExtraBold.ttf": {
+    "file": "assets/PlusJakartaSans-ExtraBold-BPMfZ3D1.ttf",
+    "src": "resources/fonts/PlusJakartaSans-ExtraBold.ttf"
+  },
+  "resources/fonts/PlusJakartaSans-ExtraLight.ttf": {
+    "file": "assets/PlusJakartaSans-ExtraLight-BjJ6gFSO.ttf",
+    "src": "resources/fonts/PlusJakartaSans-ExtraLight.ttf"
+  },
+  "resources/fonts/PlusJakartaSans-Light.ttf": {
+    "file": "assets/PlusJakartaSans-Light-DDhP_Rn6.ttf",
+    "src": "resources/fonts/PlusJakartaSans-Light.ttf"
+  },
+  "resources/fonts/PlusJakartaSans-Medium.ttf": {
+    "file": "assets/PlusJakartaSans-Medium-BWT6vWE5.ttf",
+    "src": "resources/fonts/PlusJakartaSans-Medium.ttf"
+  },
+  "resources/fonts/PlusJakartaSans-Regular.ttf": {
+    "file": "assets/PlusJakartaSans-Regular-DBSa4cpH.ttf",
+    "src": "resources/fonts/PlusJakartaSans-Regular.ttf"
+  },
+  "resources/fonts/PlusJakartaSans-SemiBold.ttf": {
+    "file": "assets/PlusJakartaSans-SemiBold-E-AGeNse.ttf",
+    "src": "resources/fonts/PlusJakartaSans-SemiBold.ttf"
+  },
+  "resources/js/admin.js": {
+    "file": "assets/admin-l0sNRNKZ.js",
+    "name": "admin",
+    "src": "resources/js/admin.js",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-a30oHrB4.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/customer.js": {
+    "file": "assets/customer-l0sNRNKZ.js",
+    "name": "customer",
+    "src": "resources/js/customer.js",
+    "isEntry": true
+  },
+  "resources/js/staff.js": {
+    "file": "assets/staff-DP2rzg_V.js",
+    "name": "staff",
+    "src": "resources/js/staff.js",
+    "isEntry": true
+  },
+  "resources/sass/admin.scss": {
+    "file": "assets/admin-Crz2DhqK.css",
+    "src": "resources/sass/admin.scss",
+    "isEntry": true
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-Bqg2EEUK.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  },
+  "resources/sass/customer.scss": {
+    "file": "assets/customer-CSakfURv.css",
+    "src": "resources/sass/customer.scss",
+    "isEntry": true
+  },
+  "resources/sass/login.scss": {
+    "file": "assets/login-BRB2Ymms.css",
+    "src": "resources/sass/login.scss",
+    "isEntry": true
+  },
+  "resources/sass/staff.scss": {
+    "file": "assets/staff-l0sNRNKZ.js",
+    "name": "staff",
+    "src": "resources/sass/staff.scss",
+    "isEntry": true
+  }
+}

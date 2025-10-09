@@ -1,0 +1,3291 @@
+@font-face {
+    font-family: jakaBold;
+    src: url(/build/assets/PlusJakartaSans-Bold-K_68Q89b.ttf);
+}
+
+@font-face {
+    font-family: jakaExtraBold;
+    src: url(/build/assets/PlusJakartaSans-ExtraBold-BPMfZ3D1.ttf);
+}
+
+@font-face {
+    font-family: jakaSemiBold;
+    src: url(/build/assets/PlusJakartaSans-SemiBold-E-AGeNse.ttf);
+}
+
+@font-face {
+    font-family: jakaMedium;
+    src: url(/build/assets/PlusJakartaSans-Medium-BWT6vWE5.ttf);
+}
+
+@font-face {
+    font-family: jakaReg;
+    src: url(/build/assets/PlusJakartaSans-Regular-DBSa4cpH.ttf);
+}
+
+@font-face {
+    font-family: jakaLight;
+    src: url(/build/assets/PlusJakartaSans-Light-DDhP_Rn6.ttf);
+}
+
+@font-face {
+    font-family: jakaExtraLight;
+    src: url(/build/assets/PlusJakartaSans-ExtraLight-BjJ6gFSO.ttf);
+}
+
+a.primaryOutlineBtn,
+button.primaryOutlineBtn,
+input.primaryOutlineBtn {
+    background-color: transparent;
+    border: 1px solid #0097e2;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #0097e2;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+a.primaryOutlineBtn:hover,
+button.primaryOutlineBtn:hover,
+input.primaryOutlineBtn:hover {
+    background-color: #0097e2;
+    border: 1px solid #0097e2;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #fff;
+    outline: none;
+    text-decoration: none;
+}
+
+a.twoToneBlueGreenBtn,
+button.twoToneBlueGreenBtn,
+input.twoToneBlueGreenBtn {
+    background: linear-gradient(to right, #31d2f7, #44e0ac);
+    border: 0;
+    border-radius: 5px;
+    color: #183539;
+    font-family: jakaBold, sans-serif;
+    font-size: 1.1rem;
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+}
+
+a.dangerBtn,
+button.dangerBtn,
+input.dangerBtn {
+    background-color: #fe000040;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    color: #fe0000;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    outline: none;
+    padding: 1rem;
+    text-align: center;
+}
+
+.swal2-popup {
+    background-color: #1d373b !important;
+}
+
+.swal2-popup .swal2-title {
+    color: #ffffff80 !important;
+    font-family: jakaBold, sans-serif !important;
+    font-size: 2rem !important;
+}
+
+.swal2-popup .swal2-confirm {
+    background: linear-gradient(to right, #31d2f7, #44e0ac) !important;
+    border: 0 !important;
+    border-radius: 5px !important;
+    box-shadow: none !important;
+    color: #183539 !important;
+    font-family: jakaBold, sans-serif !important;
+    font-size: 1.1rem !important;
+    margin: 0 !important;
+    outline: none !important;
+    padding: 1rem !important;
+    text-align: center !important;
+}
+
+.swal2-popup .swal2-cancel {
+    background-color: #31d2f7 !important;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.dashboardPageHero {
+    background-color: #fff;
+    border: 0;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    padding: 2rem;
+}
+
+.dashboardPageHero h1 {
+    color: #0097e2;
+    font-family: jakaBold, sans-serif;
+    font-size: 3rem;
+    line-height: 3.5rem;
+    margin-bottom: 0;
+}
+
+.dashboardPageMain {
+    background-color: #fff;
+    border: 0;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    padding: 2rem;
+}
+
+.dashboardPageMain form .formSectionTitle {
+    color: #0097e2;
+    font-family: jakaBold, sans-serif;
+    font-size: 2rem;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.dashboardPageMain form label {
+    color: #000;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.dashboardPageMain form label span {
+    color: red;
+    margin-left: 2px;
+}
+
+.dashboardPageMain form input[type="text"],
+.dashboardPageMain form input[type="email"],
+.dashboardPageMain form input[type="password"],
+.dashboardPageMain form input[type="tel"],
+.dashboardPageMain form input[type="number"] {
+    background-color: #f8f9fb;
+    border: 1px solid #f8f9fb;
+    border-bottom: 1px solid #000000;
+    box-shadow: none;
+    border-radius: 0;
+    height: 40px;
+    margin-bottom: 30px;
+    padding-left: 5px;
+    padding-right: 5px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.dashboardPageMain form input[type="text"]:focus,
+.dashboardPageMain form input[type="email"]:focus,
+.dashboardPageMain form input[type="password"]:focus,
+.dashboardPageMain form input[type="tel"]:focus,
+.dashboardPageMain form input[type="number"]:focus {
+    background-color: #f8f9fb;
+    border: 1px solid #0097e2;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.dashboardPageMain form input[type="file"] {
+    background-color: #f8f9fb;
+    border: 1px solid #f8f9fb;
+    border-bottom: 1px solid #000000;
+    box-shadow: none;
+    border-radius: 0;
+    height: 40px;
+    margin-bottom: 30px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.dashboardPageMain form input[type="file"]:focus {
+    background-color: #f8f9fb;
+    border: 1px solid #f8f9fb;
+    border-bottom: 1px solid #000000;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.dashboardPageMain form textarea {
+    margin-bottom: 30px;
+}
+
+.dashboardPageMain form button[type="submit"] {
+    margin-top: 30px;
+}
+
+.dashboardPageMain table thead tr th.actions,
+.dashboardPageMain table tbody tr td.actions {
+    text-align: right;
+}
+
+aside.sidebar {
+    background-color: #1d373b;
+    border: 0;
+    height: 100%;
+    left: -20%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2rem;
+    position: fixed;
+    top: 0;
+    width: 0;
+    z-index: 1;
+}
+
+aside.sidebar a.sidebarBrand {
+    display: block;
+    margin-bottom: 5rem;
+    width: 100%;
+}
+
+aside.sidebar a.sidebarBrand img {
+    display: block;
+    height: auto;
+    margin: 0;
+    width: 75%;
+}
+
+aside.sidebar ul.sidebar-nav {
+    list-style-type: none;
+    padding: 0;
+    max-width: 100%;
+}
+
+aside.sidebar ul.sidebar-nav li {
+    margin-bottom: 10px;
+    text-wrap: balance;
+    width: 100%;
+}
+
+aside.sidebar ul.sidebar-nav li a {
+    background-color: transparent;
+    color: #fff;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    padding: 0.25rem 1rem 0.25rem 0;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    word-break: break-word;
+    white-space: normal;
+    width: 100%;
+}
+
+aside.sidebar ul.sidebar-nav li a i {
+    color: #44e0ac;
+    margin-right: 10px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+aside.sidebar ul.sidebar-nav li a:hover,
+aside.sidebar ul.sidebar-nav li a.active {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    outline: none;
+    opacity: 1;
+    text-decoration: none;
+}
+
+aside.sidebar ul.sidebar-nav li a:hover i,
+aside.sidebar ul.sidebar-nav li a.active i {
+    color: #31d2f7;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown {
+    width: 100%;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown a.dropdown-toggle {
+    cursor: pointer;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown a.dropdown-toggle:after {
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu {
+    background-color: #fff;
+    border: 0;
+    padding: 0.5rem 1.5rem;
+    position: relative !important;
+    width: 100%;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu li {
+    margin-bottom: 5px;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu li a {
+    font-size: 1rem;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu.show {
+    position: relative !important;
+    transform: translate(0) !important;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown.dropdown a.dropdown-toggle.show {
+    color: #45b7f0;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown.dropdown ul.submenu-dropdown-menu {
+    padding: 0.5rem;
+}
+
+aside.sidebar ul.sidebar-nav li.dropdown.dropdown ul.submenu-dropdown-menu li {
+    margin-bottom: 0;
+}
+
+aside.sidebar
+    ul.sidebar-nav
+    li.dropdown.dropdown
+    ul.submenu-dropdown-menu
+    li
+    a {
+    font-size: 1rem;
+    padding-bottom: 0.25rem;
+    padding-top: 0.25rem;
+}
+
+aside.sidebar ul.sidebar-nav hr {
+    margin: 20px auto;
+    width: 90%;
+}
+
+aside.sidebar .userWrapper {
+    bottom: 2rem;
+    left: 2rem;
+    position: absolute;
+    right: 2rem;
+}
+
+aside.sidebar .userWrapper .dropup {
+    display: block;
+    width: 100%;
+}
+
+aside.sidebar .userWrapper .dropup button {
+    align-items: center;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+    text-transform: capitalize;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+aside.sidebar .userWrapper .dropup button img.userIcon {
+    height: 1rem;
+    margin-right: 0.5rem;
+    width: auto;
+}
+
+aside.sidebar .userWrapper .dropup button:after {
+    display: none;
+}
+
+aside.sidebar .userWrapper .dropup ul.dropdown-menu li a {
+    color: #183539;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+aside.sidebar .userWrapper .dropup ul.dropdown-menu li a:hover {
+    box-shadow: none;
+    color: #31d2f7;
+    outline: none;
+    text-decoration: none;
+}
+
+aside.sidebar.open {
+    left: 0;
+    width: 20%;
+}
+
+header .topbar {
+    background-color: #fff;
+    border-bottom: 1px solid #e1e6f0;
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    justify-content: center;
+    position: relative;
+}
+
+header .topbar button.sidebarMenuToggler {
+    background-color: transparent;
+    border: 0;
+    border-right: 1px solid #e1e6f0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #000;
+    font-size: 1.25rem;
+    height: 80px;
+    left: -1.5rem;
+    line-height: 0;
+    margin: 0;
+    padding: 1rem;
+    position: relative;
+    top: 0;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 75px;
+}
+
+header .topbar .topbar-brand {
+    color: #0097e2;
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    padding: 0 0.5rem;
+    text-decoration: none;
+}
+
+header .topbar form.searchFormMain .input-group {
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+
+header .topbar form.searchFormMain input[type="text"] {
+    background-color: #fff;
+    border: 0;
+    box-shadow: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+header .topbar form.searchFormMain input[type="text"]:focus {
+    background-color: #fff;
+    border: 0;
+    box-shadow: none;
+    outline: none;
+}
+
+header .topbar form.searchFormMain button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #000;
+    font-size: 1.1rem;
+    outline: none;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+header .topbar form.searchFormMain button:hover,
+header .topbar form.searchFormMain button:focus {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #0097e2;
+    outline: none;
+    text-decoration: none;
+}
+
+header .topbar ul.topbarEndList {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin-bottom: 0;
+}
+
+header .topbar ul.topbarEndList li a {
+    color: #000;
+    font-size: 1rem;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+header .topbar ul.topbarEndList li button.sidebarMenuToggler {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #000;
+    font-size: 1rem;
+    outline: none;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+header .topbar ul.topbarEndList li button.sidebarMenuToggler:hover {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+header .topbar ul.topbarEndList li.userDropdown .dropdown-toggle {
+    color: #000;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+header
+    .topbar
+    ul.topbarEndList
+    li.userDropdown
+    .dropdown-toggle
+    img.userAvatar {
+    border-radius: 50%;
+    display: inline-block;
+    height: 30px;
+    margin-right: 10px;
+    width: auto;
+}
+
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li {
+    margin-bottom: 0;
+}
+
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li a,
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #00000080;
+    display: block;
+    margin-bottom: 0;
+    opacity: 0.5;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li a:hover,
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li button:hover {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #0097e2;
+    outline: none;
+    text-decoration: none;
+}
+
+header .topbar ul.topbarEndList hr {
+    margin: 0.5rem 0;
+}
+
+main.dashboardMain {
+    background-color: #061d21;
+    min-height: 100svh;
+    margin-left: auto;
+    padding: 4rem 5rem;
+    width: 80%;
+}
+
+main.dashboardMain.full {
+    margin: 0;
+    padding: 3rem 0.5rem;
+    width: 100%;
+}
+
+header {
+    background-color: #d1f9ff0d;
+    left: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+header .headWrap {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 1rem 0;
+    width: 100%;
+}
+
+header .headWrap button {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    font-size: 2rem;
+}
+
+header .headWrap img {
+    display: block;
+    height: 30px;
+    width: auto;
+}
+
+header .modal .modal-dialog .modal-content .modal-body h1 {
+    font-size: 1.5rem;
+}
+
+.pageTitleBanner {
+    margin-bottom: 2rem;
+}
+
+.pageTitleBanner h1 {
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 3rem;
+    line-height: 3.5rem;
+    margin-bottom: 0;
+}
+
+.pageTitleBanner a.editItemBtn {
+    color: #31d2f7;
+    font-size: 2rem;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.pageTitleBanner a.editItemBtn:hover {
+    color: #44e0ac;
+}
+
+.modal .modal-dialog .modal-content {
+    background-color: #1d373b;
+}
+
+.modal .modal-dialog .modal-content .modal-header {
+    background-color: #1d373b;
+    border: 0;
+    overflow: hidden;
+}
+
+.modal .modal-dialog .modal-content .modal-header button.btn-close {
+    background: none;
+    color: #fff !important;
+    font-size: 1.25rem;
+    opacity: 1;
+}
+
+.modal .modal-dialog .modal-content .modal-body {
+    background-color: #1d373b;
+}
+
+.modal .modal-dialog .modal-content .modal-body h1 {
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    margin-top: -0.75rem;
+    text-align: center;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .row {
+    margin-bottom: 1.5rem;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .row label,
+.theme_label {
+    color: #fff;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .row input[type="text"],
+.modal .modal-dialog .modal-content .modal-body form .row input[type="number"],
+.modal .modal-dialog .modal-content .modal-body form .row input[type="date"],
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .row
+    input[type="password"],
+.theme_input {
+    background-color: #d1f9ff0d;
+    border: 1px solid rgba(209, 249, 255, 0.05);
+    color: #fff;
+    display: block;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100% !important;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .row
+    input[type="text"]:focus,
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .row
+    input[type="number"]:focus,
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .row
+    input[type="date"]:focus,
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .row
+    input[type="password"]:focus,
+.theme_input:focus {
+    border: 1px solid #31d2f7;
+    box-shadow: none;
+    outline: none;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .row select {
+    background-color: #d1f9ff0d;
+    border: 1px solid rgba(209, 249, 255, 0.05);
+    color: #fff;
+    display: block;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .row select:focus {
+    border: 1px solid #31d2f7;
+    box-shadow: none;
+    outline: none;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .row .input-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .row .input-group label {
+    margin-bottom: 0;
+    width: auto;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .row
+    button[type="submit"] {
+    display: block;
+    width: 100%;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .addBudgetItem {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem 0;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group {
+    align-items: center;
+    background-color: #d1f9ff0d;
+    border: 1px solid rgba(209, 249, 255, 0.05);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    overflow: hidden;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 90%;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group
+    label {
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    padding: 12px 0 20px 5px;
+    text-align: right;
+    width: 7%;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group
+    input[type="number"] {
+    background-color: transparent;
+    border: 0;
+    color: #ffffffa6;
+    display: inline-block;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 100%;
+    margin-left: 0;
+    padding-left: 0;
+    width: 90% !important;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group
+    input[type="number"]::placeholder {
+    color: #ffffffa6;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group
+    input[type="number"]:focus,
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group
+    input[type="number"]:hover {
+    box-shadow: none;
+    outline: none;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group:focus-within {
+    border: 1px solid #31d2f7;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group:focus-within
+    .input-group-text,
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .input-group:focus-within
+    input.form-control {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    input[type="text"] {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    margin-left: 0 !important;
+    outline: none;
+    padding: 0.5rem;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    input[type="text"]::placeholder {
+    color: #ffffffa6;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .addBudgetItem p {
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0;
+    opacity: 1;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    span.confirmAmount {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    span.confirmAmount
+    a.editBtn {
+    color: #31d2f7;
+    display: inline-block;
+    font-size: 1rem;
+    margin-left: 5px;
+    margin-top: 0;
+    opacity: 1;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem:first-of-type {
+    padding-top: 0;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem:last-of-type {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .addBudgetItem a,
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    button.add-expense {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    display: block;
+    margin: 1rem auto 0;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.modal .modal-dialog .modal-content .modal-body form .addBudgetItem a:hover,
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    button.add-expense:hover {
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: none;
+}
+
+.modal
+    .modal-dialog
+    .modal-content
+    .modal-body
+    form
+    .addBudgetItem
+    .expenseItemInner {
+    margin-bottom: 1rem;
+}
+
+.modal .modal-dialog .modal-content .modal-footer {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 0;
+    display: flex;
+    justify-content: start;
+    padding-top: 0;
+}
+
+.noAccountDetailsNotice {
+    background-color: #d1f9ff0d;
+    border-radius: 12px;
+    padding: 2rem 4rem;
+}
+
+.noAccountDetailsNotice i {
+    color: #ffffff80;
+    font-size: 4rem;
+    margin-bottom: 2rem;
+}
+
+.noAccountDetailsNotice h2 {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.noAccountDetailsNotice p {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin: 0 auto 2rem;
+    width: 60%;
+}
+
+.noAccountDetailsNotice a.twoToneBlueGreenBtn {
+    display: block;
+    text-decoration: none;
+    margin: 1rem auto;
+    width: 200px;
+}
+
+.dashboardNextStepsBanner {
+    margin-bottom: 2rem;
+}
+
+.dashboardNextStepsBanner .nextStepsBox {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.dashboardNextStepsBanner .nextStepsBox .item {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;
+}
+
+.dashboardNextStepsBanner .nextStepsBox .item a {
+    box-shadow: none;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    outline: none;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.dashboardNextStepsBanner .nextStepsBox .item a .circle {
+    background: #25474c;
+    border: 1px solid #2e575d;
+    border-radius: 100%;
+    content: "";
+    display: inline-block;
+    height: 25px;
+    margin-right: 0.5rem;
+    overflow: hidden;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 25px;
+}
+
+.dashboardNextStepsBanner .nextStepsBox .item a:hover {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    outline: none;
+    text-decoration: none;
+}
+
+.dashboardNextStepsBanner .nextStepsBox .item a:hover .circle {
+    background: #31d2f7;
+}
+
+.dashboardNextStepsBanner .nextStepsBox .item:last-of-type {
+    margin-bottom: 0;
+}
+
+.floatingQuickAddDropUp {
+    bottom: 1rem;
+    position: fixed;
+    right: 1rem;
+}
+
+.floatingQuickAddDropUp button.dropdown-toggle {
+    background: linear-gradient(to right, #31d2f7, #44e0ac);
+    border: 0;
+    border-radius: 100%;
+    box-shadow: none;
+    color: #fff;
+    font-size: 1.5rem;
+    height: 3rem;
+    text-align: center;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 3rem;
+}
+
+.floatingQuickAddDropUp button.dropdown-toggle .fa-plus {
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.floatingQuickAddDropUp button.dropdown-toggle:hover,
+.floatingQuickAddDropUp button.dropdown-toggle:focus,
+.floatingQuickAddDropUp button.dropdown-toggle.show {
+    background: linear-gradient(to left, #31d2f7, #44e0ac);
+    color: #fff;
+}
+
+.floatingQuickAddDropUp button.dropdown-toggle:hover .fa-plus,
+.floatingQuickAddDropUp button.dropdown-toggle:focus .fa-plus,
+.floatingQuickAddDropUp button.dropdown-toggle.show .fa-plus {
+    transform: rotate(-45deg);
+}
+
+.floatingQuickAddDropUp button.dropdown-toggle:after {
+    display: none;
+}
+
+.floatingQuickAddDropUp ul.dropdown-menu {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 8px;
+    width: 250px;
+}
+
+.floatingQuickAddDropUp ul.dropdown-menu li {
+    display: block;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.floatingQuickAddDropUp ul.dropdown-menu li button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #ffffff80;
+    display: block;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding: 0.25rem 0.75rem;
+    text-align: left;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+.floatingQuickAddDropUp ul.dropdown-menu li button:hover {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #fff;
+    outline: none;
+    text-decoration: none;
+}
+
+.floatingQuickAddDropUp ul.dropdown-menu li:last-of-type {
+    margin-bottom: 0;
+}
+
+.setupStepsWrapper .setupStepsWrap {
+    margin-bottom: 2rem;
+}
+
+.setupStepsWrapper .setupStepsWrap .titles {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.setupStepsWrapper .setupStepsWrap .titles .item {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 0.9rem;
+}
+
+.setupStepsWrapper .setupStepsWrap .titles .item.active {
+    color: #31d2f7;
+}
+
+.setupStepsWrapper .setupStepsWrap .titles .sep {
+    background-color: #fff;
+    content: "";
+    display: block;
+    height: 1px;
+    margin: 1rem;
+    opacity: 0.25;
+    width: 50px;
+}
+
+.setupStepsWrapper .setupStepsWrap .boxes {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.setupStepsWrapper .setupStepsWrap .boxes .box {
+    background-color: #fff;
+    content: "";
+    display: block;
+    height: 5px;
+    opacity: 0.25;
+    width: 200px;
+}
+
+.setupStepsWrapper .setupStepsWrap .boxes .box.active {
+    background-color: #31d2f7;
+    opacity: 1;
+}
+
+.setupStepsWrapper h1 {
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 35px;
+    line-height: 40px;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.setupStepsWrapper h4 {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.setupStepsWrapper p {
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    opacity: 0.5;
+    text-align: center;
+}
+
+.setupStepsWrapper a.twoToneBlueGreenBtn {
+    display: block;
+    margin: 3rem auto 0;
+    text-decoration: none;
+    width: 200px;
+}
+
+.setupStepsWrapper form {
+    margin-top: 2rem;
+}
+
+.setupStepsWrapper form .inputWrap {
+    align-items: center;
+    background-color: #d1f9ff0d;
+    border: 1px solid rgba(209, 249, 255, 0.05);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    padding: 2rem 3rem;
+    position: relative;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.setupStepsWrapper form .inputWrap input[type="radio"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.setupStepsWrapper form .inputWrap .content h5 {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.5rem;
+}
+
+.setupStepsWrapper form .inputWrap .content p {
+    color: #fff;
+    font-family: jakaLight, sans-serif;
+    margin-bottom: 0;
+    text-align: left;
+}
+
+.setupStepsWrapper form .inputWrap .iconWrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: absolute;
+    right: 3rem;
+}
+
+.setupStepsWrapper form .inputWrap .iconWrap i {
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.setupStepsWrapper form .inputWrap:hover,
+.setupStepsWrapper form .inputWrap:focus-within {
+    border: 1px solid #31d2f7;
+}
+
+.setupStepsWrapper form .dateSelectMainWrapper {
+    background-color: #d1f9ff0d;
+    border-radius: 8px;
+    padding: 2rem 4rem;
+}
+
+.setupStepsWrapper form .dateSelectMainWrapper .input-group {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 1rem;
+    padding-bottom: 2rem;
+}
+
+.setupStepsWrapper form .dateSelectMainWrapper .input-group .input-group-text {
+    background: transparent;
+    align-items: center;
+    border: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.setupStepsWrapper
+    form
+    .dateSelectMainWrapper
+    .input-group
+    .input-group-text
+    input[type="radio"] {
+    display: none;
+}
+
+.setupStepsWrapper
+    form
+    .dateSelectMainWrapper
+    .input-group
+    .input-group-text
+    label {
+    background-color: #183539;
+    border-radius: 50% !important;
+    color: #fff;
+    cursor: pointer;
+    display: block;
+    font-size: 1rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: background 0.3s ease-in-out;
+    width: 100%;
+}
+
+.setupStepsWrapper
+    form
+    .dateSelectMainWrapper
+    .input-group
+    .input-group-text
+    input[type="radio"]:checked
+    + label {
+    background: linear-gradient(to right, #31d2f7, #44e0ac);
+    color: #183539;
+    border-radius: 50%;
+    font-weight: 700;
+}
+
+.setupStepsWrapper form .dateSelectMainWrapper p {
+    margin-bottom: 0;
+}
+
+.setupStepsWrapper form .dateSelectMainWrapper p strong {
+    color: #fff;
+    opacity: 1;
+}
+
+.setupStepsWrapper form .formSectionTitle {
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 19px;
+}
+
+.setupStepsWrapper form .expensesWrap {
+    background-color: #d1f9ff0d;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    padding: 2rem 4rem;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem 0;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem label {
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem .input-group {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+    border-radius: 5px;
+    height: 40px;
+    outline: none;
+    overflow: hidden;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 150px;
+}
+
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    .input-group
+    .input-group-text {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding-right: 0;
+}
+
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    .input-group
+    input.form-control {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-left: 0 !important;
+    outline: none;
+    padding-left: 0;
+}
+
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    .input-group
+    input.form-control::placeholder {
+    color: #ffffffa6;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem .input-group:focus-within {
+    border: 1px solid #31d2f7;
+}
+
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    .input-group:focus-within
+    .input-group-text,
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    .input-group:focus-within
+    input.form-control {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem input[type="date"] {
+    background-color: #ffffff0d;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    margin-left: 0 !important;
+    outline: none;
+    padding: 0.5rem;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    input[type="date"]::placeholder {
+    color: #ffffffa6;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem input[type="date"]:focus {
+    border: 1px solid #31d2f7;
+    box-shadow: none;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem input[type="text"] {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    margin-left: 0 !important;
+    outline: none;
+    padding: 0.5rem;
+}
+
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    input[type="text"]::placeholder {
+    color: #ffffffa6;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem p {
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0;
+    opacity: 1;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem span.confirmAmount {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+
+.setupStepsWrapper
+    form
+    .expensesWrap
+    .expenseItem
+    span.confirmAmount
+    a.editBtn {
+    color: #31d2f7;
+    display: inline-block;
+    font-size: 1rem;
+    margin-left: 5px;
+    margin-top: 0;
+    opacity: 1;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem:first-of-type {
+    padding-top: 0;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem:last-of-type {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem a,
+.setupStepsWrapper form .expensesWrap .expenseItem button.add-expense {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    display: block;
+    margin: 1rem auto 0;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem a:hover,
+.setupStepsWrapper form .expensesWrap .expenseItem button.add-expense:hover {
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: none;
+}
+
+.setupStepsWrapper form .expensesWrap .expenseItem .expenseItemInner {
+    margin-bottom: 1rem;
+}
+
+.setupStepsWrapper form a.editBudgetItemButton {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.setupStepsWrapper form a.editBudgetItemButton i {
+    margin-right: 5px;
+}
+
+.setupStepsWrapper form a.editBudgetItemButton:hover {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: none;
+}
+
+.setupStepsWrapper form .bankDetailsInputMainWrap .bankItem {
+    background-color: #d1f9ff0d;
+    border: 1px solid rgba(209, 249, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    padding: 2rem 3rem;
+}
+
+.setupStepsWrapper form .bankDetailsInputMainWrap .bankItem .row {
+    margin-bottom: 2rem;
+}
+
+.setupStepsWrapper form .bankDetailsInputMainWrap .bankItem .row:last-of-type {
+    margin-bottom: 0;
+}
+
+.setupStepsWrapper form .bankDetailsInputMainWrap .bankItem label {
+    color: #fff;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.setupStepsWrapper form .bankDetailsInputMainWrap .bankItem input[type="text"],
+.setupStepsWrapper
+    form
+    .bankDetailsInputMainWrap
+    .bankItem
+    input[type="number"],
+.setupStepsWrapper form .bankDetailsInputMainWrap .bankItem select {
+    background-color: #d1f9ff0d;
+    border: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: #fff;
+    display: block;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    padding: 0.5rem;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+.setupStepsWrapper
+    form
+    .bankDetailsInputMainWrap
+    .bankItem
+    input[type="text"]:focus,
+.setupStepsWrapper
+    form
+    .bankDetailsInputMainWrap
+    .bankItem
+    input[type="number"]:focus,
+.setupStepsWrapper form .bankDetailsInputMainWrap .bankItem select:focus {
+    background-color: #d1f9ff0d;
+    border: 1px solid #31d2f7;
+    box-shadow: none;
+    color: #fff;
+    outline: none;
+    text-decoration: none;
+}
+
+.setupStepsWrapper
+    form
+    .bankDetailsInputMainWrap
+    .bankItem
+    button.removeBankBtn {
+    background-color: red;
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.setupStepsWrapper
+    form
+    .bankDetailsInputMainWrap
+    .bankItem
+    button.removeBankBtn:hover {
+    background-color: #c00;
+    border: 0;
+    box-shadow: none;
+    color: #fff;
+    outline: none;
+    text-decoration: none;
+}
+
+.setupStepsWrapper
+    form
+    .bankDetailsInputMainWrap
+    .bankItem:first-of-type
+    button.removeBankBtn {
+    display: none;
+}
+
+.setupStepsWrapper form button.addAnotherBankBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #31d2f7;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    margin: 0;
+    outline: none;
+    padding: 0;
+    text-align: center;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.setupStepsWrapper form button.addAnotherBankBtn:hover {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: none;
+}
+
+.setupStepsWrapper a.setupStepsBackButton {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 1.1rem;
+    margin: 0;
+    outline: none;
+    padding: 1rem;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.setupStepsWrapper a.setupStepsBackButton:hover {
+    background-color: #44e0ac;
+    border: 0;
+    box-shadow: none;
+    color: #183539;
+    outline: none;
+    text-decoration: none;
+}
+
+.dashboardNextStepsBanner h4 {
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.dateInfoBanner {
+    margin-bottom: 2rem;
+}
+
+.dateInfoBanner .inner {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 8px;
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    width: 230px;
+}
+
+.dashboardInfoBoxesBanner .col-lg-6,
+.dashboardInfoBoxesBanner .col-md-6 {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboardInfoBoxesBanner h4 {
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    margin-bottom: 0;
+}
+
+.dashboardInfoBoxesBanner a.viewMoreDetailsBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin: 0;
+    text-align: right;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.dashboardInfoBoxesBanner a.viewMoreDetailsBtn:hover {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: none;
+}
+
+.dashboardInfoBoxesBanner .infoBox {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 12px;
+    color: #ffffff80;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 175px;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    width: 100%;
+}
+
+.dashboardInfoBoxesBanner .infoBox strong {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+}
+
+.dashboardInfoBoxesBanner .infoBox h2 {
+    color: #44e0ac;
+    font-family: jakaBold, sans-serif;
+    font-size: 2.5rem;
+}
+
+.dashboardInfoBoxesBanner .infoBox h5 {
+    color: #fff;
+}
+
+.dashboardInfoBoxesBanner .infoBox p {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.dashboardInfoBoxesBanner .infoBox p a {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    outline: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.dashboardInfoBoxesBanner .infoBox p a:hover {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+}
+
+.dashboardInfoBoxesBanner .infoBox #myDoughnutChart {
+    max-width: 200px;
+    max-height: 200px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto 2rem;
+}
+
+.dashboardInfoBoxesBanner .infoBox #expenseChart,
+.dashboardInfoBoxesBanner .infoBox #incomeChart {
+    max-height: 300px;
+    max-width: 300px;
+    width: 225px !important;
+    height: 300px !important;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.addTransactionFilterBanner {
+    margin-bottom: 2rem;
+}
+
+.addTransactionFilterBanner .btn-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.addTransactionFilterBanner .btn-group .dropdown a.dropdown-toggle {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding: 1.3rem 1.5rem;
+}
+
+.addTransactionFilterBanner .btn-group .dropdown a.dropdown-toggle:after {
+    display: none;
+}
+
+.addTransactionFilterBanner .btn-group .dropdown .dropdown-menu {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding: 1.5rem;
+    width: 300px;
+}
+
+.addTransactionFilterBanner .btn-group .dropdown .dropdown-menu h6 {
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.addTransactionFilterBanner .btn-group .dropdown .dropdown-menu .item {
+    margin-bottom: 0.5rem;
+}
+
+.addTransactionFilterBanner .btn-group .dropdown .dropdown-menu .item a {
+    align-items: center;
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    gap: 0.75rem;
+    text-decoration: none;
+    width: 100%;
+}
+
+.addTransactionFilterBanner
+    .btn-group
+    .dropdown
+    .dropdown-menu
+    .item
+    a
+    .square {
+    background: #25474c;
+    border: 1px solid #2e575d;
+    content: "";
+    display: inline-block;
+    height: 1.25rem;
+    position: relative;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 1.25rem;
+}
+
+.addTransactionFilterBanner
+    .btn-group
+    .dropdown
+    .dropdown-menu
+    .item
+    a
+    .square:before {
+    content: "";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    color: transparent;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.addTransactionFilterBanner
+    .btn-group
+    .dropdown
+    .dropdown-menu
+    .item
+    a:hover
+    .square,
+.addTransactionFilterBanner
+    .btn-group
+    .dropdown
+    .dropdown-menu
+    .item
+    a.active
+    .square {
+    background: linear-gradient(to top left, #31d2f7, #44e0ac);
+    color: #1d373b;
+    content: "f00c";
+}
+
+.addTransactionFilterBanner
+    .btn-group
+    .dropdown
+    .dropdown-menu
+    .item
+    a:hover
+    .square:before,
+.addTransactionFilterBanner
+    .btn-group
+    .dropdown
+    .dropdown-menu
+    .item
+    a.active
+    .square:before {
+    color: #1d373b;
+}
+
+.transactionGroup {
+    margin-bottom: 2rem;
+}
+
+.transactionGroup h4 {
+    color: #ffffff80;
+    font-family: jakaBold, sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.transactionGroup .transactionList {
+    background-color: #d1f9ff0d;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.transactionGroup .transactionList .transaction {
+    margin-bottom: 2rem;
+}
+
+.transactionGroup .transactionList .transaction button.modalBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 8px;
+    display: block;
+    margin: 0;
+    padding: 1rem;
+    text-align: left;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+.transactionGroup .transactionList .transaction button.modalBtn:hover {
+    background-color: #25474c;
+    border: 0;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.transactionGroup .transactionList .transaction h5 {
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 1rem;
+}
+
+.transactionGroup .transactionList .transaction h6 {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.transactionGroup .transactionList .transaction .amount span {
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+}
+
+.transactionGroup .transactionList .transaction .accountType {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 0.8rem;
+}
+
+.transactionGroup .transactionList .transaction:last-of-type {
+    margin-bottom: 0;
+}
+
+.transactionsMainBanner .inner {
+    background-color: #d1f9ff0d;
+    border: 0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.transactionsMainBanner .inner i.fa-right-left {
+    color: #ffffff80;
+    font-size: 4rem;
+    margin-bottom: 2rem;
+}
+
+.transactionsMainBanner .inner h2 {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.transactionsMainBanner .inner p {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin: 0 auto 2rem;
+    width: 60%;
+}
+
+.transactionsMainBanner .inner a.twoToneBlueGreenBtn {
+    display: block;
+    text-decoration: none;
+    margin: 1rem auto;
+    width: 200px;
+}
+
+.transactionsMainBanner .inner.noTransactions {
+    padding: 2rem 4rem;
+}
+
+.createTransactionsMainWrap {
+    background-color: #d1f9ff0d;
+    border: 0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.createTransactionsMainWrap form .row {
+    margin-bottom: 1.5rem;
+}
+
+.createTransactionsMainWrap form .row label {
+    color: #fff;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.createTransactionsMainWrap form .row input[type="text"],
+.createTransactionsMainWrap form .row input[type="number"],
+.createTransactionsMainWrap form .row input[type="date"],
+.createTransactionsMainWrap form .row select {
+    background-color: #d1f9ff0d;
+    border: 1px solid rgba(209, 249, 255, 0.05);
+    color: #fff;
+    display: block;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+.createTransactionsMainWrap form .row input[type="text"]:focus,
+.createTransactionsMainWrap form .row input[type="number"]:focus,
+.createTransactionsMainWrap form .row input[type="date"]:focus,
+.createTransactionsMainWrap form .row select:focus {
+    border: 1px solid #31d2f7;
+    box-shadow: none;
+    outline: none;
+}
+
+.createTransactionsMainWrap form .row .input-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.createTransactionsMainWrap form .row .input-group label {
+    margin-bottom: 0;
+    width: auto;
+}
+
+.createTransactionsMainWrap form .row button[type="submit"] {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+.addBanner {
+    margin-bottom: 2rem;
+}
+
+.bankAccountsMainList {
+    background-color: #d1f9ff0d;
+    border: 0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.bankAccountsMainList .bankItem {
+    margin-bottom: 2rem;
+}
+
+.bankAccountsMainList .bankItem button.modalBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    display: block;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+}
+
+.bankAccountsMainList .bankItem h4 {
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 1rem;
+}
+
+.bankAccountsMainList .bankItem h6 {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+.bankAccountsMainList .bankItem .balance {
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+}
+
+.bankAccountsMainList .bankItem:last-of-type {
+    margin-bottom: 0;
+}
+
+.bankAccountsMainList .noAccountNotice i {
+    color: #ffffff80;
+    font-size: 4rem;
+    margin-bottom: 2rem;
+}
+
+.bankAccountsMainList .noAccountNotice h2 {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.bankAccountsMainList .noAccountNotice p {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin: 0 auto 2rem;
+    width: 60%;
+}
+
+.bankAccountsMainList .noAccountNotice a.twoToneBlueGreenBtn {
+    display: block;
+    text-decoration: none;
+    margin: 1rem auto;
+    width: 200px;
+}
+
+.bankAccountsMainList .noAccountNotice.noTransactions {
+    padding: 2rem 4rem;
+}
+
+.budgetTotalBudgetBanner {
+    margin-bottom: 2rem;
+}
+
+.budgetTotalBudgetBanner h2 {
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.budgetTotalBudgetBanner .inner {
+    align-items: center;
+    background-color: #d1f9ff0d;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+.budgetTotalBudgetBanner .inner #myDoughnutChart {
+    max-width: 300px;
+    max-height: 300px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 2rem;
+}
+
+.budgetTotalBudgetBanner .inner h4 {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+}
+
+.budgetTotalBudgetBanner .inner h5 {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.categoryBudgetsWrapper a.editCatListBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding: 0;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.categoryBudgetsWrapper a.editCatListBtn i {
+    margin-right: 5px;
+}
+
+.categoryBudgetsWrapper a.editCatListBtn:hover {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: none;
+}
+
+.categoryBudgetsWrapper h2 {
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.categoryBudgetsWrapper .inner {
+    background-color: #d1f9ff0d;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.categoryBudgetsWrapper .inner button.modalBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    display: block;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+}
+
+.categoryBudgetsWrapper .inner .catItem {
+    margin-bottom: 2.5rem;
+}
+
+.categoryBudgetsWrapper .inner .catItem h5 {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    text-transform: capitalize;
+}
+
+.categoryBudgetsWrapper .inner .catItem h6 {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+
+.categoryBudgetsWrapper .inner .catItem .spentAmount {
+    color: #fff;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+}
+
+.categoryBudgetsWrapper .inner .catItem .progress {
+    background-color: #ffffff0d;
+    border-radius: 5px;
+    height: 30px;
+    margin-top: 0.5rem;
+}
+
+.categoryBudgetsWrapper .inner .catItem .progress .progress-bar {
+    background: linear-gradient(to right, #31d2f7, #44e0ac);
+}
+
+.editCategoryBudgetWrapper .inner {
+    background-color: #d1f9ff0d;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.editCategoryBudgetWrapper .inner .editItem {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem 0;
+}
+
+.editCategoryBudgetWrapper .inner .editItem label {
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+
+.editCategoryBudgetWrapper .inner .editItem .input-group {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+    border-radius: 5px;
+    height: 50px;
+    outline: none;
+    overflow: hidden;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 150px;
+}
+
+.editCategoryBudgetWrapper .inner .editItem .input-group .input-group-text {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding-right: 0;
+}
+
+.editCategoryBudgetWrapper .inner .editItem .input-group input.form-control {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-left: 0 !important;
+    outline: none;
+    padding-left: 0;
+}
+
+.editCategoryBudgetWrapper
+    .inner
+    .editItem
+    .input-group
+    input.form-control::placeholder {
+    color: #ffffffa6;
+}
+
+.editCategoryBudgetWrapper .inner .editItem .input-group:focus-within {
+    border: 1px solid #31d2f7;
+}
+
+.editCategoryBudgetWrapper
+    .inner
+    .editItem
+    .input-group:focus-within
+    .input-group-text,
+.editCategoryBudgetWrapper
+    .inner
+    .editItem
+    .input-group:focus-within
+    input.form-control {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.editCategoryBudgetWrapper .inner .editItem input[type="text"] {
+    background-color: #ffffff0d;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #ffffffa6;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    margin-left: 0 !important;
+    outline: none;
+    padding: 0.5rem;
+}
+
+.editCategoryBudgetWrapper .inner .editItem input[type="text"]::placeholder {
+    color: #ffffffa6;
+}
+
+.editCategoryBudgetWrapper .inner .editItem p {
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0;
+    opacity: 1;
+}
+
+.editCategoryBudgetWrapper .inner .editItem span.confirmAmount {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+
+.editCategoryBudgetWrapper .inner .editItem span.confirmAmount a.editBtn {
+    color: #31d2f7;
+    display: inline-block;
+    font-size: 1rem;
+    margin-left: 5px;
+    margin-top: 0;
+    opacity: 1;
+}
+
+.editCategoryBudgetWrapper .inner .editItem:first-of-type {
+    padding-top: 0;
+}
+
+.editCategoryBudgetWrapper .inner .editItem:last-of-type {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.editCategoryBudgetWrapper .inner .editItem a,
+.editCategoryBudgetWrapper .inner .editItem button.add-expense {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    display: block;
+    margin: 1rem auto 0;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.editCategoryBudgetWrapper .inner .editItem a:hover,
+.editCategoryBudgetWrapper .inner .editItem button.add-expense:hover {
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: none;
+}
+
+.editCategoryBudgetWrapper .inner .editItem .expenseItemInner {
+    margin-bottom: 1rem;
+}
+
+.editCategoryBudgetWrapper .inner button.addNewItemBtn {
+    padding: 0.25rem 1rem;
+}
+
+.myAccountBox .inner {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.myAccountBox form .row {
+    margin-bottom: 1.5rem;
+}
+
+.myAccountBox form .row label {
+    color: #fff;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.myAccountBox form .row input[type="text"],
+.myAccountBox form .row input[type="number"],
+.myAccountBox form .row input[type="date"],
+.myAccountBox form .row input[type="email"],
+.myAccountBox form .row select {
+    background-color: #d1f9ff0d;
+    border: 1px solid rgba(209, 249, 255, 0.05);
+    color: #fff;
+    display: block;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    height: 50px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+.myAccountBox form .row input[type="text"]:focus,
+.myAccountBox form .row input[type="number"]:focus,
+.myAccountBox form .row input[type="date"]:focus,
+.myAccountBox form .row input[type="email"]:focus,
+.myAccountBox form .row select:focus {
+    border: 1px solid #31d2f7;
+    box-shadow: none;
+    outline: none;
+}
+
+.myAccountBox form .row .changePasswordBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+    padding: 0;
+    text-align: left;
+    text-decoration: underline;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.myAccountBox form .row .changePasswordBtn:hover {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #44e0ac;
+    outline: none;
+    text-decoration: underline;
+}
+
+.myAccountBox form .row .input-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.myAccountBox form .row .input-group label {
+    margin-bottom: 0;
+    width: auto;
+}
+
+.myAccountBox form .row button[type="submit"] {
+    display: block;
+    width: 100%;
+}
+
+.myAccountBox .accountDeletionBanner {
+    background-color: #1d373b;
+    border: 1px solid red;
+    border-radius: 12px;
+    margin: 2rem 0;
+    padding: 2rem;
+}
+
+.myAccountBox .accountDeletionBanner h3 {
+    color: red;
+    font-family: jakaBold, sans-serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.myAccountBox .accountDeletionBanner p {
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+
+.recurringPaymentsWrapper {
+    margin-bottom: 2rem;
+}
+
+.recurringPaymentsWrapper .paymentList {
+    background-color: #d1f9ff0d;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.recurringPaymentsWrapper .paymentList .paymentItem {
+    margin-bottom: 2rem;
+}
+
+.recurringPaymentsWrapper .paymentList .paymentItem button.modalBtn {
+    background-color: transparent;
+    border: 0;
+    border-radius: 8px;
+    display: block;
+    margin: 0;
+    padding: 1rem;
+    text-align: left;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+
+.recurringPaymentsWrapper .paymentList .paymentItem button.modalBtn:hover {
+    background-color: #25474c;
+    border: 0;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.recurringPaymentsWrapper
+    .paymentList
+    .paymentItem
+    button.modalBtn
+    .col-md-4:last-of-type {
+    text-align: right;
+}
+
+.recurringPaymentsWrapper .paymentList .paymentItem h4 {
+    color: #fff;
+    display: block;
+    font-family: jakaBold, sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0;
+    text-transform: capitalize;
+    width: 100%;
+}
+
+.recurringPaymentsWrapper .paymentList .paymentItem span.nextDueDate,
+.recurringPaymentsWrapper .paymentList .paymentItem span.accountDetails,
+.recurringPaymentsWrapper .paymentList .paymentItem span.every {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.recurringPaymentsWrapper .paymentList .paymentItem:last-of-type {
+    margin-bottom: 0;
+}
+
+@media only screen and (max-width: 767px) {
+    header {
+        background-color: #1d373b;
+        z-index: 1080;
+    }
+
+    header .headWrap img {
+        height: 25px;
+    }
+
+    aside.sidebar {
+        padding-top: 8rem;
+        z-index: 1080;
+    }
+
+    aside.sidebar a.sidebarBrand {
+        display: none;
+    }
+
+    aside.sidebar.open {
+        width: 100%;
+    }
+
+    .adminPageHero h1 {
+        margin-bottom: 30px;
+    }
+
+    main.dashboardMain {
+        padding-top: 8rem;
+    }
+
+    main.dashboardMain.full {
+        padding-top: 6.5rem;
+    }
+
+    .setupStepsWrapper {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    .setupStepsWrapper .setupStepsWrap .titles {
+        gap: 0.25rem;
+        justify-content: space-between;
+    }
+
+    .setupStepsWrapper .setupStepsWrap .titles .item {
+        font-size: 0.75rem;
+    }
+
+    .setupStepsWrapper .setupStepsWrap .titles .sep {
+        margin: 0 0.1rem;
+        width: 20px;
+    }
+
+    .setupStepsWrapper form .inputWrap {
+        padding: 1rem;
+    }
+
+    .setupStepsWrapper form .inputWrap .content h5 {
+        font-size: 1.1rem;
+    }
+
+    .setupStepsWrapper form .inputWrap .content p {
+        font-size: 1rem;
+        width: 85%;
+    }
+
+    .setupStepsWrapper form .inputWrap .iconWrap {
+        right: 1rem;
+    }
+
+    .setupStepsWrapper form .inputWrap .iconWrap i {
+        font-size: 1.2rem;
+    }
+
+    .setupStepsWrapper form .dateSelectMainWrapper {
+        padding: 1rem;
+    }
+
+    .setupStepsWrapper form .dateSelectMainWrapper .input-group {
+        gap: 0.5rem;
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .setupStepsWrapper
+        form
+        .dateSelectMainWrapper
+        .input-group
+        .input-group-text
+        label {
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+
+    .setupStepsWrapper form .expensesWrap {
+        padding: 2rem;
+    }
+
+    .setupStepsWrapper form .expensesWrap .expenseItem label {
+        text-align: center;
+    }
+
+    .setupStepsWrapper form .expensesWrap .expenseItem .input-group {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .setupStepsWrapper form .bankDetailsInputMainWrap {
+        padding: 0;
+    }
+
+    .dashboardInfoBoxesBanner .infoBox h2 {
+        font-size: 1.3rem;
+    }
+
+    .pageTitleBanner h1 {
+        font-size: 1.7rem;
+        line-height: 2.5rem;
+    }
+
+    .budgetTotalBudgetBanner .inner,
+    .budgetTotalBudgetBanner .inner h5 {
+        text-align: center;
+    }
+
+    .categoryBudgetsWrapper .inner {
+        padding: 1.2rem 1rem;
+    }
+
+    .categoryBudgetsWrapper .inner .catItem h6 {
+        font-size: 0.75rem;
+    }
+
+    .bankAccountsMainList {
+        padding: 1rem;
+    }
+
+    .bankAccountsMainList .bankItem .balance {
+        font-size: 0.8rem;
+    }
+
+    .transactionsMainBanner .inner.noTransactions {
+        padding: 2rem;
+    }
+
+    .transactionsMainBanner .inner p {
+        width: 100%;
+    }
+
+    .transactionGroup .transactionList .transaction .accountType,
+    .transactionGroup .transactionList .transaction h6 {
+        font-size: 0.6rem;
+    }
+
+    .transactionGroup .transactionList .transaction .amount {
+        font-size: 0.9rem;
+    }
+
+    .noAccountDetailsNotice {
+        padding: 2rem;
+    }
+
+    .noAccountDetailsNotice p,
+    .modal
+        .modal-dialog
+        .modal-content
+        .modal-body
+        form
+        .addBudgetItem
+        .input-group {
+        width: 100%;
+    }
+
+    .modal
+        .modal-dialog
+        .modal-content
+        .modal-body
+        form
+        .addBudgetItem
+        .input-group
+        label {
+        padding: 12px 0 20px;
+    }
+
+    .modal
+        .modal-dialog
+        .modal-content
+        .modal-body
+        form
+        .addBudgetItem
+        input[type="text"] {
+        display: block;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .modal .modal-dialog .modal-content .modal-footer form,
+    .modal .modal-dialog .modal-content .modal-footer form button.dangerBtn {
+        display: block;
+        width: 100%;
+    }
+
+    .floatingQuickAddDropUp button.dropdown-toggle {
+        padding: 0 !important;
+        text-align: center !important;
+    }
+
+    .categoryBudgetsWrapper .inner .catItem {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal .modal-dialog .modal-content .modal-body h1 {
+        font-size: 1.6rem;
+    }
+
+
+
+
+
+    /* /changes here start*/
+
+        .dashboardNextStepsBanner h4 {
+     font-size: 1.15rem;
+     margin-bottom: 0.75rem;
+     margin-bottom: 10px !important;
+}
+
+.dashboardNextStepsBanner .nextStepsBox {
+
+    border-radius: 7px;
+    padding: 1rem;
+}
+    .dashboardNextStepsBanner {
+    margin-bottom: 0.4rem;
+}
+.dashboardNextStepsBanner .nextStepsBox .item a {
+
+    font-size: 0.9rem;
+
+}
+.dateInfoBanner .inner {
+
+    border-radius: 6px;
+
+    font-size: 0.9rem;
+    padding: 0.6rem 1.5rem;
+
+}
+
+.pageTitleBanner {
+    margin-bottom: 1.4rem;
+}
+.dateInfoBanner {
+    margin-bottom: 1.3rem;
+}
+
+.dashboardInfoBoxesBanner h4 {
+    font-size: 1.15rem;
+    margin-bottom: 10px !important;
+}
+
+.dashboardInfoBoxesBanner .infoBox {
+
+    border-radius: 7px;
+
+
+    min-height: 100px;
+    margin-bottom: 0.6rem;
+    padding: 1.2rem;
+
+}
+
+.bankAccountsMainList .bankItem
+
+ {
+    margin-bottom: 1.4rem;
+}
+    /* /changes here end  */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+select {
+    background-color: #1d373b !important;
+    color: #ffffff !important;
+    border: 1px solid #444 !important;
+    border-radius: 6px;
+    padding: 10px;
+}
+option {
+    background-color: #1d373b !important;
+    color: #ffffff !important;
+}
+
+@media only screen and (max-width: 580px) {
+    .dashboardInfoBoxesBanner .infoBox #expenseChart,
+    .dashboardInfoBoxesBanner .infoBox #incomeChart {
+        max-height: 300px;
+        max-width: 300px;
+        width: 200px !important;
+        height: 200px !important;
+        margin: 0 auto;
+        object-fit: contain;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .dashboardInfoBoxesBanner .infoBox #expenseChart,
+    .dashboardInfoBoxesBanner .infoBox #incomeChart {
+        max-height: 300px;
+        max-width: 300px;
+        width: 180px !important;
+        height: 300px !important;
+        margin: 0 auto;
+        object-fit: contain;
+    }
+}
+
+
+@media only screen and (max-width: 500px) {
+    .spentAmount{
+        font-size: 0.7rem !important;
+    }
+}
+
+
+.text-primary{
+    color:#31d2f7 !important
+}

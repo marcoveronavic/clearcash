@@ -1,0 +1,10 @@
+@mixin backgroundSize($property) {
+    -webkit-background-size: $property;
+    -moz-background-size: $property;
+    background-size: $property;
+}
+@mixin transition($property) {
+    -webkit-transition: $property;
+    -moz-transition: $property;
+    transition: $property;
+}

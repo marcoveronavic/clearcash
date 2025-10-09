@@ -1,0 +1,173 @@
+header {
+    .topbar {
+        background-color: $white;
+        border-bottom: 1px solid $lightGrey2;
+        display: flex;
+        flex-direction: row;
+        height: 80px;
+        justify-content: center;
+        position: relative;
+
+        button.sidebarMenuToggler {
+            background-color: transparent;
+            border: 0;
+            border-right: 1px solid $lightGrey2;
+            border-radius: 0;
+            box-shadow: none;
+            color: $black;
+            font-size: 1.25rem;
+            height: 80px;
+            left: -1.5rem;
+            line-height: 0;
+            margin: 0;
+            padding: 1rem;
+            position: relative;
+            top: 0;
+            @include transition(all .4s ease-in-out);
+            width: 75px;
+
+        }
+
+        .topbar-brand {
+            color: $primary;
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 0;
+            padding: 0 .5rem;
+            text-decoration: none;
+        }
+
+        form.searchFormMain {
+            .input-group {
+                border: 1px solid $offBlack;
+                border-radius: 5px;
+            }
+            input[type='text'] {
+                background-color: $white;
+                border: 0;
+                box-shadow: none;
+
+                @include transition(all .4s ease-in-out);
+
+                &:focus {
+                    background-color: $white;
+                    border: 0;
+                    box-shadow: none;
+                    outline: none;
+                }
+            }
+            button {
+                background-color: transparent;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+                color: $black;
+                font-size: 1.1rem;
+                outline: none;
+                padding: .5rem 1rem;
+                text-align: center;
+                @include transition(all .4s ease-in-out);
+
+                &:hover,
+                &:focus {
+                    background-color: transparent;
+                    border: 0;
+                    border-radius: 0;
+                    box-shadow: none;
+                    color: $primary;
+                    outline: none;
+                    text-decoration: none;
+                }
+            }
+        }
+
+        ul.topbarEndList {
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            margin-bottom: 0;
+            li {
+
+                a {
+                    color: $black;
+                    font-size: 1rem;
+                    text-decoration: none;
+                    @include transition(all .4s ease-in-out);
+
+
+                }
+                button.sidebarMenuToggler {
+                    background-color: transparent;
+                    border: 0;
+                    box-shadow: none;
+                    color: $black;
+                    font-size: 1rem;
+                    outline: none;
+                    text-decoration: none;
+                    @include transition(all .4s ease-in-out);
+
+                    &:hover {
+                        background-color: transparent;
+                        border: 0;
+                        box-shadow: none;
+                        outline: none;
+                        text-decoration: none;
+                    }
+                }
+                &.userDropdown {
+                    .dropdown-toggle {
+                        color: $black;
+                        font-family: $medium;
+                        font-size: 1rem;
+                        text-decoration: none;
+                        @include transition(all .4s ease-in-out);
+                        img.userAvatar {
+                            border-radius: 50%;
+                            display: inline-block;
+                            height: 30px;
+                            margin-right: 10px;
+                            width: auto;
+                        }
+                    }
+                    .dropdown-menu {
+                        li {
+                            margin-bottom: 0;
+                            a,
+                            button {
+                                background-color: transparent;
+                                border: 0;
+                                border-radius: 0;
+                                color: $offBlack;
+                                display: block;
+                                margin-bottom: 0;
+                                opacity: .5;
+                                padding: .5rem 1rem;
+                                text-align: left;
+                                text-decoration: none;
+                                @include transition(all .4s ease-in-out);
+                                width: 100%;
+
+                                &:hover {
+                                    background-color: transparent;
+                                    border: 0;
+                                    border-radius: 0;
+                                    box-shadow: none;
+                                    color: $primary;
+                                    outline: none;
+                                    text-decoration: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            hr {
+                margin: .5rem 0;
+            }
+        }
+
+
+
+    }
+}

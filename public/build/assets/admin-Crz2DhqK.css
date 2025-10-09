@@ -1,0 +1,788 @@
+@font-face {
+    font-family: jakaBold;
+    src: url(/build/assets/PlusJakartaSans-Bold-K_68Q89b.ttf);
+}
+@font-face {
+    font-family: jakaExtraBold;
+    src: url(/build/assets/PlusJakartaSans-ExtraBold-BPMfZ3D1.ttf);
+}
+@font-face {
+    font-family: jakaSemiBold;
+    src: url(/build/assets/PlusJakartaSans-SemiBold-E-AGeNse.ttf);
+}
+@font-face {
+    font-family: jakaMedium;
+    src: url(/build/assets/PlusJakartaSans-Medium-BWT6vWE5.ttf);
+}
+@font-face {
+    font-family: jakaReg;
+    src: url(/build/assets/PlusJakartaSans-Regular-DBSa4cpH.ttf);
+}
+@font-face {
+    font-family: jakaLight;
+    src: url(/build/assets/PlusJakartaSans-Light-DDhP_Rn6.ttf);
+}
+@font-face {
+    font-family: jakaExtraLight;
+    src: url(/build/assets/PlusJakartaSans-ExtraLight-BjJ6gFSO.ttf);
+}
+a.primaryOutlineBtn,
+button.primaryOutlineBtn,
+input.primaryOutlineBtn {
+    background-color: transparent;
+    border: 1px solid #0097e2;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #0097e2;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+a.primaryOutlineBtn:hover,
+button.primaryOutlineBtn:hover,
+input.primaryOutlineBtn:hover {
+    background-color: #0097e2;
+    border: 1px solid #0097e2;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #fff;
+    outline: none;
+    text-decoration: none;
+}
+a.twoToneBlueGreenBtn,
+button.twoToneBlueGreenBtn,
+input.twoToneBlueGreenBtn {
+    background: linear-gradient(to right, #31d2f7, #44e0ac);
+    border: 0;
+    border-radius: 5px;
+    color: #183539;
+    font-family: jakaBold, sans-serif;
+    font-size: 1.1rem;
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+}
+a.dangerBtn,
+button.dangerBtn,
+input.dangerBtn {
+    background-color: #fe000040;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    color: #fe0000;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    outline: none;
+    padding: 1rem;
+    text-align: center;
+}
+.swal2-popup {
+    background-color: #1d373b !important;
+}
+.swal2-popup .swal2-title {
+    color: #ffffff80 !important;
+    font-family: jakaBold, sans-serif !important;
+    font-size: 2rem !important;
+}
+.swal2-popup .swal2-confirm {
+    background: linear-gradient(to right, #31d2f7, #44e0ac) !important;
+    border: 0 !important;
+    border-radius: 5px !important;
+    box-shadow: none !important;
+    color: #183539 !important;
+    font-family: jakaBold, sans-serif !important;
+    font-size: 1.1rem !important;
+    margin: 0 !important;
+    outline: none !important;
+    padding: 1rem !important;
+    text-align: center !important;
+}
+.swal2-popup .swal2-cancel {
+    background-color: #31d2f7 !important;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+.dashboardPageHero {
+    background-color: #fff;
+    border: 0;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    padding: 2rem;
+}
+.dashboardPageHero h1 {
+    color: #0097e2;
+    font-family: jakaBold, sans-serif;
+    font-size: 3rem;
+    line-height: 3.5rem;
+    margin-bottom: 0;
+}
+.dashboardPageMain {
+    background-color: #fff;
+    border: 0;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    padding: 2rem;
+}
+.dashboardPageMain form .formSectionTitle {
+    color: #0097e2;
+    font-family: jakaBold, sans-serif;
+    font-size: 2rem;
+    margin: 20px 0;
+    text-align: left;
+}
+.dashboardPageMain form label {
+    color: #000;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+.dashboardPageMain form label span {
+    color: red;
+    margin-left: 2px;
+}
+.dashboardPageMain form input[type="text"],
+.dashboardPageMain form input[type="email"],
+.dashboardPageMain form input[type="password"],
+.dashboardPageMain form input[type="tel"],
+.dashboardPageMain form input[type="number"] {
+    background-color: #f8f9fb;
+    border: 1px solid #f8f9fb;
+    border-bottom: 1px solid #000000;
+    box-shadow: none;
+    border-radius: 0;
+    height: 40px;
+    margin-bottom: 30px;
+    padding-left: 5px;
+    padding-right: 5px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+.dashboardPageMain form input[type="text"]:focus,
+.dashboardPageMain form input[type="email"]:focus,
+.dashboardPageMain form input[type="password"]:focus,
+.dashboardPageMain form input[type="tel"]:focus,
+.dashboardPageMain form input[type="number"]:focus {
+    background-color: #f8f9fb;
+    border: 1px solid #0097e2;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+.dashboardPageMain form input[type="file"] {
+    background-color: #f8f9fb;
+    border: 1px solid #f8f9fb;
+    border-bottom: 1px solid #000000;
+    box-shadow: none;
+    border-radius: 0;
+    height: 40px;
+    margin-bottom: 30px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+.dashboardPageMain form input[type="file"]:focus {
+    background-color: #f8f9fb;
+    border: 1px solid #f8f9fb;
+    border-bottom: 1px solid #000000;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+.dashboardPageMain form textarea {
+    margin-bottom: 30px;
+}
+.dashboardPageMain form button[type="submit"] {
+    margin-top: 30px;
+}
+.dashboardPageMain table thead tr th.actions,
+.dashboardPageMain table tbody tr td.actions {
+    text-align: right;
+}
+aside.sidebar {
+    background-color: #1d373b;
+    border: 0;
+    height: 100%;
+    left: -20%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2rem;
+    position: fixed;
+    top: 0;
+    width: 0;
+    z-index: 1;
+}
+aside.sidebar a.sidebarBrand {
+    display: block;
+    margin-bottom: 5rem;
+    width: 100%;
+}
+aside.sidebar a.sidebarBrand img {
+    display: block;
+    height: auto;
+    margin: 0;
+    width: 75%;
+}
+aside.sidebar ul.sidebar-nav {
+    list-style-type: none;
+    padding: 0;
+    max-width: 100%;
+}
+aside.sidebar ul.sidebar-nav li {
+    margin-bottom: 10px;
+    text-wrap: balance;
+    width: 100%;
+}
+aside.sidebar ul.sidebar-nav li a {
+    background-color: transparent;
+    color: #fff;
+    display: block;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    padding: 0.25rem 1rem 0.25rem 0;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    word-break: break-word;
+    white-space: normal;
+    width: 100%;
+}
+aside.sidebar ul.sidebar-nav li a i {
+    color: #44e0ac;
+    margin-right: 10px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+aside.sidebar ul.sidebar-nav li a:hover,
+aside.sidebar ul.sidebar-nav li a.active {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #31d2f7;
+    outline: none;
+    opacity: 1;
+    text-decoration: none;
+}
+aside.sidebar ul.sidebar-nav li a:hover i,
+aside.sidebar ul.sidebar-nav li a.active i {
+    color: #31d2f7;
+}
+aside.sidebar ul.sidebar-nav li.dropdown {
+    width: 100%;
+}
+aside.sidebar ul.sidebar-nav li.dropdown a.dropdown-toggle {
+    cursor: pointer;
+}
+aside.sidebar ul.sidebar-nav li.dropdown a.dropdown-toggle:after {
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu {
+    background-color: #fff;
+    border: 0;
+    padding: 0.5rem 1.5rem;
+    position: relative !important;
+    width: 100%;
+}
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu li {
+    margin-bottom: 5px;
+}
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu li a {
+    font-size: 1rem;
+}
+aside.sidebar ul.sidebar-nav li.dropdown ul.dropdown-menu.show {
+    position: relative !important;
+    transform: translate(0) !important;
+}
+aside.sidebar ul.sidebar-nav li.dropdown.dropdown a.dropdown-toggle.show {
+    color: #45b7f0;
+}
+aside.sidebar ul.sidebar-nav li.dropdown.dropdown ul.submenu-dropdown-menu {
+    padding: 0.5rem;
+}
+aside.sidebar ul.sidebar-nav li.dropdown.dropdown ul.submenu-dropdown-menu li {
+    margin-bottom: 0;
+}
+aside.sidebar
+    ul.sidebar-nav
+    li.dropdown.dropdown
+    ul.submenu-dropdown-menu
+    li
+    a {
+    font-size: 1rem;
+    padding-bottom: 0.25rem;
+    padding-top: 0.25rem;
+}
+aside.sidebar ul.sidebar-nav hr {
+    margin: 20px auto;
+    width: 90%;
+}
+aside.sidebar .userWrapper {
+    bottom: 2rem;
+    left: 2rem;
+    position: absolute;
+    right: 2rem;
+}
+aside.sidebar .userWrapper .dropup {
+    display: block;
+    width: 100%;
+}
+aside.sidebar .userWrapper .dropup button {
+    align-items: center;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+    text-transform: capitalize;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+aside.sidebar .userWrapper .dropup button img.userIcon {
+    height: 1rem;
+    margin-right: 0.5rem;
+    width: auto;
+}
+aside.sidebar .userWrapper .dropup button:after {
+    display: none;
+}
+aside.sidebar .userWrapper .dropup ul.dropdown-menu li a {
+    color: #183539;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+aside.sidebar .userWrapper .dropup ul.dropdown-menu li a:hover {
+    box-shadow: none;
+    color: #31d2f7;
+    outline: none;
+    text-decoration: none;
+}
+aside.sidebar.open {
+    left: 0;
+    width: 20%;
+}
+header .topbar {
+    background-color: #fff;
+    border-bottom: 1px solid #e1e6f0;
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    justify-content: center;
+    position: relative;
+}
+header .topbar button.sidebarMenuToggler {
+    background-color: transparent;
+    border: 0;
+    border-right: 1px solid #e1e6f0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #000;
+    font-size: 1.25rem;
+    height: 80px;
+    left: -1.5rem;
+    line-height: 0;
+    margin: 0;
+    padding: 1rem;
+    position: relative;
+    top: 0;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 75px;
+}
+header .topbar .topbar-brand {
+    color: #0097e2;
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    padding: 0 0.5rem;
+    text-decoration: none;
+}
+header .topbar form.searchFormMain .input-group {
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+header .topbar form.searchFormMain input[type="text"] {
+    background-color: #fff;
+    border: 0;
+    box-shadow: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+header .topbar form.searchFormMain input[type="text"]:focus {
+    background-color: #fff;
+    border: 0;
+    box-shadow: none;
+    outline: none;
+}
+header .topbar form.searchFormMain button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #000;
+    font-size: 1.1rem;
+    outline: none;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+header .topbar form.searchFormMain button:hover,
+header .topbar form.searchFormMain button:focus {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #0097e2;
+    outline: none;
+    text-decoration: none;
+}
+header .topbar ul.topbarEndList {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin-bottom: 0;
+}
+header .topbar ul.topbarEndList li a {
+    color: #000;
+    font-size: 1rem;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+header .topbar ul.topbarEndList li button.sidebarMenuToggler {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #000;
+    font-size: 1rem;
+    outline: none;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+header .topbar ul.topbarEndList li button.sidebarMenuToggler:hover {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    outline: none;
+    text-decoration: none;
+}
+header .topbar ul.topbarEndList li.userDropdown .dropdown-toggle {
+    color: #000;
+    font-family: jakaMedium, sans-serif;
+    font-size: 1rem;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+header
+    .topbar
+    ul.topbarEndList
+    li.userDropdown
+    .dropdown-toggle
+    img.userAvatar {
+    border-radius: 50%;
+    display: inline-block;
+    height: 30px;
+    margin-right: 10px;
+    width: auto;
+}
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li {
+    margin-bottom: 0;
+}
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li a,
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #00000080;
+    display: block;
+    margin-bottom: 0;
+    opacity: 0.5;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    text-decoration: none;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+}
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li a:hover,
+header .topbar ul.topbarEndList li.userDropdown .dropdown-menu li button:hover {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #0097e2;
+    outline: none;
+    text-decoration: none;
+}
+header .topbar ul.topbarEndList hr {
+    margin: 0.5rem 0;
+}
+main.dashboardMain {
+    background-color: #061d21;
+    min-height: 100svh;
+    margin-left: auto;
+    padding: 4rem 10rem;
+    width: 80%;
+}
+main.dashboardMain.full {
+    margin: 0;
+    padding: 4rem 1rem;
+    width: 100%;
+}
+.adminDashItem {
+    background-color: #1d373b;
+    border: 0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+.adminDashItem.small {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.adminDashItem.small h4 {
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 3rem;
+}
+.adminDashItem.small h6 {
+    color: #ffffff80;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+.adminDashItem.medium h4 {
+    color: #ffffff80;
+    font-family: jakaMedium, sans-serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+.adminDashItem.medium .table-responsive.table-wrap {
+    height: 400px;
+    overflow-y: auto;
+}
+.adminDashItem.medium .table-responsive table {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+}
+.adminDashItem.medium .table-responsive table thead {
+    background-color: #2e575d;
+}
+.adminDashItem.medium .table-responsive table thead tr th {
+    background-color: #2e575d;
+    color: #fff;
+    font-family: jakaBold, sans-serif;
+    font-size: 1rem;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+}
+.adminDashItem.medium .table-responsive table tbody tr td {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    font-family: jakaReg, sans-serif;
+    font-size: 1rem;
+}
+@media only screen and (max-width: 767px) {
+    header {
+        background-color: #1d373b;
+        z-index: 1080;
+    }
+    header .headWrap img {
+        height: 25px;
+    }
+    aside.sidebar {
+        padding-top: 8rem;
+        z-index: 1080;
+    }
+    aside.sidebar a.sidebarBrand {
+        display: none;
+    }
+    aside.sidebar.open {
+        width: 100%;
+    }
+    .adminPageHero h1 {
+        margin-bottom: 30px;
+    }
+    main.dashboardMain {
+        padding-top: 8rem;
+    }
+    main.dashboardMain.full {
+        padding-top: 8rem;
+    }
+    .setupStepsWrapper {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+    .setupStepsWrapper .setupStepsWrap .titles {
+        gap: 0.25rem;
+        justify-content: space-between;
+    }
+    .setupStepsWrapper .setupStepsWrap .titles .item {
+        font-size: 0.75rem;
+    }
+    .setupStepsWrapper .setupStepsWrap .titles .sep {
+        margin: 0 0.1rem;
+        width: 20px;
+    }
+    .setupStepsWrapper form .inputWrap {
+        padding: 1rem;
+    }
+    .setupStepsWrapper form .inputWrap .content h5 {
+        font-size: 1.1rem;
+    }
+    .setupStepsWrapper form .inputWrap .content p {
+        font-size: 1rem;
+        width: 85%;
+    }
+    .setupStepsWrapper form .inputWrap .iconWrap {
+        right: 1rem;
+    }
+    .setupStepsWrapper form .inputWrap .iconWrap i {
+        font-size: 1.2rem;
+    }
+    .setupStepsWrapper form .dateSelectMainWrapper {
+        padding: 1rem;
+    }
+    .setupStepsWrapper form .dateSelectMainWrapper .input-group {
+        gap: 0.5rem;
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .setupStepsWrapper
+        form
+        .dateSelectMainWrapper
+        .input-group
+        .input-group-text
+        label {
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+    .setupStepsWrapper form .expensesWrap {
+        padding: 2rem;
+    }
+    .setupStepsWrapper form .expensesWrap .expenseItem label {
+        text-align: center;
+    }
+    .setupStepsWrapper form .expensesWrap .expenseItem .input-group {
+        margin-top: 10px;
+        width: 100%;
+    }
+    .setupStepsWrapper form .bankDetailsInputMainWrap {
+        padding: 0;
+    }
+    .dashboardInfoBoxesBanner .infoBox h2 {
+        font-size: 2rem;
+    }
+    .pageTitleBanner h1 {
+        font-size: 2rem;
+        line-height: 2.5rem;
+    }
+    .budgetTotalBudgetBanner .inner,
+    .budgetTotalBudgetBanner .inner h5 {
+        text-align: center;
+    }
+    .categoryBudgetsWrapper .inner {
+        padding: 1rem;
+    }
+    .categoryBudgetsWrapper .inner .catItem h6 {
+        font-size: 0.75rem;
+    }
+    .bankAccountsMainList {
+        padding: 1rem;
+    }
+    .bankAccountsMainList .bankItem .balance {
+        font-size: 0.8rem;
+    }
+    .transactionsMainBanner .inner.noTransactions {
+        padding: 2rem;
+    }
+    .transactionsMainBanner .inner p {
+        width: 100%;
+    }
+    .transactionGroup .transactionList .transaction .accountType,
+    .transactionGroup .transactionList .transaction h6 {
+        font-size: 0.6rem;
+    }
+    .transactionGroup .transactionList .transaction .amount {
+        font-size: 0.9rem;
+    }
+    .noAccountDetailsNotice {
+        padding: 2rem;
+    }
+    .noAccountDetailsNotice p,
+    .modal
+        .modal-dialog
+        .modal-content
+        .modal-body
+        form
+        .addBudgetItem
+        .input-group {
+        width: 100%;
+    }
+    .modal
+        .modal-dialog
+        .modal-content
+        .modal-body
+        form
+        .addBudgetItem
+        .input-group
+        label {
+        padding: 12px 0 20px;
+    }
+    .modal
+        .modal-dialog
+        .modal-content
+        .modal-body
+        form
+        .addBudgetItem
+        input[type="text"] {
+        display: block;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+    .modal .modal-dialog .modal-content .modal-footer form,
+    .modal .modal-dialog .modal-content .modal-footer form button.dangerBtn {
+        display: block;
+        width: 100%;
+    }
+    .floatingQuickAddDropUp button.dropdown-toggle {
+        padding: 0 !important;
+        text-align: center !important;
+    }
+}

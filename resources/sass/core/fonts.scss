@@ -1,0 +1,36 @@
+@font-face {
+    font-family: 'jakaBold';
+    src: url("../fonts/PlusJakartaSans-Bold.ttf");
+}
+@font-face {
+    font-family: 'jakaExtraBold';
+    src: url("../fonts/PlusJakartaSans-ExtraBold.ttf");
+}
+@font-face {
+    font-family: 'jakaSemiBold';
+    src: url("../fonts/PlusJakartaSans-SemiBold.ttf");
+}
+@font-face {
+    font-family: 'jakaMedium';
+    src: url("../fonts/PlusJakartaSans-Medium.ttf");
+}
+@font-face {
+    font-family: 'jakaReg';
+    src: url("../fonts/PlusJakartaSans-Regular.ttf");
+}
+@font-face {
+    font-family: 'jakaLight';
+    src: url("../fonts/PlusJakartaSans-Light.ttf");
+}
+@font-face {
+    font-family: 'jakaExtraLight';
+    src: url("../fonts/PlusJakartaSans-ExtraLight.ttf");
+}
+
+$bold: 'jakaBold', sans-serif;
+$extraBold: 'jakaExtraBold', sans-serif;
+$semiBold: 'jakaSemiBold', sans-serif;
+$medium: 'jakaMedium', sans-serif;
+$reg: 'jakaReg', sans-serif;
+$light: 'jakaLight', sans-serif;
+$extraLight: 'jakaExtraLight', sans-serif;

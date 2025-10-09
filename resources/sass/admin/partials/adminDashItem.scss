@@ -1,0 +1,71 @@
+.adminDashItem {
+    background-color: $darkBackground;
+    border: 0;
+    border-radius: 12px;
+    padding: 2rem;
+
+    &.small {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        h4 {
+            color: $white;
+            font-family: $bold;
+            font-size: 3rem;
+        }
+        h6 {
+            color: $offWhite;
+            font-family: $reg;
+            font-size: 1rem;
+        }
+    }
+
+    &.medium {
+        h4 {
+            color: $offWhite;
+            font-family: $medium;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .table-responsive {
+
+            &.table-wrap {
+                height: 400px;
+                overflow-y: auto;
+            }
+
+            table {
+                background-color: transparent;
+                border: 0;
+                border-radius: 0;
+
+                thead {
+                    background-color: lighten($darkBackground, 10%);
+
+                    tr {
+                        th {
+                            background-color: lighten($darkBackground, 10%);
+                            color: $white;
+                            font-family: $bold;
+                            font-size: 1rem;
+                            padding-bottom: 1rem;
+                            padding-top: 1rem;
+                        }
+                    }
+                }
+                tbody {
+                    tr {
+                        td {
+                            background-color: transparent;
+                            border-bottom: 1px solid $offWhite;
+                            color :$white;
+                            font-family: $reg;
+                            font-size: 1rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

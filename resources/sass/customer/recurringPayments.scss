@@ -1,0 +1,58 @@
+.recurringPaymentsWrapper {
+    margin-bottom: 2rem;
+    .paymentList {
+        background-color: $surfaceCard;
+        border-radius: 12px;
+        padding: 1rem;
+        .paymentItem {
+            margin-bottom: 2rem;
+            button.modalBtn {
+                background-color: transparent;
+                border: 0;
+                border-radius: 8px;
+                display: block;
+                margin: 0;
+                padding: 1rem;
+                text-align: left;
+                @include transition(all .4s ease-in-out);
+                width: 100%;
+
+                &:hover {
+                    background-color: lighten($darkBackground, 5%);
+                    border: 0;
+                    box-shadow: none;
+                    outline: none;
+                    text-decoration: none;
+                }
+                .col-md-4 {
+                    &:last-of-type {
+                        text-align: right;
+                    }
+                }
+            }
+
+            h4 {
+                color: $white;
+                display: block;
+                font-family: $bold;
+                font-size: 1rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+                width: 100%;
+            }
+
+            span.nextDueDate,
+            span.accountDetails,
+            span.every {
+                color: $offWhite;
+                font-family: $reg;
+                font-size: 14px;
+                margin-bottom: 0;
+            }
+
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

@@ -1,0 +1,123 @@
+.dashboardPageMain {
+    background-color: $white;
+    border: 0;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    padding: 2rem;
+
+    form {
+        .formSectionTitle {
+            color: $primary;
+            font-family: $bold;
+            font-size: 2rem;
+            margin: 20px 0;
+            text-align: left;
+        }
+        label {
+            color: $black;
+            font-family: $medium;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+
+            span {
+                color: red;
+                margin-left: 2px;
+            }
+        }
+        input[type='text'],
+        input[type='email'],
+        input[type='password'],
+        input[type='tel'],
+        input[type='number'] {
+            background-color: $lightGrey;
+            border: 1px solid $lightGrey;
+            border-bottom: 1px solid $black;
+            box-shadow: none;
+            border-radius: 0;
+            height: 40px;
+            margin-bottom: 30px;
+            padding-left: 5px;
+            padding-right: 5px;
+            @include transition(all .4s ease-in-out);
+
+            &:focus {
+                background-color: $lightGrey;
+                border: 1px solid $primary;
+                box-shadow: none;
+                outline: none;
+                text-decoration: none;
+            }
+        }
+        input[type='file'] {
+            background-color: $lightGrey;
+            border: 1px solid $lightGrey;
+            border-bottom: 1px solid $black;
+            box-shadow: none;
+            border-radius: 0;
+            height: 40px;
+            margin-bottom: 30px;
+            @include transition(all .4s ease-in-out);
+
+            &:focus {
+                background-color: $lightGrey;
+                border: 1px solid $lightGrey;
+                border-bottom: 1px solid $black;
+                box-shadow: none;
+                outline: none;
+                text-decoration: none;
+            }
+        }
+        select {
+
+        }
+        textarea {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+
+            &:focus-within {
+
+            }
+        }
+
+        button[type='submit'] {
+            margin-top: 30px;
+        }
+    }
+    table {
+        thead {
+
+            tr {
+
+                th {
+
+                    &.actions {
+                        text-align: right;
+                    }
+                }
+            }
+        }
+        tbody {
+
+            tr {
+
+                td {
+                    &.actions {
+                        text-align: right;
+
+                        .dropdown {
+                            a.dropdown-toggle,
+                            button.dropdown-toggle {
+
+                            }
+                            ul.dropdown-menu {
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

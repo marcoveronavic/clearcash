@@ -1,0 +1,73 @@
+a.primaryOutlineBtn,
+button.primaryOutlineBtn,
+input.primaryOutlineBtn {
+    background-color: transparent;
+    border: 1px solid $primary;
+    border-radius: 5px;
+    box-shadow: none;
+    color: $primary;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    @include transition(all .4s ease-in-out);
+
+    &:hover {
+        background-color: $primary;
+        border: 1px solid $primary;
+        border-radius :5px;
+        box-shadow: none;
+        color: $white;
+        outline: none;
+        text-decoration: none;
+    }
+}
+a.secondryOutlineBtn,
+button.secondryOutlineBtn,
+input.secondryOutlineBtn {
+
+}
+a.whiteOutlineBtn,
+button.whiteOutlineBtn,
+input.whiteOutlineBtn {
+
+}
+a.blackOutlineBtn,
+button.blackOutlineBtn,
+input.blackOutlineBtn {
+
+}
+a.solidLightGreenBtn,
+button.solidLightGreenBtn,
+input.solidLightGreenBtn {
+
+}
+a.twoToneBlueGreenBtn,
+button.twoToneBlueGreenBtn,
+input.twoToneBlueGreenBtn {
+    background: linear-gradient(to right, $lightBlue, $green);
+    border :0;
+    border-radius: 5px;
+    color: $textPrimaryColour;
+    font-family: $bold;
+
+    font-size: 1.1rem;
+    margin: 0;
+    padding: 1rem;
+    text-align :center;
+}
+
+a.dangerBtn,
+button.dangerBtn,
+input.dangerBtn {
+    background-color: rgba(254, 0, 0, .25);
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    color: rgba(254, 0, 0, 1);
+    font-family: $medium;
+    font-size: 1rem;
+    outline: none;
+    padding: 1rem;
+    text-align:center;
+}

@@ -1,0 +1,92 @@
+@media (max-width: 768px) {
+    .setupStepsWrapper form .expensesWrap {
+        padding: 1rem 1.1rem !important;
+    }
+
+    .setupStepsWrapper h1 {
+        font-size: 30px !important;
+        line-height: 38px !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .setupStepsWrapper form .expensesWrap .expenseItem input[type="date"] {
+        font-size: 0.9rem !important;
+        height: 38px !important;
+    }
+    .setupStepsWrapper form .formSectionTitle {
+        font-size: 17px !important;
+    }
+
+    .setupStepsWrapper form .expensesWrap .expenseItem input[type="text"] {
+        font-size: 0.9rem !important;
+        height: 38px !important;
+    }
+
+    .setupStepsWrapper form .expensesWrap .expenseItem .input-group {
+        margin-top: 0px !important;
+        width: 100%;
+    }
+
+    .setupStepsWrapper form .expensesWrap .expenseItem a,
+    .setupStepsWrapper form .expensesWrap .expenseItem button.add-expense {
+        font-size: 1rem;
+        display: block;
+        margin: 0rem auto 0 !important;
+    }
+
+    a.twoToneBlueGreenBtn,
+    button.twoToneBlueGreenBtn,
+    input.twoToneBlueGreenBtn {
+        font-size: 0.9rem !important;
+        padding: 0.8rem !important;
+    }
+    .setupStepsWrapper a.setupStepsBackButton {
+        font-size: 0.9rem !important;
+
+        padding: 1rem !important;
+    }
+
+    .setupStepsWrapper form .expensesWrap .expenseItem {
+        padding: 0.4rem 0 !important;
+    }
+    .setupStepsWrapper form .expensesWrap .expenseItem label {
+        font-size: 0.9rem !important;
+    }
+
+    .setupStepsWrapper form .expensesWrap .expenseItem span.confirmAmount {
+        font-size: 0.9rem !important;
+    }
+
+    .setupStepsWrapper form .bankDetailsInputMainWrap .bankItem {
+        margin-bottom: 1.5rem !important;
+        padding: 1rem 1.2rem !important;
+    }
+
+    .setupStepsWrapper
+        form
+        .bankDetailsInputMainWrap
+        .bankItem
+        input[type="text"],
+    .setupStepsWrapper
+        form
+        .bankDetailsInputMainWrap
+        .bankItem
+        input[type="number"],
+    .setupStepsWrapper form .bankDetailsInputMainWrap .bankItem select {
+        font-size: 0.9rem !important;
+        height: 40px !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    .setupStepsWrapper form .bankDetailsInputMainWrap .bankItem label {
+        font-size: 0.9rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .setupStepsWrapper form .bankDetailsInputMainWrap .bankItem .row {
+        margin-bottom: 1.5rem;
+    }
+    .setupStepsWrapper form .inputWrap .content p {
+        font-size: 0.9rem;
+        width: 85%;
+    }
+}

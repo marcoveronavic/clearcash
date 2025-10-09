@@ -1,0 +1,21 @@
+.pageTitleBanner {
+    margin-bottom: 2rem;
+
+    h1 {
+        color: $white;
+        font-family: $bold;
+        font-size: 3rem;
+        line-height: 3.5rem;
+        margin-bottom: 0;
+    }
+
+    a.editItemBtn {
+        color: $lightBlue;
+        font-size: 2rem;
+        @include transition(all .4s ease-in-out);
+
+        &:hover {
+            color: $green;
+        }
+    }
+}

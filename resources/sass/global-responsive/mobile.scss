@@ -1,0 +1,237 @@
+@media only screen and (max-width: 767px) {
+
+    header {
+        background-color: $darkBackground;
+        z-index: 1080;
+        .headWrap {
+            img {
+                height: 25px;
+            }
+        }
+    }
+
+    aside.sidebar {
+        padding-top: 8rem;
+        z-index: 1080;
+
+        a.sidebarBrand {
+            display: none;
+        }
+        &.open {
+            width: 100%;
+        }
+    }
+
+    .adminPageHero {
+        h1 {
+            margin-bottom: 30px;
+        }
+    }
+
+    main.dashboardMain {
+        padding-top: 8rem;
+
+        &.full {
+            padding-top: 8rem;
+        }
+    }
+
+    .setupStepsWrapper {
+        margin-left: -10px;
+        margin-right: -10px;
+        .setupStepsWrap {
+            .titles {
+                gap: .25rem;
+                justify-content: space-between;
+                .item {
+                    font-size: .75rem;
+                }
+                .sep {
+                    margin: 0 .1rem;
+                    width: 20px;
+                }
+            }
+        }
+
+        form {
+            .inputWrap {
+                padding: 1rem;
+                .content {
+
+
+                    h5 {
+                        font-size: 1.1rem;
+                    }
+                    p {
+                        font-size: 1rem;
+                        width: 85%;
+                    }
+                }
+                .iconWrap {
+                    right: 1rem;
+
+                    i {
+                        font-size: 1.2rem;
+                    }
+                }
+            }
+            .dateSelectMainWrapper {
+                padding: 1rem;
+
+
+                .input-group {
+                    gap: .5rem;
+                    grid-template-columns: repeat(6, 1fr);
+
+                    .input-group-text {
+                        label {
+                            font-size: 1rem;
+                            padding: .5rem .5rem;
+                        }
+                    }
+                }
+            }
+
+            .expensesWrap {
+                padding: 2rem;
+                .expenseItem {
+                    label {
+
+                        text-align: center;
+                    }
+                    .input-group {
+                        margin-top: 10px;
+                        width: 100%;
+                    }
+                }
+            }
+            .bankDetailsInputMainWrap {
+                padding: 0;
+            }
+        }
+    }
+
+    .dashboardInfoBoxesBanner {
+        .infoBox {
+            h2 {
+                font-size: 2rem;
+            }
+        }
+    }
+
+    .pageTitleBanner {
+        h1 {
+            font-size: 2rem;
+            line-height: 2.5rem;
+        }
+    }
+    .budgetTotalBudgetBanner {
+        .inner {
+            text-align: center;
+            h5 {
+                text-align: center;
+            }
+        }
+    }
+    .categoryBudgetsWrapper {
+        .inner {
+            padding: 1rem;
+            .catItem {
+                h6 {
+                    font-size: .75rem;
+                }
+            }
+        }
+    }
+    .bankAccountsMainList {
+        padding: 1rem;
+        .bankItem {
+            .balance {
+                font-size: .8rem;
+            }
+        }
+    }
+
+    .transactionsMainBanner {
+        .inner {
+            &.noTransactions {
+                padding: 2rem;
+            }
+
+            p {
+                width: 100%;
+            }
+        }
+    }
+
+    .transactionGroup {
+        .transactionList {
+            .transaction {
+
+                .accountType {
+                    font-size: .6rem;
+                }
+                h6 {
+                    font-size: .6rem;
+                }
+                .amount {
+                    font-size: .9rem;
+                }
+            }
+        }
+    }
+    .noAccountDetailsNotice {
+        padding: 2rem;
+
+        p {
+            width: 100%;
+        }
+    }
+
+    .modal {
+        .modal-dialog {
+            .modal-content {
+                .modal-body {
+                    form {
+
+                        .addBudgetItem {
+
+                            .input-group {
+                                width: 100%;
+
+                                label {
+                                    padding: 12px 0 20px 0;
+                                }
+                            }
+                            input[type='text'] {
+                                display: block;
+                                margin-bottom: 1rem;
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+                .modal-footer {
+                    form {
+                        display: block;
+                        width: 100%;
+
+                        button.dangerBtn {
+                            display: block;
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .floatingQuickAddDropUp {
+
+
+
+        button.dropdown-toggle {
+            padding: 0 !important;
+            text-align: center !important;
+        }
+    }
+}

@@ -1,0 +1,202 @@
+aside.sidebar {
+    background-color: #1d373b;
+    border: 0;
+    height: 100%;
+    left: -20%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2rem 2rem;
+    position: fixed;
+    top: 0;
+    width: 0;
+    z-index: 1;
+
+    a.sidebarBrand {
+        display: block;
+        margin-bottom: 5rem;
+        width: 100%;
+        img {
+            display: block;
+            height: auto;
+            margin: 0;
+            width: 75%;
+        }
+    }
+
+    ul.sidebar-nav {
+        list-style-type: none;
+
+        padding: 0;
+        max-width: 100%;
+        li {
+            margin-bottom: 10px;
+            text-wrap: balance;
+            width: 100%;
+            a {
+                background-color: transparent;
+                color: $white;
+                display: block;
+                font-family: $medium;
+                font-size: 1rem;
+                padding: .25rem 1rem .25rem 0;
+                text-decoration: none;
+                @include transition(all .4s ease-in-out);
+                word-break: break-word;
+                white-space: normal;
+                width: 100%;
+
+                i {
+                    color: $green;
+                    margin-right: 10px;
+                    @include transition(all .4s ease-in-out);
+                }
+
+                &:hover,
+                &.active {
+                    background-color: transparent;
+                    border: 0;
+                    box-shadow: none;
+                    color: $lightBlue;
+                    outline: none;
+                    opacity: 1;
+                    text-decoration: none;
+
+                    i {
+                        color: $lightBlue;
+                        color: $lightBlue;
+                    }
+                }
+            }
+
+            &.dropdown {
+                width: 100%;
+
+                a.dropdown-toggle {
+                    cursor: pointer;
+
+                    &:after {
+                        @include transition(all .4s ease-in-out);
+                    }
+
+                    &.show {
+
+                        &::after {
+
+                        }
+                    }
+                }
+
+                ul.dropdown-menu {
+                    background-color: $white;
+                    border: 0;
+                    padding: .5rem 1.5rem;
+                    position: relative !important;
+                    width: 100%;
+
+                    li {
+                        margin-bottom: 5px;
+                        a {
+                            font-size: 1rem;
+                        }
+                    }
+
+                    &.show {
+                        position: relative !important;
+                        transform: translate(0px, 0px) !important;
+                    }
+                }
+                &.dropdown {
+                    a.dropdown-toggle {
+
+                        &.show {
+                            color: $secondry;
+                        }
+                    }
+                    ul.submenu-dropdown-menu {
+                        padding: .5rem;
+                        li {
+                            margin-bottom: 0;
+                            a {
+                                font-size: 1rem;
+                                padding-bottom: .25rem;
+                                padding-top: .25rem;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        hr {
+
+            margin: 20px auto;
+            width: 90%;
+        }
+    }
+
+    .userWrapper {
+        bottom: 2rem;
+        left: 2rem;
+        position: absolute;
+        right: 2rem;
+
+        .dropup {
+            display: block;
+            width: 100%;
+            button {
+                align-items: center;
+                background-color: transparent;
+                border: 0;
+                border-radius: 0;
+                color: $white;
+                display: flex;
+                flex-direction: row;
+                font-family: $medium;
+                font-size: 1rem;
+                margin: 0;
+                padding: 0;
+                text-transform: capitalize;
+                @include transition(all .4s ease-in-out);
+                width: 100%;
+
+                img.userIcon {
+                    height: 1rem;
+                    margin-right: .5rem;
+                    width: auto;
+                }
+
+                &:hover,
+                &.show {
+
+                }
+
+                &:after {
+                    display: none;
+                }
+            }
+
+            ul.dropdown-menu {
+                li {
+                    a {
+                        color: $textPrimaryColour;
+                        @include transition(all .4s ease-in-out);
+
+                        &:hover {
+                            box-shadow: none;
+                            color: $lightBlue;
+                            outline: none;
+                            text-decoration: none;
+                        }
+                    }
+                    form {
+
+                    }
+                }
+            }
+        }
+    }
+
+    &.open {
+        left: 0;
+        width: 20%;
+    }
+}

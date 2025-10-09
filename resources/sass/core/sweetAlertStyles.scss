@@ -1,0 +1,39 @@
+.swal2-popup {
+    background-color: $darkBackground !important;
+
+    .swal2-title {
+        color: $offWhite !important;
+        font-family: $bold !important;
+        font-size: 2rem !important;
+    }
+
+    .swal2-confirm {
+        background: linear-gradient(to right, $lightBlue, $green) !important;
+        border :0 !important;
+        border-radius: 5px !important;
+        box-shadow: none !important;
+        color: $textPrimaryColour !important;
+        font-family: $bold !important;
+
+        font-size: 1.1rem !important;
+        margin: 0 !important;
+        outline: none !important;
+        padding: 1rem !important;
+        text-align :center !important;
+    }
+
+    .swal2-cancel {
+        background-color: $lightBlue !important;
+        border: 0;
+        border-radius: 5px;
+        box-shadow: none;
+        color: $white;
+        font-size: 1.2rem;
+        padding: 1rem 2rem;
+        text-align: center;
+        text-decoration: none;
+        @include transition(all .4s ease-in-out);
+    }
+}
+
+//swal2-popup swal2-modal swal2-icon-success swal2-show

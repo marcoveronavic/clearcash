@@ -1,0 +1,135 @@
+.dashboardNextStepsBanner {
+    h4 {
+        color: $offWhite;
+        font-family: $medium;
+        font-size: 1.25rem;
+        margin-bottom: .75rem;
+    }
+}
+
+.dateInfoBanner {
+    margin-bottom: 2rem;
+    .inner {
+        background-color: $darkBackground;
+        border: 0;
+        border-radius: 8px;
+        color: $offWhite;
+        font-family: $medium;
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        width: 230px;
+    }
+}
+
+.dashboardInfoBoxesBanner {
+
+    .col-lg-6,
+    .col-md-6 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    h4 {
+        color: $offWhite;
+        font-family: $medium;
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        margin-bottom: 0;
+    }
+    a.viewMoreDetailsBtn {
+        background-color: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        color: $lightBlue;
+        display: block;
+        font-family: $medium;
+        font-size: 1rem;
+        margin: 0;
+        text-align: right;
+        text-decoration: none;
+        @include transition(all .4s ease-in-out);
+
+        &:hover {
+            background-color: transparent;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+            color: $green;
+            outline: none;
+            text-decoration: none;
+        }
+    }
+    .infoBox {
+        background-color: $darkBackground;
+        border: 0;
+        border-radius: 12px;
+        color: $offWhite;
+        display: flex;
+        height: 100%;
+        flex-direction: column;;
+        justify-content: center;
+        min-height: 175px;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        width: 100%;
+
+        strong {
+            color: $white;
+            font-family: $medium;
+        }
+
+        h2 {
+            color: $green;
+            font-family: $bold;
+            font-size: 2.5rem;
+        }
+        h5 {
+            color: $white;
+        }
+
+        p {
+            color: $offWhite;
+            font-family: $reg;
+            font-size: 1rem;
+            text-align: center;
+            a {
+                background-color: transparent;
+                border: 0;
+                box-shadow: none;
+                color: $lightBlue;
+                outline: none;
+                @include transition(all .4s ease-in-out);
+
+                &:hover {
+                    background-color: transparent;
+                    border: 0;
+                    border-radius: 0;
+                    box-shadow: none;
+                    color: $green;
+                    outline: none;
+                }
+            }
+        }
+
+        #myDoughnutChart{
+            max-width: 200px;
+            max-height: 200px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 2rem auto
+        }
+
+        #expenseChart,
+        #incomeChart{
+            max-height: 300px;
+            max-width: 300px;
+            width: 250px !important;
+            height: 250px !important;
+            margin: 0 auto;
+            object-fit: contain;
+
+        }
+    }
+}

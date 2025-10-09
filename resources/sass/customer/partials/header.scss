@@ -1,0 +1,44 @@
+header {
+    background-color: $surfaceCard;
+    left: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+
+    .headWrap {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+
+        padding: 1rem 0;
+        width: 100%;
+
+        button {
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            color: $white;
+            font-size: 2rem;
+        }
+
+        img {
+            display: block;
+            height: 30px;
+            width: auto;
+        }
+    }
+
+    .modal {
+        .modal-dialog {
+            .modal-content {
+                .modal-body {
+                    h1 {
+                        font-size: 1.5rem;
+                    }
+                }
+            }
+        }
+    }
+}

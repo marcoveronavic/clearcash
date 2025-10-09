@@ -1,0 +1,28 @@
+@import "global-partials/core-options";
+
+//Global Partials
+@import "global-partials/sidebar";
+@import "global-partials/topbar";
+@import "global-partials/dashboardMain";
+
+//Partials
+@import "customer/partials/header";
+@import "customer/partials/pageTitleBanner";
+@import "customer/partials/modals";
+@import "customer/partials/noAccountDetailsNoticeBanner";
+@import "customer/partials/nextStepsBanner";
+@import "customer/partials/floatingQuickAddDrop";
+
+//Pages
+@import "customer/setupSteps";
+@import "customer/dashboardMainPage";
+@import "customer/transactions";
+@import "customer/bankAccountsPages";
+@import "customer/budgetPages";
+@import "customer/myAccount";
+@import "customer/recurringPayments";
+
+//Footer
+
+//Responsive
+@import "global-responsive/mobile";

@@ -1,0 +1,25 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<IfModule mod_dir.c>
+    DirectoryIndex index.php
+</IfModule>
+
+# Ensure that .env is not publicly accessible
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Allow .htaccess to work from the root directory as well
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ /public/$1 [L]
+</IfModule>
+
+# Redirect www to non-www (optional)
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^ http://%1%{REQUEST_URI} [L,R=301]

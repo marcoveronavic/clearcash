@@ -1,0 +1,268 @@
+.budgetTotalBudgetBanner {
+    margin-bottom: 2rem;
+
+    h2 {
+        color: $offWhite;
+        font-family: $medium;
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        margin-bottom: .75rem;
+    }
+    .inner {
+        align-items: center;
+        background-color: $surfaceCard;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;;
+        padding: 2rem;
+
+        #myDoughnutChart {
+            max-width: 300px;
+            max-height: 300px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+
+        h4 {
+            color: $white;
+            font-family: $medium;
+            font-size: 1rem;
+        }
+        h5 {
+            color: $offWhite;
+            font-family: $reg;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+    }
+
+}
+
+.categoryBudgetsWrapper {
+    a.editCatListBtn {
+        background-color: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        color: $lightBlue;
+        font-family: $reg;
+        font-size: 1rem;
+        padding: 0;
+        text-decoration: none;
+        @include transition(all .4s ease-in-out);
+
+        i {
+            margin-right: 5px;;
+        }
+
+        &:hover {
+            background-color: transparent;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+            color: $green;
+            outline: none;
+            text-decoration: none;
+        }
+    }
+    h2 {
+        color: $offWhite;
+        font-family: $medium;
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        margin-bottom: .75rem;
+    }
+    .inner {
+        background-color: $surfaceCard;
+        border-radius: 12px;
+        padding: 2rem;
+
+        button.modalBtn {
+            background-color: transparent;
+            border: 0;
+            border-radius: 0;
+            display: block;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+            width: 100%;
+        }
+
+
+        .catItem {
+            margin-bottom: 2.5rem;
+            h5 {
+                color: $white;
+                font-family: $medium;
+                font-size: 1rem;
+                margin-bottom: .5rem;
+                text-transform: capitalize;
+            }
+
+            h6 {
+                color: $offWhite;
+                font-family: $reg;
+                font-size: 1rem;
+            }
+            .spentAmount {
+                color: $white;
+                font-family: $medium;
+                font-size: 1rem;
+            }
+
+            .progress{
+                background-color: lighten($surfaceCard, 10%);
+                border-radius: 5px;
+                height: 30px;
+                margin-top: .5rem;
+
+                .progress-bar {
+                    background: linear-gradient(to right, $lightBlue, $green);
+                }
+            }
+        }
+    }
+}
+
+.editCategoryBudgetWrapper {
+
+    .inner {
+        background-color: $surfaceCard;
+        border-radius: 12px;
+        padding: 2rem;
+
+        .editItem {
+            border-bottom: 1px solid lighten($surfaceCard, 10%);
+            padding: 1.5rem 0;
+            label {
+                color: $white;
+                font-family: $reg;
+                font-size: 1rem;
+            }
+
+            .input-group {
+                background-color: transparent;
+                border: 1px solid lighten($surfaceCard, 25%);
+                box-shadow: none;
+                border-radius: 5px;
+                height: 50px;
+                outline: none;
+                overflow: hidden;
+                @include transition(all .4s ease-in-out);
+                width: 150px;
+                .input-group-text {
+                    background-color: lighten($surfaceCard, 20%);
+                    border: 0;
+                    border-radius: 0;
+                    box-shadow: none;
+                    color: rgba(255, 255,255, 0.65);
+                    font-family: $reg;
+                    font-size: 1rem;
+                    padding-right: 0;
+                }
+
+                input.form-control {
+                    background-color: lighten($surfaceCard, 20%);
+                    border: 0;
+                    border-radius: 0;
+                    box-shadow: none;
+                    color: rgba(255, 255,255, 0.65);
+                    font-family: $reg;
+                    font-size: 1rem;
+                    margin-left: 0 !important;
+                    outline: none;
+                    padding-left: 0;
+
+                    &::placeholder {
+                        color: rgba(255, 255,255, 0.65);
+                    }
+                }
+
+                &:focus-within {
+                    border: 1px solid $lightBlue;
+                    .input-group-text,
+                    input.form-control {
+                        border: 0;
+                        box-shadow: none;
+                        outline: none;
+                        text-decoration: none;
+                    }
+                }
+            }
+            input[type='text']{
+                background-color: lighten($surfaceCard, 20%);
+                border: 0;
+                border-radius: 5px;
+                box-shadow: none;
+                color: rgba(255, 255,255, 0.65);
+                font-family: $reg;
+                font-size: 1rem;
+                height: 50px;
+                margin-left: 0 !important;
+                outline: none;
+                padding: .5rem;
+
+                &::placeholder {
+                    color: rgba(255, 255,255, 0.65);
+                }
+            }
+            p {
+                color: $white;
+                font-family: $reg;
+                font-size: 1rem;
+                margin-bottom: 0;
+                opacity: 1;
+            }
+            span.confirmAmount {
+                color: $offWhite;
+                font-family: $reg;
+                font-size: 1rem;
+
+                a.editBtn {
+                    color: $lightBlue;
+                    display: inline-block;
+                    font-size: 1rem;
+                    margin-left: 5px;
+                    margin-top: 0;
+                    opacity: 1;
+                }
+            }
+            &:first-of-type {
+                padding-top: 0;
+            }
+            &:last-of-type {
+                border-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            a,
+            button.add-expense{
+                background-color: transparent;
+                border: 0;
+                box-shadow: none;
+                color: $lightBlue;
+                font-family: $reg;
+                font-size: 1rem;
+                display: block;
+                margin: 1rem auto 0 auto;
+                text-align: center;
+                text-decoration: none;
+                @include transition(all .4s ease-in-out);
+
+                &:hover {
+                    box-shadow: none;
+                    color: $green;
+                    outline: none;
+                    text-decoration: none;
+                }
+            }
+            .expenseItemInner {
+                margin-bottom: 1rem;
+            }
+        }
+        button.addNewItemBtn {
+            padding: .25rem 1rem;
+        }
+    }
+}
