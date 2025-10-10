@@ -116,9 +116,17 @@
                 border-radius: 5px;
                 height: 30px;
                 margin-top: .5rem;
+                overflow: hidden;
 
-                .progress-bar {
-                    background: linear-gradient(to right, $lightBlue, $green);
+                &.budget-progress {
+                    .budget-progress-bar {
+                        background: linear-gradient(to right, $lightBlue, $green);
+                        transition: width .4s ease-in-out;
+
+                        &.overspent {
+                            background: linear-gradient(to top right, #D21414, #F96565);
+                        }
+                    }
                 }
             }
         }

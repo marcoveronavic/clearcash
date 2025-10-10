@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\Budget;
-use App\Models\BudgetCategory;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class CustomerTransactionController extends Controller
 {
@@ -17,41 +18,32 @@ class CustomerTransactionController extends Controller
      */
     public function index()
     {
-        $userId = Auth::user()->id;
+        $userId = Auth::id();
 
-        // Get all transactions with category
+        // tutte le transazioni con relazione category (-> budget_categories)
         $transactions = Transaction::where('user_id', $userId)
             ->with('category')
             ->orderBy('date', 'desc')
             ->get();
 
-        // Group transactions by date
-        $groupedTransactions = $transactions->groupBy(function ($transaction) {
-            return \Carbon\Carbon::parse($transaction->date)->format('Y-m-d');
-        });
+        // group by day
+        $groupedTransactions = $transactions->groupBy(fn ($t) =>
+        \Carbon\Carbon::parse($t->date)->format('Y-m-d')
+        );
 
-        // Calculate today's totals
+        // totals of today
         $today = \Carbon\Carbon::today()->format('Y-m-d');
-
-        $todayTransactions = $transactions->filter(function ($transaction) use ($today) {
-            return \Carbon\Carbon::parse($transaction->date)->format('Y-m-d') === $today;
-        });
+        $todayTransactions = $transactions->filter(fn ($t) =>
+            \Carbon\Carbon::parse($t->date)->format('Y-m-d') === $today
+        );
 
         $totalTransactionAmountToday = $todayTransactions->sum('amount');
-
-
-
-        // Assuming there's a 'type' field in transaction which can be 'expense'
-        $totalExpenseAmountToday = $todayTransactions->filter(function ($transaction) {
-            return $transaction->transaction_type === 'expense';
-        })->sum('amount');
+        $totalExpenseAmountToday = $todayTransactions->where('transaction_type', 'expense')->sum('amount');
 
         $bankAccounts = BankAccount::where('user_id', $userId)
-            ->orderBy('account_name', 'asc')
             ->where('account_name', '!=', 'pension')
+            ->orderBy('account_name', 'asc')
             ->get();
-
-
 
         $dailyExpenses = [];
         foreach ($groupedTransactions as $date => $trans) {
@@ -68,39 +60,31 @@ class CustomerTransactionController extends Controller
         ));
     }
 
-
     public function filterByBank($bankName)
     {
-        $bank = BankAccount::whereRaw("LOWER(REPLACE(account_name, ' ', '-')) = ?", [strtolower($bankName)])->firstOrFail();
+        $bank = BankAccount::whereRaw("LOWER(REPLACE(account_name, ' ', '-')) = ?", [strtolower($bankName)])
+            ->firstOrFail();
 
-        $bankId = $bank->id;
-
-        // Get the transactions for the user
-        $transactions = Transaction::where('user_id', Auth::user()->id)
-            ->with('category')
-            ->orderBy('date', 'desc')
-            ->where('bank_account_id', $bankId)
-            ->get();
-
-        // Group transactions by the date (assuming date is in Y-m-d format)
-        $groupedTransactions = $transactions->groupBy(function ($transaction) {
-            return \Carbon\Carbon::parse($transaction->date)->format('Y-m-d'); // Format the date to group by
-        });
-        $transactions = Transaction::where('user_id', Auth::user()->id)
+        $transactions = Transaction::where('user_id', Auth::id())
             ->with('category')
             ->where('bank_account_id', $bank->id)
             ->orderBy('date', 'desc')
             ->get();
 
-        $bankAccounts = BankAccount::where('user_id', Auth::user()->id)
-            ->orderBy('account_name', 'asc')
+        $groupedTransactions = $transactions->groupBy(fn ($t) =>
+        \Carbon\Carbon::parse($t->date)->format('Y-m-d')
+        );
+
+        $bankAccounts = BankAccount::where('user_id', Auth::id())
             ->where('account_name', '!=', 'pension')
+            ->orderBy('account_name', 'asc')
             ->get();
 
-        $categories = Budget::where('user_id', Auth::user()->id)
-            ->get();
+        $categories = Budget::where('user_id', Auth::id())->get();
 
-        return view('customer.pages.transactions.filter-by-bank', compact('transactions', 'bank', 'bankAccounts', 'categories', 'groupedTransactions'));
+        return view('customer.pages.transactions.filter-by-bank', compact(
+            'transactions', 'bank', 'bankAccounts', 'categories', 'groupedTransactions'
+        ));
     }
 
     /**
@@ -108,491 +92,287 @@ class CustomerTransactionController extends Controller
      */
     public function create()
     {
-
-        $bankAccounts = BankAccount::where('user_id', Auth::user()->id)
+        $bankAccounts = BankAccount::where('user_id', Auth::id())
             ->orderBy('account_name', 'asc')
             ->get();
 
-        $categories = Budget::where('user_id', Auth::user()->id)
-            ->get();
+        // in UI scegli l'ID DEL BUDGET (budgets.id)
+        $categories = Budget::where('user_id', Auth::id())->get();
 
-        // dd($categories);
         return view('customer.pages.transactions.create', compact('bankAccounts', 'categories'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store (singola transazione dalla pagina create).
+     * Il form invia: category = budgets.id
      */
     public function store(Request $request)
     {
+        $userId = Auth::id();
+
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
-            'category' => ['required', 'integer'],
-            'bank_account' => ['required', 'integer'],
-            // 'category' => ['required', 'integer', 'exists:budget_categories,id'],
-            // 'bank_account' => ['required', 'integer', 'exists:bank_accounts,id'],
-            'amount' => ['required', 'numeric', 'min:1'],
-            'transaction_type' => ['required', 'string', 'max:255'],
-            'internal_transfer' => ['nullable', 'boolean'],
+            'name'            => ['required', 'string', 'max:255'],
+            'date'            => ['required', 'date'],
+            // Arriva l'ID DEL BUDGET dell'utente
+            'category'        => ['required','integer', Rule::exists('budgets','id')->where(fn($q)=>$q->where('user_id',$userId))],
+            'bank_account'    => ['required','integer', Rule::exists('bank_accounts','id')->where(fn($q)=>$q->where('user_id',$userId))],
+            'amount'          => ['required', 'numeric', 'min:1'],
+            'transaction_type'=> ['required', 'string', 'max:255'],
+            'internal_transfer'=> ['nullable', 'boolean'],
         ]);
 
-        $isInternalTransfer = $request->has('internal_transfer') ? true : false;
+        $isInternalTransfer = $request->boolean('internal_transfer');
 
+        // Risali dal budget scelto alla categoria VERA (budget_categories.id)
+        $budget = Budget::with('category')
+            ->where('user_id', $userId)
+            ->findOrFail($validated['category']);
 
-        $relatedCategory = Budget::where('user_id', Auth::user()->id)
-            ->where('id', $validated['category'])
-            ->first();
+        $categoryName = $budget->category_name ?? optional($budget->category)->name;
+        $categoryId   = $budget->category_id   ?? optional($budget->category)->id;  // <-- FK corretta
 
         $transaction = Transaction::create([
-            'name' => $validated['name'],
-            'date' => $validated['date'],
-            'category_name' => $relatedCategory->category_name,
-            'category_id' => $validated['category'],
-            'bank_account_id' => $validated['bank_account'],
-            'amount' => $validated['amount'],
-            'transaction_type' => $validated['transaction_type'],
+            'name'              => $validated['name'],
+            'date'              => $validated['date'],
+            'category_name'     => $categoryName,
+            'category_id'       => $categoryId,                   // <-- salva id della tabella budget_categories
+            'bank_account_id'   => $validated['bank_account'],
+            'amount'            => $validated['amount'],
+            'transaction_type'  => $validated['transaction_type'],
             'internal_transfer' => $isInternalTransfer,
-            'user_id' => Auth::user()->id,
-
+            'user_id'           => $userId,
         ]);
 
-        /*$budget = Budget::where('user_id', Auth::user()->id)
-            ->where('category_id', $validated['category'])
-            ->first();
-        $budgetCurrentBalance = $budget->amount;*/
-
-        $bankAccount = BankAccount::where('id', $validated['bank_account'])->first();
-        $currentBalance = $bankAccount->starting_balance;
-
-        if ($validated['transaction_type'] == 'income') {
-            $amountToAdd = $currentBalance + $validated['amount'];
-            $bankAccount->update([
-                'starting_balance' => $amountToAdd,
-            ]);
-            /*$budgetAdd = $budgetCurrentBalance + $validated['amount'];*/
-            /*$budget->update([
-                'amount' => $budgetAdd,
-            ]);*/
+        // aggiorna saldo conto
+        $bankAccount = BankAccount::where('user_id', $userId)->findOrFail($validated['bank_account']);
+        if ($validated['transaction_type'] === 'income') {
+            $bankAccount->starting_balance += $validated['amount'];
         } else {
-            $amountToTake = $currentBalance - $validated['amount'];
-            $bankAccount->update([
-                'starting_balance' => $amountToTake,
-            ]);
-            /*$budgetRemove = $budgetCurrentBalance - $validated['amount'];*/
-            /*$budget->update([
-                'amount' => $budgetRemove,
-            ]);*/
+            $bankAccount->starting_balance -= $validated['amount'];
         }
+        $bankAccount->save();
 
         return redirect()->route('transactions.index')->with('success', 'Transaction recorded successfully.');
     }
 
     /**
      * Update the specified resource in storage.
+     * Il form invia: category = budgets.id
      */
-    // public function update(Request $request, string $id)
-    // {
-    //     $transaction = Transaction::findOrFail($id);
-    //     $currentAmount = $transaction->amount;
-    //     $validated = $request->validate([
-    //         'name' => ['required', 'string', 'max:255'],
-    //         'date' => ['required', 'date'],
-    //         'category' => ['required', 'integer', 'exists:budget_categories,id'],
-    //         'bank_account' => ['required', 'integer', 'exists:bank_accounts,id'],
-    //         'amount' => ['required', 'numeric', 'min:1'],
-    //         'transaction_type' => ['required', 'string', 'max:255'],
-    //         'internal_transfer' => ['nullable', 'boolean'],
-    //     ]);
-
-    //     $isInternalTransfer = $request->has('internal_transfer') ? true : false;
-
-    //     $categoryName = Budget::where('user_id', Auth::user()->id)
-    //         ->where('id', $validated['category'])
-    //         ->pluck('category_name')
-    //         ->first();
-
-    //     $transaction->update([
-    //         'name' => $validated['name'],
-    //         'date' => $validated['date'],
-    //         'category_id' => $validated['category'],
-    //         'category_name' => $categoryName,
-    //         'bank_account_id' => $validated['bank_account'],
-    //         'amount' => $validated['amount'],
-    //         'transaction_type' => $validated['transaction_type'],
-    //         'internal_transfer' => $isInternalTransfer,
-    //         'user_id' => Auth::user()->id,
-
-    //     ]);
-
-    //     $bankAccount = BankAccount::where('id', $validated['bank_account'])->first();
-    //     $currentBalance = $bankAccount->starting_balance;
-
-    //     if ($validated['transaction_type'] == 'income') {
-    //         $amountToAdd = $currentBalance - $currentAmount + $validated['amount'];
-    //         $bankAccount->update([
-    //             'starting_balance' => $amountToAdd,
-    //         ]);
-    //     } else {
-    //         $amountToTake = $currentBalance + $currentAmount - $validated['amount'];
-    //         $bankAccount->update([
-    //             'starting_balance' => $amountToTake,
-    //         ]);
-    //     }
-
-    //     return redirect()->route('transactions.index')->with('success', 'Transaction updated successfully.');
-    // }
     public function update(Request $request, string $id)
     {
-        $transaction = Transaction::findOrFail($id);
+        $userId = Auth::id();
+        $transaction = Transaction::where('user_id',$userId)->findOrFail($id);
         $oldAmount = $transaction->amount;
 
-        // Validation rules
+        // regole
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
+            'name'   => ['required', 'string', 'max:255'],
+            'date'   => ['required', 'date'],
             'amount' => ['required', 'numeric', 'min:1'],
         ];
 
         if ($transaction->transaction_type === 'fundtransfer') {
-            $rules['from_account'] = ['required', 'exists:bank_accounts,id'];
-            $rules['to_account'] = ['required', 'exists:bank_accounts,id'];
+            $rules['from_account'] = ['required', Rule::exists('bank_accounts','id')->where(fn($q)=>$q->where('user_id',$userId))];
+            $rules['to_account']   = ['required', Rule::exists('bank_accounts','id')->where(fn($q)=>$q->where('user_id',$userId))];
         } else {
             $rules['transaction_type'] = ['required', 'string', 'max:255'];
-            $rules['category'] = ['required', 'exists:budget_categories,id'];
-            $rules['bank_account'] = ['required', 'exists:bank_accounts,id'];
+            // category = budgets.id (non budget_categories.id)
+            $rules['category']      = ['required','integer', Rule::exists('budgets','id')->where(fn($q)=>$q->where('user_id',$userId))];
+            $rules['bank_account']  = ['required','integer', Rule::exists('bank_accounts','id')->where(fn($q)=>$q->where('user_id',$userId))];
             $rules['internal_transfer'] = ['nullable', 'boolean'];
         }
 
         $validated = $request->validate($rules);
 
         if ($transaction->transaction_type === 'fundtransfer') {
-            // Rollback old balances
-            $oldFrom = BankAccount::findOrFail($transaction->from_account);
-            $oldTo = BankAccount::findOrFail($transaction->to_account);
-
+            // ripristina saldi vecchi
+            $oldFrom = BankAccount::where('user_id',$userId)->findOrFail($transaction->from_account);
+            $oldTo   = BankAccount::where('user_id',$userId)->findOrFail($transaction->to_account);
             $oldFrom->starting_balance += $oldAmount;
-            $oldTo->starting_balance -= $oldAmount;
+            $oldTo->starting_balance   -= $oldAmount;
             $oldFrom->save();
             $oldTo->save();
 
-            // Update transaction
+            // update transazione
             $transaction->update([
-                'name' => $validated['name'],
-                'date' => $validated['date'],
-                'from_account' => $validated['from_account'],
-                'to_account' => $validated['to_account'],
-                'amount' => $validated['amount'],
-                'transaction_type' => 'fundtransfer',
-                'category_name' => 'Fund Transfer',
-                'user_id' => Auth::id(),
+                'name'            => $validated['name'],
+                'date'            => $validated['date'],
+                'from_account'    => $validated['from_account'],
+                'to_account'      => $validated['to_account'],
+                'amount'          => $validated['amount'],
+                'transaction_type'=> 'fundtransfer',
+                'category_name'   => 'Fund Transfer',
+                'user_id'         => $userId,
             ]);
 
-            // Apply new balances
-            $newFrom = BankAccount::findOrFail($validated['from_account']);
-            $newTo = BankAccount::findOrFail($validated['to_account']);
-
+            // applica nuovi saldi
+            $newFrom = BankAccount::where('user_id',$userId)->findOrFail($validated['from_account']);
+            $newTo   = BankAccount::where('user_id',$userId)->findOrFail($validated['to_account']);
             $newFrom->starting_balance -= $validated['amount'];
-            $newTo->starting_balance += $validated['amount'];
+            $newTo->starting_balance   += $validated['amount'];
             $newFrom->save();
             $newTo->save();
         } else {
-            // Rollback old balance
-            $oldBankAccount = BankAccount::findOrFail($transaction->bank_account_id);
+            // ripristina saldo del vecchio conto
+            $oldBank = BankAccount::where('user_id',$userId)->findOrFail($transaction->bank_account_id);
             if ($transaction->transaction_type === 'income') {
-                $oldBankAccount->starting_balance -= $oldAmount;
+                $oldBank->starting_balance -= $oldAmount;
             } else {
-                $oldBankAccount->starting_balance += $oldAmount;
+                $oldBank->starting_balance += $oldAmount;
             }
-            $oldBankAccount->save();
+            $oldBank->save();
 
-            // Get category name
-            $categoryName = Budget::where('user_id', Auth::id())
-                ->where('id', $validated['category'])
-                ->value('category_name');
+            // risali dal BUDGET alla categoria
+            $budget = Budget::with('category')
+                ->where('user_id', $userId)
+                ->findOrFail($validated['category']);
 
-            $isInternal = $request->has('internal_transfer');
+            $categoryName = $budget->category_name ?? optional($budget->category)->name;
+            $categoryId   = $budget->category_id   ?? optional($budget->category)->id;
 
-            // Update transaction
+            $isInternal = $request->boolean('internal_transfer');
+
+            // update transazione
             $transaction->update([
-                'name' => $validated['name'],
-                'date' => $validated['date'],
-                'category_id' => $validated['category'],
-                'category_name' => $categoryName,
-                'bank_account_id' => $validated['bank_account'],
-                'amount' => $validated['amount'],
-                'transaction_type' => $validated['transaction_type'],
+                'name'              => $validated['name'],
+                'date'              => $validated['date'],
+                'category_id'       => $categoryId,       // <-- FK corretta
+                'category_name'     => $categoryName,
+                'bank_account_id'   => $validated['bank_account'],
+                'amount'            => $validated['amount'],
+                'transaction_type'  => $validated['transaction_type'],
                 'internal_transfer' => $isInternal,
-                'user_id' => Auth::id(),
+                'user_id'           => $userId,
             ]);
 
-            // Apply new balance
-            $newBankAccount = BankAccount::findOrFail($validated['bank_account']);
+            // applica saldo sul nuovo conto
+            $newBank = BankAccount::where('user_id',$userId)->findOrFail($validated['bank_account']);
             if ($validated['transaction_type'] === 'income') {
-                $newBankAccount->starting_balance += $validated['amount'];
+                $newBank->starting_balance += $validated['amount'];
             } else {
-                $newBankAccount->starting_balance -= $validated['amount'];
+                $newBank->starting_balance -= $validated['amount'];
             }
-            $newBankAccount->save();
+            $newBank->save();
         }
 
         return redirect()->route('transactions.index')->with('success', 'Transaction updated successfully.');
     }
 
-
-
+    /**
+     * Global add (dai pulsanti rapidi / modal). Il form invia: category = budgets.id
+     */
     public function globalAddTransaction(Request $request)
     {
+        $userId = Auth::id();
+
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
-            'category' => ['required', 'integer'],
-            'bank_account' => ['required', 'integer'],
-            // 'category' => ['required', 'integer', 'exists:budget_categories,id'],
-            // 'bank_account' => ['required', 'integer', 'exists:bank_accounts,id'],
-            'amount' => ['required', 'numeric', 'min:1'],
-            'transaction_type' => ['required', 'string', 'max:255'],
-            'internal_transfer' => ['nullable', 'boolean'],
+            'name'            => ['required', 'string', 'max:255'],
+            'date'            => ['required', 'date'],
+            'category'        => ['required','integer', Rule::exists('budgets','id')->where(fn($q)=>$q->where('user_id',$userId))],
+            'bank_account'    => ['required','integer', Rule::exists('bank_accounts','id')->where(fn($q)=>$q->where('user_id',$userId))],
+            'amount'          => ['required', 'numeric', 'min:1'],
+            'transaction_type'=> ['required', 'string', 'max:255'],
+            'internal_transfer'=> ['nullable', 'boolean'],
         ]);
 
-        $isInternalTransfer = $request->has('internal_transfer') ? true : false;
+        $isInternalTransfer = $request->boolean('internal_transfer');
 
+        $budget = Budget::with('category')
+            ->where('user_id', $userId)
+            ->findOrFail($validated['category']);
 
-        $relatedCategory = Budget::where('user_id', Auth::user()->id)
-            ->where('id', $validated['category'])
-            ->first();
+        $bankAccount = BankAccount::where('user_id', $userId)
+            ->findOrFail($validated['bank_account']);
 
-        $transaction = Transaction::create([
-            'name' => $validated['name'],
-            'date' => $validated['date'],
-            'category_name' => $relatedCategory->category_name,
-            'category_id' => $validated['category'],
-            'bank_account_id' => $validated['bank_account'],
-            'amount' => $validated['amount'],
-            'transaction_type' => $validated['transaction_type'],
-            'internal_transfer' => $isInternalTransfer,
-            'user_id' => Auth::user()->id,
+        $categoryName = $budget->category_name ?? optional($budget->category)->name;
+        $categoryId   = $budget->category_id   ?? optional($budget->category)->id;
 
-        ]);
+        DB::transaction(function () use ($validated, $isInternalTransfer, $categoryName, $categoryId, $budget, $bankAccount, $userId) {
 
-        $budget = Budget::where('user_id', Auth::user()->id)
-            ->where('id', $validated['category'])
-            ->first();
-        $budgetCurrentBalance = $budget->amount;
-
-        $bankAccount = BankAccount::where('id', $validated['bank_account'])->first();
-        $currentBalance = $bankAccount->starting_balance;
-
-        if ($validated['transaction_type'] == 'income') {
-            $amountToAdd = $currentBalance + $validated['amount'];
-            $bankAccount->update([
-                'starting_balance' => $amountToAdd,
+            Transaction::create([
+                'name'              => $validated['name'],
+                'date'              => $validated['date'],
+                'category_name'     => $categoryName,
+                'category_id'       => $categoryId,             // <-- FK corretta (budget_categories.id)
+                'bank_account_id'   => $validated['bank_account'],
+                'amount'            => $validated['amount'],
+                'transaction_type'  => $validated['transaction_type'],
+                'internal_transfer' => $isInternalTransfer,
+                'user_id'           => $userId,
             ]);
-            $budgetAdd = $budgetCurrentBalance + $validated['amount'];
-            $budget->update([
-                'amount' => $budgetAdd,
-            ]);
-        } else {
-            $amountToTake = $currentBalance - $validated['amount'];
-            $bankAccount->update([
-                'starting_balance' => $amountToTake,
-            ]);
-            //  $budgetRemove = $budgetCurrentBalance - $validated['amount'];
-            //  $budget->update([
-            //     'amount' => $budgetRemove,
-            // ]);
-        }
 
-        return redirect()->back()->with('success', 'Transaction recorded successfully.');
+            if ($validated['transaction_type'] === 'income') {
+                $bankAccount->increment('starting_balance', $validated['amount']);
+                // opzionale: $budget->increment('amount', $validated['amount']);
+            } else {
+                $bankAccount->decrement('starting_balance', $validated['amount']);
+            }
+        });
+
+        return redirect()->route('transactions.index')->with('success', 'Transaction recorded successfully.');
     }
-    // public function globalFundTransfer(Request $request)
-    // {
-    //     dd($request->all());
-    //     // dd($request->all());
-    //     $validated = $request->validate([
-    //         'name' => ['required', 'string', 'max:255'],
-    //         'date' => ['required', 'date'],
-    //         // 'category' => ['required', 'integer'],
-    //         'from_account' => ['required'],
-    //         'to_account' => ['required'],
-    //         // 'category' => ['required', 'integer', 'exists:budget_categories,id'],
-    //         // 'bank_account' => ['required', 'integer', 'exists:bank_accounts,id'],
-    //         'amount' => ['required', 'numeric', 'min:1'],
-    //         // 'transaction_type' => ['required', 'string', 'max:255'],
-    //         // 'internal_transfer' => ['nullable', 'boolean'],
-    //     ]);
-
-    //     $transaction = Transaction::create([
-    //         'name' => $validated['name'],
-    //         'date' => $validated['date'],
-    //         'category_name' => "Fund Transfer",
-    //         // 'category_id' => $validated['category'],
-    //         // 'bank_account_id' => $validated['bank_account'],
-    //         'from_account' => $validated['from_account'],
-    //         'to_account' => $validated['to_account'],
-    //         'amount' => $validated['amount'],
-    //         'transaction_type' => 'fundtransfer',
-    //         // 'internal_transfer' => $1,
-    //         'user_id' => Auth::user()->id,
-    //     ]);
-
-    //     $budget = Budget::where('user_id', Auth::user()->id)
-    //         ->where('id', $validated['category'])
-    //         ->first();
-    //     $budgetCurrentBalance = $budget->amount;
-
-    //     $bankAccount = BankAccount::where('id', $validated['bank_account'])->first();
-    //     $currentBalance = $bankAccount->starting_balance;
-
-    //     if ($validated['transaction_type'] == 'income') {
-    //         $amountToAdd = $currentBalance + $validated['amount'];
-    //         $bankAccount->update([
-    //             'starting_balance' => $amountToAdd,
-    //         ]);
-    //         $budgetAdd = $budgetCurrentBalance + $validated['amount'];
-    //         $budget->update([
-    //             'amount' => $budgetAdd,
-    //         ]);
-    //     } else {
-    //         $amountToTake = $currentBalance - $validated['amount'];
-    //         $bankAccount->update([
-    //             'starting_balance' => $amountToTake,
-    //         ]);
-    //         //  $budgetRemove = $budgetCurrentBalance - $validated['amount'];
-    //         //  $budget->update([
-    //         //     'amount' => $budgetRemove,
-    //         // ]);
-    //     }
-
-    //     return redirect()->back()->with('success', 'Transaction recorded successfully.');
-    // }
 
     public function globalFundTransfer(Request $request)
     {
-        // Validate request
+        $userId = Auth::id();
+
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
-            'from_account' => ['required', 'exists:bank_accounts,id'],
-            'to_account' => ['required', 'exists:bank_accounts,id'],
-            'amount' => ['required', 'numeric', 'min:1'],
+            'name'         => ['required', 'string', 'max:255'],
+            'date'         => ['required', 'date'],
+            'from_account' => ['required','integer', Rule::exists('bank_accounts','id')->where(fn($q)=>$q->where('user_id',$userId))],
+            'to_account'   => ['required','integer', Rule::exists('bank_accounts','id')->where(fn($q)=>$q->where('user_id',$userId))],
+            'amount'       => ['required', 'numeric', 'min:1'],
         ]);
 
-        // Create transaction record
         $transaction = Transaction::create([
-            'name' => $validated['name'],
-            'date' => $validated['date'],
-            'category_name' => "Fund Transfer",
-            'from_account' => $validated['from_account'],
-            'to_account' => $validated['to_account'],
-            'amount' => $validated['amount'],
+            'name'             => $validated['name'],
+            'date'             => $validated['date'],
+            'category_name'    => 'Fund Transfer',
+            'from_account'     => $validated['from_account'],
+            'to_account'       => $validated['to_account'],
+            'amount'           => $validated['amount'],
             'transaction_type' => 'fundtransfer',
-            'user_id' => Auth::user()->id,
+            'user_id'          => $userId,
         ]);
 
-        // Find both bank accounts
-        $fromAccount = BankAccount::findOrFail($validated['from_account']);
-        $toAccount = BankAccount::findOrFail($validated['to_account']);
+        $from = BankAccount::where('user_id',$userId)->findOrFail($validated['from_account']);
+        $to   = BankAccount::where('user_id',$userId)->findOrFail($validated['to_account']);
 
-        // Update balances
-        $fromAccount->update([
-            'starting_balance' => $fromAccount->starting_balance - $validated['amount'],
-        ]);
-
-        $toAccount->update([
-            'starting_balance' => $toAccount->starting_balance + $validated['amount'],
-        ]);
+        $from->starting_balance -= $validated['amount'];
+        $to->starting_balance   += $validated['amount'];
+        $from->save();
+        $to->save();
 
         return redirect()->back()->with('success', 'Fund transferred successfully.');
     }
-
-
-    // public function fundTransfer(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'name' => ['required', 'string', 'max:255'],
-    //         'date' => ['required', 'date'],
-    //         'category' => ['required', 'integer'],
-    //         'bank_account' => ['required', 'integer'],
-    //         // 'category' => ['required', 'integer', 'exists:budget_categories,id'],
-    //         // 'bank_account' => ['required', 'integer', 'exists:bank_accounts,id'],
-    //         'amount' => ['required', 'numeric', 'min:1'],
-    //         'transaction_type' => ['required', 'string', 'max:255'],
-    //         'internal_transfer' => ['nullable', 'boolean'],
-    //     ]);
-
-    //     $isInternalTransfer = $request->has('internal_transfer') ? true : false;
-
-
-    //     $relatedCategory = Budget::where('user_id', Auth::user()->id)
-    //         ->where('id', $validated['category'])
-    //         ->first();
-
-    //     $transaction = Transaction::create([
-    //         'name' => $validated['name'],
-    //         'date' => $validated['date'],
-    //         'category_name' => $relatedCategory->category_name,
-    //         'category_id' => $validated['category'],
-    //         'bank_account_id' => $validated['bank_account'],
-    //         'amount' => $validated['amount'],
-    //         'transaction_type' => $validated['transaction_type'],
-    //         'internal_transfer' => $isInternalTransfer,
-    //         'user_id' => Auth::user()->id,
-
-    //     ]);
-
-    //     /*$budget = Budget::where('user_id', Auth::user()->id)
-    //         ->where('category_id', $validated['category_id'])
-    //         ->first();
-    //     $budgetCurrentBalance = $budget->amount;*/
-
-    //     $bankAccount = BankAccount::where('id', $validated['bank_account'])->first();
-    //     $currentBalance = $bankAccount->starting_balance;
-
-    //     if ($validated['transaction_type'] == 'income') {
-    //         $amountToAdd = $currentBalance + $validated['amount'];
-    //         $bankAccount->update([
-    //             'starting_balance' => $amountToAdd,
-    //         ]);
-    //         /*$budgetAdd = $budgetCurrentBalance + $validated['amount'];*/
-    //         /*$budget->update([
-    //             'amount' => $budgetAdd,
-    //         ]);*/
-    //     } else {
-    //         $amountToTake = $currentBalance - $validated['amount'];
-    //         $bankAccount->update([
-    //             'starting_balance' => $amountToTake,
-    //         ]);
-    //         /*$budgetRemove = $budgetCurrentBalance - $validated['amount'];*/
-    //         /*$budget->update([
-    //             'amount' => $budgetRemove,
-    //         ]);*/
-    //     }
-
-    //     return redirect()->back()->with('success', 'Transaction recorded successfully.');
-    // }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
+        $userId = Auth::id();
+
         $transaction = Transaction::where('id', $id)
-            ->where('user_id', Auth::user()->id)
-            ->first();
+            ->where('user_id', $userId)
+            ->firstOrFail();
 
-        $bankAccount = BankAccount::where('id', $transaction->bank_account_id)->first();
-        $currentBalance = $bankAccount->starting_balance;
-
-
-        if ($transaction->transaction_type == 'income') {
-            $bankAccount->update([
-                'starting_balance' => $currentBalance - $transaction->amount,
-            ]);
+        if ($transaction->transaction_type === 'fundtransfer') {
+            $from = BankAccount::where('user_id',$userId)->find($transaction->from_account);
+            $to   = BankAccount::where('user_id',$userId)->find($transaction->to_account);
+            if ($from) { $from->starting_balance += $transaction->amount; $from->save(); }
+            if ($to)   { $to->starting_balance   -= $transaction->amount; $to->save(); }
         } else {
-            $bankAccount->update([
-                'starting_balance' => $currentBalance + $transaction->amount,
-            ]);
+            $bank = BankAccount::where('user_id',$userId)->find($transaction->bank_account_id);
+            if ($bank) {
+                if ($transaction->transaction_type === 'income') {
+                    $bank->starting_balance -= $transaction->amount;
+                } else {
+                    $bank->starting_balance += $transaction->amount;
+                }
+                $bank->save();
+            }
         }
 
         $transaction->delete();
