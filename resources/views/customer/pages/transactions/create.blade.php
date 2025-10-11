@@ -1,4 +1,5 @@
 @extends('layouts.customer')
+
 @section('content')
     <section class="pageTitleBanner">
         <div class="container">
@@ -16,15 +17,16 @@
                 <div class="col-12">
                     <form action="{{ route('transactions.store') }}" method="post">
                         @csrf
-                        <div class="row lg:g-4 g-3 ">
+
+                        <div class="row lg:g-4 g-3">
                             <div class="col-12 col-lg-6">
                                 <label for="name">Name of Business/Person</label>
-                                <input type="text" name="name" id="name">
+                                <input type="text" name="name" id="name" value="{{ old('name') }}">
                             </div>
 
                             <div class="col-12 col-lg-6">
                                 <label for="date">Date</label>
-                                <input type="date" name="date" id="date">
+                                <input type="date" name="date" id="date" value="{{ old('date') }}">
                             </div>
 
                             <div class="col-12 col-lg-6">
@@ -32,29 +34,32 @@
                                 <select name="category" id="category">
                                     <option value="" disabled selected>Select a category...</option>
                                     @foreach($categories as $cat)
-                                        <option value="{{ $cat->id }}">{{ str_replace('_', ' ',$cat->category_name) }}</option>
-                                        {{-- <option value="{{ $cat->id }}">{{ str_replace('_', ' ',$cat->category->name) }}</option> --}}
+                                        <option value="{{ $cat->id }}">
+                                            {{ str_replace('_', ' ', $cat->category_name) }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="col-12 col-lg-6">
-                                <label for="bank_account">Bank Account</label>
-                                <select name="bank_account" id="">
+                                <label for="bank_account_id">Bank Account</label>
+                                <select name="bank_account_id" id="bank_account_id">
                                     <option value="" disabled selected>Select a bank account...</option>
                                     @foreach($bankAccounts as $account)
-                                        <option value="{{ $account->id }}">{{ str_replace('_', ' ', $account->account_name) }}</option>
+                                        <option value="{{ $account->id }}">
+                                            {{ str_replace('_', ' ', $account->account_name) }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="col-12 col-lg-6">
                                 <label for="amount">Amount</label>
-                                <input type="number" name="amount" id="amount" step="any">
+                                <input type="number" name="amount" id="amount" step="any" value="{{ old('amount') }}">
                             </div>
 
                             <div class="col-12 col-lg-6">
-                                <label for="">Transaction Type</label>
+                                <label>Transaction Type</label>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="transaction_type" id="expense" value="expense" required>
                                     <label class="form-check-label" for="expense">Expense</label>
@@ -68,7 +73,7 @@
 
                             <div class="col-12 col-lg-6">
                                 <div class="input-group">
-                                    <input type="checkbox" name="internal_transfer" id="internal_transfer">
+                                    <input type="checkbox" name="internal_transfer" id="internal_transfer" {{ old('internal_transfer') ? 'checked' : '' }}>
                                     <label for="internal_transfer">Internal Transfer</label>
                                 </div>
                             </div>
@@ -83,8 +88,3 @@
         </div>
     </section>
 @endsection
-
-
-
-
-

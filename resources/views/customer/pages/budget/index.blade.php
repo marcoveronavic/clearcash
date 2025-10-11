@@ -111,62 +111,79 @@
                 </div>
             </div>
 
-            {{-- DONUT — usa lo speso reale del mese; "Remaining" solo se > 0 --}}
+            {{-- ************ DONUT — BUDGETED CATEGORIES vs INCOME ************ --}}
             <script>
                 (function () {
-                    function makeOptions(isV2) {
-                        if (isV2) {
-                            return {
-                                cutoutPercentage: 70,
-                                legend: { position: "bottom", labels: { fontColor: "#ffffff", boxWidth: 15, padding: 20 } },
-                                tooltips: { callbacks: {
-                                        label: function (item, data) {
-                                            var val = Number(data.datasets[0].data[item.index] || 0);
-                                            var tot = data.datasets[0].data.reduce(function(a,b){return Number(a)+Number(b)},0) || 1;
-                                            var pct = ((val/tot)*100).toFixed(1);
-                                            return data.labels[item.index] + ": £" + val.toFixed(2) + " (" + pct + "%)";
-                                        }
-                                    }}
-                            };
-                        }
+                    function optionsV4() {
                         return {
                             cutout: '70%',
                             plugins: {
                                 legend: { position: "bottom", labels: { color: "#ffffff", boxWidth: 15, padding: 20 } },
-                                tooltip: { callbacks: {
+                                tooltip: {
+                                    callbacks: {
                                         label: function (ctx) {
-                                            const val = Number(ctx.raw || 0);
-                                            const tot = ctx.dataset.data.reduce((a,b)=>Number(a)+Number(b),0) || 1;
-                                            const pct = ((val/tot)*100).toFixed(1);
-                                            return `${ctx.label}: £${val.toFixed(2)} (${pct}%)`;
+                                            const income = Number(ctx.chart.config._income || 0);
+                                            const label  = ctx.label || '';
+                                            const v      = Number(ctx.raw || 0);
+
+                                            // Remaining Income → % su income
+                                            if (label === 'Remaining Income') {
+                                                const pct = income > 0 ? ((v / income) * 100).toFixed(1) : '0.0';
+                                                return `${label}: £${v.toFixed(2)} (${pct}%)`;
+                                            }
+
+                                            // Categorie → uso il budget "grezzo" per la % su income
+                                            const rawBudgets = ctx.chart.config._rawBudgets || [];
+                                            const idx        = ctx.dataIndex;
+                                            const raw        = Number(rawBudgets[idx] || 0);
+                                            const pct        = income > 0 ? ((raw / income) * 100).toFixed(1) : '0.0';
+                                            return `${label}: £${raw.toFixed(2)} (${pct}% of income)`;
                                         }
-                                    }}
+                                    }
+                                }
                             }
                         };
                     }
 
-                    function renderBudgetChart() {
+                    function renderIncomeDonut() {
+                        const income = {{ (float) $income }};
+
+                        // Etichette e BUDGET per categoria (dalla struttura che già usi nel body)
                         const catLabels = [
                             @foreach ($categoryDetails as $item)
                                 "{{ str_replace('_', ' ', $item['budgetItem']->category_name) }}",
                             @endforeach
                         ];
-
-                        // Speso reale del mese per categoria (già calcolato in PHP nello stesso ordine)
-                        const catSpent = [
-                            @foreach ($spentByCatMonth as $spent)
-                                {{ (float) $spent }},
+                        const catBudgets = [
+                            @foreach ($categoryDetails as $item)
+                                {{ (float) $item['budget']->amount }},
                             @endforeach
                         ];
 
-                        const remainingRaw = {{ (float) $remainingBudget }};
-                        const remaining = remainingRaw > 0 ? remainingRaw : 0;
+                        // Se non c'è Income o non ci sono budget → niente donut
+                        if (!income || income <= 0 || catLabels.length === 0) return;
 
-                        const labels = remaining > 0 ? [...catLabels, "Remaining"] : [...catLabels];
-                        const data   = remaining > 0 ? [...catSpent, remaining]   : [...catSpent];
+                        // Somma budget
+                        const sumBud = catBudgets.reduce((a,b)=>a+Number(b||0),0);
 
-                        if (!data.length || data.every(v => Number(v) === 0)) return;
+                        // Dati scalati: l’intero anello rappresenta l’Income
+                        let scaled = catBudgets.slice();
+                        let remainingIncome = 0;
 
+                        if (sumBud <= income) {
+                            remainingIncome = income - sumBud;      // aggiungo "Remaining Income"
+                        } else {
+                            const k = income / sumBud;              // riscalo le fette se overspend
+                            scaled = catBudgets.map(v => Number(v||0) * k);
+                            remainingIncome = 0;
+                        }
+
+                        const labels = remainingIncome > 0 ? [...catLabels, 'Remaining Income'] : [...catLabels];
+                        const data   = remainingIncome > 0 ? [...scaled, remainingIncome]       : [...scaled];
+
+                        if (data.every(v => Number(v) === 0)) return;
+
+                        // Colori
                         const baseColors = [
                             "#E6194B","#3CB44B","#FFE119","#0082C8","#911EB4","#46F0F0","#F032E6","#D2F53C","#008080",
                             "#AA6E28","#800000","#808000","#000080","#808080","#FFD8B1","#FABED4","#DCBEFF","#A9A9A9",
@@ -177,39 +194,43 @@
                         @foreach ($categoryDetails as $index => $item)
                         colors.push(baseColors[{{ $loop->index }} % baseColors.length]);
                         @endforeach
-                        if (remaining > 0) colors.push("#183236");
+                        if (remainingIncome > 0) colors.push("#2C3E45"); // Remaining Income (grigio scuro)
 
                         const canvas = document.getElementById("budgetChart");
                         if (!canvas) return;
                         const ctx = canvas.getContext("2d");
                         if (!ctx) return;
 
-                        const isV2 = !!(window.Chart && window.Chart.defaults && window.Chart.defaults.global);
                         if (window.budgetChart) { try { window.budgetChart.destroy(); } catch(e){} }
 
-                        window.budgetChart = new Chart(ctx, {
+                        // salvo income e budgets "grezzi" nella config per tooltip
+                        const cfg = {
                             type: "doughnut",
                             data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
-                            options: makeOptions(isV2)
-                        });
+                            options: optionsV4(),
+                            _income: {{ (float) $income }},
+                            _rawBudgets: catBudgets
+                        };
 
-                        const ccBalance = {{ (float) $clearCashBalance }};
-                        const el = document.getElementById("remainingAmount");
-                        if (el) el.style.color = ccBalance < 0 ? "#D21414" : "#44E0AC";
+                        window.budgetChart = new Chart(ctx, cfg);
                     }
 
                     function ensureChartAndRender() {
                         if (typeof window.Chart === 'undefined') {
                             const s = document.createElement('script');
                             s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
-                            s.onload = renderBudgetChart;
+                            s.onload = renderIncomeDonut;
                             document.head.appendChild(s);
                         } else {
-                            renderBudgetChart();
+                            renderIncomeDonut();
                         }
                     }
-                    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureChartAndRender);
-                    else ensureChartAndRender();
+
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', ensureChartAndRender);
+                    } else {
+                        ensureChartAndRender();
+                    }
                 })();
             </script>
         </div>
