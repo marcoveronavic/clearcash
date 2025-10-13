@@ -1,67 +1,93 @@
 @extends('layouts.customer')
 
 @php
+    use Illuminate\Support\Facades\Auth;
     use Illuminate\Support\Facades\DB;
 
     $Budget      = \App\Models\Budget::class;
     $Transaction = \App\Models\Transaction::class;
 
-    // Limiti di periodo (solo mese corrente, confronto a livello di data 'YYYY-MM-DD')
-    $startCarbon = now()->startOfMonth();
-    $endCarbon   = now()->endOfMonth();
+    $userId = Auth::id();
+
+    // Usa il periodo passato dal controller (NON now())
+    $startCarbon = \Illuminate\Support\Carbon::parse($budgetStartDate);
+    $endCarbon   = \Illuminate\Support\Carbon::parse($budgetEndDate);
     $startDate   = $startCarbon->toDateString();
     $endDate     = $endCarbon->toDateString();
 
-    // Categorie con budget (se servono filtri user/bank_account, aggiungili qui)
-    $budgetCategoryIds = $Budget::query()->pluck('category_id')->filter()->all();
-
-    // Spese "uncategorised" del mese (uscite senza categoria o in categorie senza budget)
-    $uncategorisedSpent = $Transaction::query()
-        ->whereBetween('date', [$startCarbon, $endCarbon])
-        ->where('amount', '<', 0)
-        ->where(function ($q) use ($budgetCategoryIds) {
-            $q->whereNull('category_id');
-            if (count($budgetCategoryIds)) {
-                $q->orWhereNotIn('category_id', $budgetCategoryIds);
-            }
-        })
-        ->sum(DB::raw('ABS(amount)'));
-    $showUncategorised = ($uncategorisedSpent > 0);
+    // Categorie con budget (utente)
+    $budgetCategoryIds = $Budget::query()
+        ->where('user_id', $userId)
+        ->pluck('category_id')
+        ->filter()
+        ->all();
 
     /**
-     * Calcolo SPESO REALE DEL MESE per ciascuna categoria usando
-     * le transazioni già fornite in $categoryDetails[*]['transactions'].
-     * (Così non dipendiamo da eventuali mismatch di category_id.)
+     * Uncategorised (NETTO) — convenzione: expense outflow > 0 ; refund < 0
+     */
+    $uncatAgg = $Transaction::query()
+        ->where('user_id', $userId)
+        ->whereBetween('date', [$startCarbon, $endCarbon])
+        ->where(function ($q) {
+            $q->whereNull('category_id')
+              ->orWhereRaw("LOWER(category_name) = 'uncategorised'");
+        })
+        ->where(function ($q) {
+            $q->whereNull('internal_transfer')->orWhere('internal_transfer', false);
+        })
+        ->where('transaction_type', 'expense')
+        ->selectRaw("
+            SUM(CASE WHEN amount > 0 THEN  amount ELSE 0 END) AS outflow,
+            SUM(CASE WHEN amount < 0 THEN -amount ELSE 0 END) AS refunds
+        ")
+        ->first();
+
+    $uncategorisedSpent = max(0.0, (float)($uncatAgg->outflow ?? 0) - (float)($uncatAgg->refunds ?? 0));
+    $showUncategorised  = ($uncategorisedSpent > 0);
+
+    /**
+     * Speso NETTO per categoria (dalle transazioni già filtrate dal controller)
      */
     $spentByCatMonth = [];
-    $totalOverspend  = 0.0;
+    $totalOverspent  = 0.0;
 
     foreach ($categoryDetails as $row) {
-        $budgetAmt = isset($row['budget']) ? (float) $row['budget']->amount : 0.0;
+        $budgetAmt = isset($row['startingBudgetAmount'])
+            ? (float) $row['startingBudgetAmount']
+            : (isset($row['budget'])
+                ? (float) $row['budget']->amount
+                : (isset($row['budgetItem']) ? (float) $row['budgetItem']->amount : 0.0));
 
-        // Filtra SOLO le transazioni-uscita del mese corrente
         $txMonth = collect($row['transactions'] ?? [])->filter(function ($t) use ($startDate, $endDate) {
-            // data normalizzata a YYYY-MM-DD per evitare problemi di timezone
-            $d   = \Carbon\Carbon::parse($t->date)->toDateString();
-            $amt = (float) ($t->amount ?? 0);
-            $type = strtolower(trim((string)($t->transaction_type ?? '')));
-
-            // Considero "spesa" se importo < 0 OPPURE se il tipo non è 'income'
-            $isExpense = ($amt < 0) || ($type !== '' && $type !== 'income');
-
-            return $isExpense && ($d >= $startDate && $d <= $endDate);
+            $d = \Carbon\Carbon::parse($t->date)->toDateString();
+            return ($d >= $startDate && $d <= $endDate);
         });
 
-        // Somma in valore assoluto SOLO delle uscite selezionate
-        $spent = $txMonth->sum(function ($t) {
-            return abs((float) $t->amount);
-        });
+        // >>> expense outflow > 0 ; refund < 0
+        $outflow = $txMonth->sum(function ($t) { $a = (float)($t->amount ?? 0); return $a > 0 ? $a  : 0; });
+        $refunds = $txMonth->sum(function ($t) { $a = (float)($t->amount ?? 0); return $a < 0 ? -$a : 0; });
 
-        $spentByCatMonth[] = $spent;
+        $spentNet = max(0.0, $outflow - $refunds);
+        $spentByCatMonth[] = $spentNet;
 
-        if ($spent > $budgetAmt) {
-            $totalOverspend += ($spent - $budgetAmt);
+        if ($spentNet > $budgetAmt) {
+            $totalOverspent += ($spentNet - $budgetAmt);
         }
+    }
+
+    // Dati per donut
+    $catLabels = [];
+    $catBudgetAmounts = [];
+    foreach ($categoryDetails as $row) {
+        $label = isset($row['budgetItem']) ? (string) $row['budgetItem']->category_name : 'Category';
+        $catLabels[] = str_replace('_', ' ', $label);
+
+        $amt = isset($row['startingBudgetAmount'])
+            ? (float) $row['startingBudgetAmount']
+            : (isset($row['budget'])
+                ? (float) $row['budget']->amount
+                : (isset($row['budgetItem']) ? (float) $row['budgetItem']->amount : 0.0));
+        $catBudgetAmounts[] = $amt;
     }
 @endphp
 
@@ -72,15 +98,16 @@
         .budget-progress .progress-bar { background-color: transparent !important; }
         .budget-progress .budget-progress-bar.on-track { background: linear-gradient(90deg,#33BBC5,#44E0AC) !important; }
         .budget-progress .budget-progress-bar.overspent { background: linear-gradient(90deg,#D21414,#F96565) !important; }
+        .badge-chip { border-radius: 12px; padding: .25rem .5rem; font-size: .75rem; }
+        .badge-refund { background: #0ea5e9; }
+        .badge-expense { background: #ef4444; }
     </style>
 
     <section class="pageTitleBanner">
         <div class="container">
             <div class="row">
                 <div class="col-8"><h1>Budget</h1></div>
-                <div class="col-4 d-flex justify-content-end">
-                    {{-- <a href="" class="editItemBtn"><i class="fas fa-cog"></i></a> --}}
-                </div>
+                <div class="col-4 d-flex justify-content-end"></div>
             </div>
         </div>
     </section>
@@ -93,25 +120,25 @@
                 <canvas id="budgetChart" width="300" height="300"></canvas>
 
                 <div class="row mt-3 text-white text-start">
-                    <div class="col-9"><h4 class=" fw-bold">Income</h4></div>
-                    <div class="col-3"><h4 class=" fw-bold">£{{ number_format($income, 2) }}</h4></div>
+                    <div class="col-9"><h4 class="fw-bold">Income</h4></div>
+                    <div class="col-3"><h4 class="fw-bold">£{{ number_format($income, 2) }}</h4></div>
 
-                    <div class="col-9"><h4 class=" fw-bold">Expenses (Budgeted)</h4></div>
-                    <div class="col-3"><h4 class=" fw-bold">£{{ number_format($totalBudget, 2) }}</h4></div>
+                    <div class="col-9"><h4 class="fw-bold">Expenses (Budgeted)</h4></div>
+                    <div class="col-3"><h4 class="fw-bold">£{{ number_format($totalBudget, 2) }}</h4></div>
 
-                    @if($totalOverspend > 0)
-                        <div class="col-9"><h4 class=" fw-bold text-danger">Overspend</h4></div>
-                        <div class="col-3"><h4 class=" fw-bold text-danger">£{{ number_format($totalOverspend, 2) }}</h4></div>
+                    @if($totalOverspent > 0)
+                        <div class="col-9"><h4 class="fw-bold text-danger">Overspent</h4></div>
+                        <div class="col-3"><h4 class="fw-bold text-danger">£{{ number_format($totalOverspent, 2) }}</h4></div>
                     @endif
 
-                    <div class="col-9"><h4 class=" fw-bold">Clear Cash Balance</h4></div>
+                    <div class="col-9"><h4 class="fw-bold">Clear Cash Balance</h4></div>
                     <div class="col-3">
                         <h4 id="remainingAmount" class="fw-bold text-primary">£{{ number_format($clearCashBalance, 2) }}</h4>
                     </div>
                 </div>
             </div>
 
-            {{-- ************ DONUT — BUDGETED CATEGORIES vs INCOME ************ --}}
+            {{-- ************ DONUT — INCOME vs BUDGETS ************ --}}
             <script>
                 (function () {
                     function optionsV4() {
@@ -126,13 +153,11 @@
                                             const label  = ctx.label || '';
                                             const v      = Number(ctx.raw || 0);
 
-                                            // Remaining Income → % su income
                                             if (label === 'Remaining Income') {
                                                 const pct = income > 0 ? ((v / income) * 100).toFixed(1) : '0.0';
                                                 return `${label}: £${v.toFixed(2)} (${pct}%)`;
                                             }
 
-                                            // Categorie → uso il budget "grezzo" per la % su income
                                             const rawBudgets = ctx.chart.config._rawBudgets || [];
                                             const idx        = ctx.dataIndex;
                                             const raw        = Number(rawBudgets[idx] || 0);
@@ -147,33 +172,20 @@
 
                     function renderIncomeDonut() {
                         const income = {{ (float) $income }};
+                        const catLabels = @json($catLabels);
+                        const catBudgets = @json($catBudgetAmounts);
 
-                        // Etichette e BUDGET per categoria (dalla struttura che già usi nel body)
-                        const catLabels = [
-                            @foreach ($categoryDetails as $item)
-                                "{{ str_replace('_', ' ', $item['budgetItem']->category_name) }}",
-                            @endforeach
-                        ];
-                        const catBudgets = [
-                            @foreach ($categoryDetails as $item)
-                                {{ (float) $item['budget']->amount }},
-                            @endforeach
-                        ];
-
-                        // Se non c'è Income o non ci sono budget → niente donut
                         if (!income || income <= 0 || catLabels.length === 0) return;
 
-                        // Somma budget
                         const sumBud = catBudgets.reduce((a,b)=>a+Number(b||0),0);
 
-                        // Dati scalati: l’intero anello rappresenta l’Income
                         let scaled = catBudgets.slice();
                         let remainingIncome = 0;
 
                         if (sumBud <= income) {
-                            remainingIncome = income - sumBud;      // aggiungo "Remaining Income"
+                            remainingIncome = income - sumBud;
                         } else {
-                            const k = income / sumBud;              // riscalo le fette se overspend
+                            const k = income / sumBud;
                             scaled = catBudgets.map(v => Number(v||0) * k);
                             remainingIncome = 0;
                         }
@@ -183,7 +195,6 @@
 
                         if (data.every(v => Number(v) === 0)) return;
 
-                        // Colori
                         const baseColors = [
                             "#E6194B","#3CB44B","#FFE119","#0082C8","#911EB4","#46F0F0","#F032E6","#D2F53C","#008080",
                             "#AA6E28","#800000","#808000","#000080","#808080","#FFD8B1","#FABED4","#DCBEFF","#A9A9A9",
@@ -191,10 +202,10 @@
                             "#20B2AA","#FF69B4","#000000"
                         ];
                         const colors = [];
-                        @foreach ($categoryDetails as $index => $item)
-                        colors.push(baseColors[{{ $loop->index }} % baseColors.length]);
-                        @endforeach
-                        if (remainingIncome > 0) colors.push("#2C3E45"); // Remaining Income (grigio scuro)
+                        for (let i = 0; i < catLabels.length; i++) {
+                            colors.push(baseColors[i % baseColors.length]);
+                        }
+                        if (remainingIncome > 0) colors.push("#2C3E45");
 
                         const canvas = document.getElementById("budgetChart");
                         if (!canvas) return;
@@ -203,7 +214,6 @@
 
                         if (window.budgetChart) { try { window.budgetChart.destroy(); } catch(e){} }
 
-                        // salvo income e budgets "grezzi" nella config per tooltip
                         const cfg = {
                             type: "doughnut",
                             data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
@@ -248,7 +258,7 @@
                     </div>
 
                     <div class="inner">
-                        {{-- UNCATEGORISED solo se serve --}}
+                        {{-- UNCATEGORISED solo se serve (NETTO) --}}
                         @if ($showUncategorised)
                             <div class="catItem">
                                 <div class="row px-0 align-items-start">
@@ -267,25 +277,26 @@
 
                         @foreach ($categoryDetails as $item)
                             @php
-                                // Speso reale del mese per questa categoria (ricavato dall'array calcolato sopra)
-                                $spentLocal = $spentByCatMonth[$loop->index] ?? 0.0;
+                                $budgetAmt = isset($item['startingBudgetAmount'])
+                                    ? (float) $item['startingBudgetAmount']
+                                    : (isset($item['budget'])
+                                        ? (float) $item['budget']->amount
+                                        : (isset($item['budgetItem']) ? (float) $item['budgetItem']->amount : 0.0));
 
-                                $budgetAmt     = (float) $item['budget']->amount;
-                                $hasTx         = $spentLocal > 0;
-                                $isOverspent   = $spentLocal > $budgetAmt;
-                                $remaining     = max(0.0, $budgetAmt - $spentLocal);
-                                $progressWidth = $isOverspent
-                                    ? 100
-                                    : ($hasTx ? min(100, round(($spentLocal / $budgetAmt) * 100, 2)) : 0);
+                                $spentLocal   = $spentByCatMonth[$loop->index] ?? 0.0; // NETTO
+                                $hasTx        = $spentLocal > 0;
 
-                                // Per il modale: mostro SOLO le spese del mese in corso
-                                $txMonth = collect($item['transactions'] ?? [])->filter(function ($t) use ($startDate, $endDate) {
-                                    $d = \Carbon\Carbon::parse($t->date)->toDateString();
-                                    $amt = (float) ($t->amount ?? 0);
-                                    $type = strtolower(trim((string)($t->transaction_type ?? '')));
-                                    $isExpense = ($amt < 0) || ($type !== '' && $type !== 'income');
-                                    return $isExpense && ($d >= $startDate && $d <= $endDate);
-                                });
+                                if ($budgetAmt > 0) {
+                                    $spentPct      = round(($spentLocal / $budgetAmt) * 100, 2);
+                                    $isAtOrOver    = ($spentPct >= 100) || ($budgetAmt - $spentLocal <= 0.00001);
+                                    $progressWidth = $hasTx ? min(100, $spentPct) : 0;
+                                } else {
+                                    $isAtOrOver    = $hasTx;
+                                    $progressWidth = $hasTx ? 100 : 0;
+                                }
+
+                                $isStrictlyOver = $spentLocal > $budgetAmt; // per messaggio "Overspent by..."
+                                $remaining      = max(0.0, $budgetAmt - $spentLocal);
                             @endphp
 
                             <div class="catItem">
@@ -299,7 +310,7 @@
                                                     £{{ number_format($budgetAmt, 2) }}
                                                     <span class="px-1 opacity-75"> left of </span>
                                                     £{{ number_format($budgetAmt, 2) }}
-                                                @elseif($isOverspent)
+                                                @elseif($isStrictlyOver)
                                                     0.00
                                                     <span class="px-1 opacity-75"> left of </span>
                                                     £{{ number_format($budgetAmt, 2) }}
@@ -314,7 +325,7 @@
                                             </h6>
                                         </div>
                                         <div class="md:col-4 col-2" style="text-align: right;">
-                                            <span class="spentAmount" @if ($isOverspent) style="color:#D21414;" @endif>
+                                            <span class="spentAmount" @if ($isAtOrOver) style="color:#D21414;" @endif>
                                                 £{{ number_format($spentLocal, 2) }}
                                             </span>
                                         </div>
@@ -323,11 +334,10 @@
                                     <div class="row px-0">
                                         <div class="col-12">
                                             <div class="progress budget-progress" role="progressbar"
-                                                 aria-valuenow="{{ $isOverspent ? 100 : $progressWidth }}"
+                                                 aria-valuenow="{{ $progressWidth }}"
                                                  aria-valuemin="0" aria-valuemax="100">
-                                                {{-- Disegno la barra SOLO se > 0% → traccia vuota quando non ci sono spese --}}
                                                 @if ($progressWidth > 0)
-                                                    <div class="progress-bar budget-progress-bar {{ $isOverspent ? 'overspent' : 'on-track' }}"
+                                                    <div class="progress-bar budget-progress-bar {{ $isAtOrOver ? 'overspent' : 'on-track' }}"
                                                          style="width: {{ $progressWidth }}%;"></div>
                                                 @endif
                                             </div>
@@ -335,7 +345,7 @@
                                     </div>
                                 </button>
 
-                                {{-- Modal --}}
+                                {{-- Modal dettaglio --}}
                                 <div class="modal fade"
                                      id="modal-{{ str_replace(' ', '-', $item['budgetItem']->category_name) }}"
                                      tabindex="-1" aria-hidden="true">
@@ -348,41 +358,37 @@
                                             </div>
                                             <div class="modal-body">
 
-                                                <div class="transactionList mb-3 pt-0 mt-0">
-                                                    <ul class="list-group mt-0 pt-0">
-                                                        <li class="list-group-item d-flex justify-content-between align-items-center my-1"
-                                                            style="background-color:#d1f9ff0d;border:none;">
-                                                            <div class="d-flex flex-column">
-                                                                <span class="fs-5 fw-semibold text-white">
-                                                                    You have daily budget of
-                                                                    <span style="color:#31d2f7"> £
-                                                                        @if (!$hasTx)
-                                                                            {{ number_format($budgetAmt / $daysLeft, 2) }}
-                                                                        @elseif($isOverspent)
-                                                                            0.00
-                                                                        @else
-                                                                            {{ number_format($remaining / $daysLeft, 2) }}
-                                                                        @endif
-                                                                    </span>
-                                                                    for this category
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                                @php
+                                                    $txMonth = collect($item['transactions'] ?? [])->filter(function ($t) use ($startDate, $endDate) {
+                                                        $d = \Carbon\Carbon::parse($t->date)->toDateString();
+                                                        return ($d >= $startDate && $d <= $endDate);
+                                                    });
+                                                @endphp
 
                                                 @if ($txMonth->count() > 0)
                                                     <div class="transactionList">
-                                                        <h4 class="mb-3 fw-semibold text-white">Recent Expenses</h4>
+                                                        <h4 class="mb-3 fw-semibold text-white">Recent Activity</h4>
                                                         <ul class="list-group">
                                                             @foreach ($txMonth->sortByDesc('date')->take(10) as $transaction)
+                                                                @php
+                                                                    $isRefund = (float)$transaction->amount < 0; // refund = expense negativo
+                                                                    $abs      = number_format(abs($transaction->amount), 2);
+                                                                @endphp
                                                                 <li class="list-group-item d-flex justify-content-between align-items-center my-1"
                                                                     style="background-color:#d1f9ff0d;border:none;">
                                                                     <div class="d-flex flex-column">
                                                                         <span class="fs-5 fw-semibold text-white">{{ $transaction->name ?? 'No Name' }}</span>
                                                                         <small class="text-white">{{ \Carbon\Carbon::parse($transaction->date)->format('d M, Y') }}</small>
                                                                     </div>
-                                                                    <span class="badge bg-danger fs-6">£{{ number_format(abs($transaction->amount), 2) }}</span>
+                                                                    <div>
+                                                                        @if($isRefund)
+                                                                            <span class="badge badge-chip badge-refund me-2">Refund</span>
+                                                                            <span class="fs-6 text-info">+£{{ $abs }}</span>
+                                                                        @else
+                                                                            <span class="badge badge-chip badge-expense me-2">Expense</span>
+                                                                            <span class="fs-6 text-danger">-£{{ $abs }}</span>
+                                                                        @endif
+                                                                    </div>
                                                                 </li>
                                                             @endforeach
                                                         </ul>
@@ -392,7 +398,7 @@
                                                         <li class="list-group-item d-flex justify-content-between align-items-center"
                                                             style="background-color:#d1f9ff0d;border:none;">
                                                             <div class="d-flex flex-column">
-                                                                <span class="text-white">No expenses recorded yet for this category</span>
+                                                                <span class="text-white">No activity recorded yet for this category</span>
                                                             </div>
                                                         </li>
                                                     </ul>
@@ -400,7 +406,7 @@
 
                                                 <div class="edit-budget-section mt-4">
                                                     <h4 class="fw-bold text-white mb-3">Edit {{ $item['budgetItem']->category_name }} Budget</h4>
-                                                    <form action="{{ route('budget.update', $item['budget']->id) }}" method="post">
+                                                    <form action="{{ route('budget.update', $item['budgetItem']->id) }}" method="post">
                                                         @csrf
                                                         @method('put')
                                                         <div class="mb-3">
@@ -416,7 +422,7 @@
                                             </div>
 
                                             <div class="modal-footer">
-                                                <form action="{{ route('budget.reset-budget', $item['budget']->id) }}" method="post">
+                                                <form action="{{ route('budget.reset-budget', $item['budgetItem']->id) }}" method="post">
                                                     @csrf
                                                     @method('put')
                                                     <button type="submit" class="twoToneBlueGreenBtn text-center py-2">Reset</button>

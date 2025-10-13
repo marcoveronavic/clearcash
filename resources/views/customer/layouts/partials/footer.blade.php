@@ -1,4 +1,11 @@
 @if (Auth::user()->has_completed_setup == true)
+
+    @php
+        // Fallback nel caso il partial venga incluso senza variabili
+        $categories   = $categories   ?? \App\Models\Budget::where('user_id', auth()->id())->get();
+        $bankAccounts = $bankAccounts ?? \App\Models\BankAccount::where('user_id', auth()->id())->orderBy('account_name')->get();
+    @endphp
+
     <div class="floatingQuickAddDropUp dropup">
         <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-plus"></i>
@@ -48,19 +55,37 @@
                         <div class="addBudgetItem">
                             <div class="row px-0">
                                 <div class="col-md-7 pe-md-0">
-                                    <input type="text" class="form-control" name="name" placeholder="Name" value="{{ old('name') }}" required>
+                                    <input type="text" class="form-control" name="name"
+                                           placeholder="Name" value="{{ old('name') }}" required>
                                 </div>
                                 <div class="col-md-5 ps-md-0 d-md-flex justify-content-md-end">
                                     <div class="input-group">
                                         <label>£</label>
-                                        <input type="number" min="0" step="any" name="amount" placeholder="0.00" required style="width: 80% !important;">
+                                        <input type="number" min="0" step="any"
+                                               name="amount" placeholder="0.00" required
+                                               style="width: 80% !important;">
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- ✅ Flag: conta le internal transfer come spesa per questa categoria --}}
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox"
+                                       name="include_internal_transfers"
+                                       id="include_internal_transfers" value="1"
+                                    {{ old('include_internal_transfers') ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold"
+                                       for="include_internal_transfers">
+                                    Count matching <strong>internal transfers</strong> as spend for this category (e.g. pension contributions)
+                                </label>
+                            </div>
                         </div>
+
                         <div class="row mt-2">
                             <div class="col-md-4 offset-md-8 d-md-flex justify-content-md-end">
-                                <button type="submit" class="twoToneBlueGreenBtn text-center py-2" data-loading-text="Saving...">Save</button>
+                                <button type="submit" class="twoToneBlueGreenBtn text-center py-2" data-loading-text="Saving...">
+                                    Save
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -68,6 +93,24 @@
             </div>
         </div>
     </div>
+
+    {{-- 🎨 Contrasto migliore (solo per la modale Add Budget) --}}
+    <style>
+        #addBudget .form-check-label{
+            color: #EAFBFF !important;
+        }
+        #addBudget .form-check-input{
+            border-color: #44E0AC !important;
+            background-color: transparent;
+        }
+        #addBudget .form-check-input:checked{
+            background-color: #44E0AC !important;
+            border-color: #44E0AC !important;
+        }
+        #addBudget .form-check-input:focus{
+            box-shadow: 0 0 0 .2rem rgba(68,224,172,.25) !important;
+        }
+    </style>
 
     {{-- Add Transaction (global quick add) --}}
     <div class="modal fade" id="addTransaction" tabindex="-1" aria-hidden="true">
@@ -124,6 +167,22 @@
                             </div>
                         </div>
 
+                        {{-- ✅ Transfer To (optional, appare se IT è spuntato) --}}
+                        <div class="row" id="gt_transfer_row" style="display:none;">
+                            <div class="col-12">
+                                <label for="gt_transfer_to">Transfer To (optional)</label>
+                                <select name="transfer_to_account" id="gt_transfer_to" disabled>
+                                    <option value="" selected>-- choose destination --</option>
+                                    @foreach ($bankAccounts as $account)
+                                        <option value="{{ $account->id }}">{{ str_replace('_', ' ', $account->account_name) }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="internal-note d-block mt-1">
+                                    If you choose a destination, two transactions will be created (expense from → income to).
+                                </small>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-12">
                                 <label for="gt_amount">Amount *</label>
@@ -135,7 +194,7 @@
                             <div class="col-12">
                                 <label>Transaction Type *</label>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="transaction_type" id="gt_expense" value="expense" required>
+                                    <input class="form-check-input" type="radio" name="transaction_type" id="gt_expense" value="expense" required checked>
                                     <label class="form-check-label" for="gt_expense">Expense</label>
                                 </div>
 
@@ -146,14 +205,18 @@
                             </div>
                         </div>
 
-                        {{-- <div class="row">
+                        {{-- ✅ Internal Transfer + nota visibile --}}
+                        <div class="row">
                             <div class="col-12">
                                 <div class="input-group">
-                                    <input type="checkbox" name="internal_transfer" id="gt_internal_transfer">
+                                    <input type="checkbox" name="internal_transfer" id="gt_internal_transfer" value="1">
                                     <label for="gt_internal_transfer">Internal Transfer</label>
                                 </div>
+                                <small class="internal-note d-block mt-1">
+                                    If the selected category is set to “count internal transfers”, this will be counted as a budgeted expense.
+                                </small>
                             </div>
-                        </div> --}}
+                        </div>
 
                         <div class="row mt-2">
                             <div class="col-md-4 offset-md-8 d-md-flex justify-content-md-end">
@@ -166,19 +229,43 @@
         </div>
     </div>
 
+    {{-- 🎨 Contrasto migliore (solo per la modale Add Transaction) --}}
+    <style>
+        #addTransaction .internal-note{ color:#EAFBFF !important; opacity:.95 }
+        #addTransaction .form-check-label{ color:#EAFBFF !important; }
+    </style>
+
     {{-- Fund Transfer --}}
     <div class="modal fade" id="fundTransfer" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="modal-body">
                     <h1>Fund Transfer</h1>
                     <form action="{{ route('transactions.global-fund-transfer') }}" method="post">
                         @csrf
+
+                        {{-- ✅ Categoria opzionale per la SPESA (from). Se flaggata, conta nel budget. --}}
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="ft_category">Category (optional)</label>
+                                <select name="category" id="ft_category">
+                                    <option value="" selected>-- none --</option>
+                                    @foreach ($categories as $cat)
+                                        <option value="{{ $cat->id }}">
+                                            {{ str_replace('_', ' ', $cat->category_name) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted d-block mt-1">
+                                    The <strong>expense</strong> (From) will be tagged with this category.
+                                    If that category counts internal transfers, it will be included in the budget.
+                                </small>
+                            </div>
+                        </div>
 
                         <div class="row">
                             <div class="col-12">
@@ -241,22 +328,19 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="modal-body">
                     <h1>Add Bank Account</h1>
                     <form action="{{ route('bank-accounts.global-add-bank-account') }}" method="post">
                         @csrf
-
                         <div class="row">
                             <div class="col-12">
                                 <label for="name_of_bank_account">Name of bank</label>
                                 <input type="text" name="name_of_bank_account" id="name_of_bank_account" value="{{ old('name_of_bank_account') }}">
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-12">
                                 <label for="bank_account_type">Account type</label>
@@ -272,14 +356,12 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-12">
                                 <label for="bank_account_starting_balance">Starting balance</label>
                                 <input type="number" name="bank_account_starting_balance" id="bank_account_starting_balance" step="any" value="{{ old('bank_account_starting_balance') }}">
                             </div>
                         </div>
-
                         <div class="row mt-2">
                             <div class="col-md-4 offset-md-8 d-md-flex justify-content-md-end">
                                 <button type="submit" class="twoToneBlueGreenBtn text-center py-2" data-loading-text="Saving...">Save</button>
@@ -293,8 +375,9 @@
 @endif
 
 <script>
+    // Spinner e blocco doppio submit per tutte le modali
     document.querySelectorAll('.modal form').forEach(form => {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function() {
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
                 const loadingText = submitBtn.dataset.loadingText || 'Saving...';
@@ -305,6 +388,22 @@
                 submitBtn.classList.add('opacity-50');
             }
         });
+    });
+
+    // Toggle "Transfer To" quando spunti Internal Transfer nella modale Add Transaction
+    document.addEventListener('DOMContentLoaded', function(){
+        const it  = document.getElementById('gt_internal_transfer');
+        const row = document.getElementById('gt_transfer_row');
+        const sel = document.getElementById('gt_transfer_to');
+        if (!it || !row || !sel) return;
+        const sync = () => {
+            const on = it.checked;
+            row.style.display = on ? '' : 'none';
+            sel.disabled = !on;
+            if (!on) sel.value = '';
+        };
+        it.addEventListener('change', sync);
+        sync();
     });
 </script>
 
