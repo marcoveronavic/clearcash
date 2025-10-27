@@ -2,64 +2,33 @@
 
 namespace Database\Seeders;
 
-use App\Models\DefaultBudgetCategories;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\DefaultBudgetCategories;
 
 class DefaultBudgetCategoriesSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        DefaultBudgetCategories::create([
-            'name' => 'Mortgage',
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Rent',
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Utilities',
-        ]);
-        DefaultBudgetCategories::create([
-           'name' => 'Groceries',
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Loans'
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Credit Card'
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Transport'
-        ]);
-        DefaultBudgetCategories::create([
-           'name' => 'Insurance'
-        ]);
-        DefaultBudgetCategories::create([
-           'name' => 'Eating Out'
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Entertainment'
-        ]);
-        DefaultBudgetCategories::create([
-           'name' => 'Home & Family'
-        ]);
-        DefaultBudgetCategories::create([
-           'name' => 'Shopping'
-        ]);
-        DefaultBudgetCategories::create([
-           'name' => 'Gifts'
-        ]);
-        DefaultBudgetCategories::create([
-           'name' => 'Education'
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Charity'
-        ]);
-        DefaultBudgetCategories::create([
-            'name' => 'Other'
-        ]);
+        $rows = [
+            ['slug' => 'rent',          'name' => 'Rent'],
+            ['slug' => 'mortgage',      'name' => 'Mortgage'],
+            ['slug' => 'car',           'name' => 'Car'],
+            ['slug' => 'grocery',       'name' => 'Grocery'],
+            ['slug' => 'travel',        'name' => 'Travel'],
+            ['slug' => 'holiday',       'name' => 'Holiday'],
+            ['slug' => 'family',        'name' => 'Family'],
+            ['slug' => 'eating_out',    'name' => 'Eating out'],
+            ['slug' => 'drinking_out',  'name' => 'Drinking out'],
+            ['slug' => 'shopping',      'name' => 'Shopping'],
+            ['slug' => 'utilities',     'name' => 'Utilities'],
+            ['slug' => 'subscriptions', 'name' => 'Subscriptions'],
+        ];
+
+        foreach ($rows as $r) {
+            DefaultBudgetCategories::updateOrCreate(
+                ['slug' => $r['slug']],
+                ['name' => $r['name']]
+            );
+        }
     }
 }

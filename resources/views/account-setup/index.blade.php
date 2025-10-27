@@ -1,51 +1,36 @@
 @extends('layouts.customer')
-@section('styles_in_head')
-    {{-- Add your link below --}}
-    <link rel="stylesheet" href="{{asset('build/assets/account-setup.css')}}">
-@endsection
 
+@section('styles_in_head')
+    {{-- CSS della pagina --}}
+    <link rel="stylesheet" href="{{ asset('build/assets/account-setup.css') }}">
+@endsection
 
 @section('content')
     <style>
+        /* Nasconde header/sidebar per la pagina setup, come prima */
         header,
-        aside.sidebar {
-            display: none;
-        }
-        main.dashboardMain {
-            padding-top: 2rem;
-            width: 100%;
-        }
-        main.dashboardMain.full {
-            padding-top: 2rem;
-        }
+        aside.sidebar { display: none; }
+        main.dashboardMain { padding-top: 2rem; width: 100%; }
+        main.dashboardMain.full { padding-top: 2rem; }
 
-
-        .inputWrap input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    margin: 0;
-}
-
-/* Make the entire inputWrap look clickable */
-.inputWrap {
-    cursor: pointer !important;
-    border: 1px solid #ccc;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: background-color 0.2s ease;
-}
-.inputWrap:hover {
-    background-color: #f0f0f0;
-}
+        /* Radio “invisibile” ma presente per accessibilità */
+        .inputWrap input[type="radio"]{
+            position:absolute;opacity:0;width:0;height:0;margin:0;
+        }
+        .inputWrap{
+            cursor:pointer!important;border:1px solid #ccc;padding:1rem;margin-bottom:1rem;
+            border-radius:6px;display:flex;align-items:center;justify-content:space-between;
+            transition:background-color .2s ease;
+        }
+        .inputWrap:hover{ background:#f0f0f0; }
+        .inputWrap.active{ border-color:#0ea5e9; background:#eef8ff; }
+        .inputWrap .content h5{ margin:0 0 .25rem 0; }
+        .inputWrap .content p{ margin:0; opacity:.8; }
     </style>
+
     <section class="setupStepsWrapper">
         <div class="container">
+            {{-- STEP BAR (come prima) --}}
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="setupStepsWrap">
@@ -69,63 +54,93 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Titolo/pitch --}}
             <div class="row mt-4">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
                     <h1>Select your period</h1>
-                    <p>
-                        Your budgeting and reporting will sync with this period.
-                    </p>
+                    <p>Your budgeting and reporting will sync with this period.</p>
                 </div>
             </div>
+
+            {{-- Contenuto --}}
             <div class="row">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    @if($errors->any())
-                        <div class="flex flex-row alert alert-danger">
-                            <ul>
-                                @foreach($errors->all() as $error)
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
                         </div>
                     @endif
-                    <form action="{{ route('account-setup.step-one-store') }}" method="post">
+
+                    @php
+                        // Preselezione da sessione o vecchio input
+                        $pre = $accSetup['period_selection'] ?? old('period_selection');
+                    @endphp
+
+                    <form action="{{ route('account-setup.step-one-store') }}" method="POST" id="periodForm">
                         @csrf
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="inputWrap">
-                                    <input type="radio" name="period_selection" id="first_day_of_month" value="first_day">
-                                    <div class="content">
-                                        <h5>First to last day of the month</h5>
-                                        <p>Your period will start on the 1st day of the month and end on the last.</p>
-                                    </div>
-                                    <div class="iconWrap">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                </div>
 
-                                <div class="inputWrap">
-                                    <input type="radio" name="period_selection" id="last_working_day" value="last_working">
-                                    <div class="content">
-                                        <h5>Last working day of the month</h5>
-                                        <p>Your period will reset on the last working day of the month.</p>
-                                    </div>
-                                    <div class="iconWrap">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                </div>
-
-                                <div class="inputWrap">
-                                    <input type="radio" name="period_selection" id="fixed_monthly_date" value="fixed_date">
-                                    <div class="content">
-                                        <h5>Fixed Monthly Date</h5>
-                                        <p>Your period will reset on the exact day you choose.</p>
-                                    </div>
-                                    <div class="iconWrap">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                </div>
+                        {{-- 1) Primo-ultimo giorno del mese --}}
+                        <label class="inputWrap {{ $pre === 'first_day' ? 'active' : '' }}" for="first_day_of_month">
+                            <input type="radio" name="period_selection" id="first_day_of_month" value="first_day"
+                                {{ $pre === 'first_day' ? 'checked' : '' }}>
+                            <div class="content">
+                                <h5>First to last day of the month</h5>
+                                <p>Your period will start on the 1st day of the month and end on the last.</p>
                             </div>
-                        </div>
+                            <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
+                        </label>
+
+                        {{-- 2) Ultimo giorno lavorativo del mese --}}
+                        <label class="inputWrap {{ $pre === 'last_working' ? 'active' : '' }}" for="last_working_day">
+                            <input type="radio" name="period_selection" id="last_working_day" value="last_working"
+                                {{ $pre === 'last_working' ? 'checked' : '' }}>
+                            <div class="content">
+                                <h5>Last working day of the month</h5>
+                                <p>Your period will reset on the last working day of the month.</p>
+                            </div>
+                            <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
+                        </label>
+
+                        {{-- 3) Giorno fisso del mese --}}
+                        <label class="inputWrap {{ $pre === 'fixed_date' ? 'active' : '' }}" for="fixed_monthly_date">
+                            <input type="radio" name="period_selection" id="fixed_monthly_date" value="fixed_date"
+                                {{ $pre === 'fixed_date' ? 'checked' : '' }}>
+                            <div class="content">
+                                <h5>Fixed Monthly Date</h5>
+                                <p>Your period will reset on the exact day you choose.</p>
+                            </div>
+                            <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
+                        </label>
+
+                        {{-- 4) Settimanale (nuovo in validazione) --}}
+                        <label class="inputWrap {{ $pre === 'weekly' ? 'active' : '' }}" for="weekly_period">
+                            <input type="radio" name="period_selection" id="weekly_period" value="weekly"
+                                {{ $pre === 'weekly' ? 'checked' : '' }}>
+                            <div class="content">
+                                <h5>Weekly</h5>
+                                <p>Your period will reset weekly (you'll choose the start day next).</p>
+                            </div>
+                            <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
+                        </label>
+
+                        {{-- 5) Personalizzato (nuovo in validazione) --}}
+                        <label class="inputWrap {{ $pre === 'custom' ? 'active' : '' }}" for="custom_period">
+                            <input type="radio" name="period_selection" id="custom_period" value="custom"
+                                {{ $pre === 'custom' ? 'checked' : '' }}>
+                            <div class="content">
+                                <h5>Custom</h5>
+                                <p>Define a custom period window (we’ll ask details in the next step).</p>
+                            </div>
+                            <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
+                        </label>
+
+                        {{-- Fallback button (se JS off) --}}
+                        <button type="submit" class="btn btn-primary d-none" id="continueBtn">Continue</button>
                     </form>
                 </div>
             </div>
@@ -133,68 +148,38 @@
     </section>
 
     <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const inputWraps = document.querySelectorAll('.inputWrap');
-    const form = document.querySelector('form');
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('periodForm');
+            const wraps = document.querySelectorAll('.inputWrap');
 
-    form.action = "{{ route('account-setup.step-one-store') }}";
+            wraps.forEach(w => {
+                w.addEventListener('click', function (e) {
+                    // Evita doppi submit se si clicca direttamente sull'input
+                    if (e.target && e.target.tagName.toLowerCase() === 'input') return;
 
-    inputWraps.forEach(wrapper => {
-        wrapper.addEventListener("click", function () {
-            const radio = this.querySelector('input[type="radio"]');
-            if (radio) {
-                radio.checked = true;
+                    wraps.forEach(x => x.classList.remove('active'));
+                    this.classList.add('active');
 
-                // Remove any previously added hidden inputs (to avoid duplicates)
-                const oldHidden = form.querySelector('input[type="hidden"][name="period_selection"]');
-                if (oldHidden) {
-                    form.removeChild(oldHidden);
-                }
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (!radio) return;
 
-                // Add hidden input with selected value
-                const hiddenInput = document.createElement("input");
-                hiddenInput.type = "hidden";
-                hiddenInput.name = "period_selection";
-                hiddenInput.value = radio.value;
-                form.appendChild(hiddenInput);
+                    // check del radio
+                    radio.checked = true;
 
-                setTimeout(() => {
-                    form.submit();
-                }, 333);
-            }
-        });
-    });
-});
-</script>
+                    // pulizia eventuale hidden duplicati
+                    const old = form.querySelector('input[type="hidden"][name="period_selection"]');
+                    if (old) old.remove();
 
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const radioButtons = document.querySelectorAll('input[name="period_selection"]');
-            const form = document.querySelector('form');
+                    // hidden di sicurezza + submit
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'period_selection';
+                    hidden.value = radio.value;
+                    form.appendChild(hidden);
 
-            form.action = "{{ route('account-setup.step-one-store') }}";
-
-            radioButtons.forEach(radio => {
-                radio.addEventListener("change", function () {
-                    if (this.checked) {
-                        console.log("Selected Value:", this.value); // Debugging
-                        console.log("Submitting to:", form.action);
-
-                        // Ensure the selected value is explicitly set in the form
-                        const hiddenInput = document.createElement("input");
-                        hiddenInput.type = "hidden";
-                        hiddenInput.name = "period_selection";
-                        hiddenInput.value = this.value;
-                        form.appendChild(hiddenInput);
-
-                        setTimeout(() => {
-                            form.submit();
-                        }, 333); // Delay of 333ms
-                    }
+                    setTimeout(() => form.submit(), 250);
                 });
             });
         });
-
-    </script> --}}
-
+    </script>
 @endsection

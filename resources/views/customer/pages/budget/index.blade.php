@@ -9,11 +9,20 @@
 
     $userId = Auth::id();
 
-    // Usa il periodo passato dal controller (NON now())
+    // Periodo passato dal controller (NON now())
     $startCarbon = \Illuminate\Support\Carbon::parse($budgetStartDate);
     $endCarbon   = \Illuminate\Support\Carbon::parse($budgetEndDate);
     $startDate   = $startCarbon->toDateString();
     $endDate     = $endCarbon->toDateString();
+
+    // Elenco periodi (ultimi 18 mesi) per il select
+    $periodOptions = [];
+    $cursor = $startCarbon->copy()->endOfMonth();
+    for ($i = 0; $i < 18; $i++) {
+        $periodOptions[] = $cursor->format('Y-m'); // es. 2025-10
+        $cursor->subMonth();
+    }
+    $currentPeriodYm = $startCarbon->format('Y-m');
 
     // Categorie con budget (utente)
     $budgetCategoryIds = $Budget::query()
@@ -22,9 +31,7 @@
         ->filter()
         ->all();
 
-    /**
-     * Uncategorised (NETTO) — convenzione: expense outflow > 0 ; refund < 0
-     */
+    // Uncategorised (NETTO) — convenzione: expense outflow > 0 ; refund < 0
     $uncatAgg = $Transaction::query()
         ->where('user_id', $userId)
         ->whereBetween('date', [$startCarbon, $endCarbon])
@@ -45,9 +52,7 @@
     $uncategorisedSpent = max(0.0, (float)($uncatAgg->outflow ?? 0) - (float)($uncatAgg->refunds ?? 0));
     $showUncategorised  = ($uncategorisedSpent > 0);
 
-    /**
-     * Speso NETTO per categoria (dalle transazioni già filtrate dal controller)
-     */
+    // Speso NETTO per categoria
     $spentByCatMonth = [];
     $totalOverspent  = 0.0;
 
@@ -63,7 +68,6 @@
             return ($d >= $startDate && $d <= $endDate);
         });
 
-        // >>> expense outflow > 0 ; refund < 0
         $outflow = $txMonth->sum(function ($t) { $a = (float)($t->amount ?? 0); return $a > 0 ? $a  : 0; });
         $refunds = $txMonth->sum(function ($t) { $a = (float)($t->amount ?? 0); return $a < 0 ? -$a : 0; });
 
@@ -101,16 +105,74 @@
         .badge-chip { border-radius: 12px; padding: .25rem .5rem; font-size: .75rem; }
         .badge-refund { background: #0ea5e9; }
         .badge-expense { background: #ef4444; }
+        .small-muted { font-size:.9rem; color:#9bb0b6; }
+        :root{ --cc-cyan-400:#31D2F7; --cc-mint-500:#44E0AC; --cc-text-dk:#04262a; }
+        .ccGradientBtn{ display:inline-flex; align-items:center; justify-content:center; padding:.55rem 1rem; border-radius:12px; border:none; background:linear-gradient(90deg,var(--cc-cyan-400),var(--cc-mint-500)); color:var(--cc-text-dk); font-weight:800; letter-spacing:.2px; box-shadow:0 6px 16px rgba(68,224,172,.18); transition:.15s ease box-shadow, .06s ease transform, .15s ease filter; text-transform:none; white-space:nowrap; }
+        .ccGradientBtn:hover{ filter:saturate(1.06); box-shadow:0 10px 24px rgba(68,224,172,.28); transform:translateY(-1px); text-decoration:none; color:var(--cc-text-dk); }
+        .resetBox { background:#0f2629; border:1px solid rgba(255,255,255,0.06); border-radius:14px; padding:10px 12px; }
+        .periodForm .form-select { min-width: 180px; }
+
+        /* >>> Forza il testo del modale in bianco <<< */
+        #resetBudgetModal .modal-title,
+        #resetBudgetModal .modal-body { color:#fff !important; }
     </style>
 
     <section class="pageTitleBanner">
         <div class="container">
-            <div class="row">
-                <div class="col-8"><h1>Budget</h1></div>
-                <div class="col-4 d-flex justify-content-end"></div>
+            <div class="row align-items-center">
+                <div class="col-6"><h1>Budget</h1></div>
+
+                {{-- SELECT PERIODO — URL RELATIVO (evita host diversi) --}}
+                <div class="col-6 d-flex justify-content-end">
+                    <form method="GET" action="/budget" class="periodForm d-flex align-items-center gap-2">
+                        <label class="small-muted me-2">Period:</label>
+                        <select name="period" class="form-select form-select-sm" onchange="this.form.submit()">
+                            @foreach($periodOptions as $ym)
+                                <option value="{{ $ym }}" {{ $ym === $currentPeriodYm ? 'selected' : '' }}>
+                                    {{ \Illuminate\Support\Carbon::createFromFormat('Y-m', $ym)->isoFormat('MMMM YYYY') }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <noscript><button class="btn btn-sm btn-outline-light" type="submit">Go</button></noscript>
+                    </form>
+                </div>
+                {{-- /SELECT PERIODO --}}
             </div>
         </div>
     </section>
+
+    {{-- Bottone reset → apre modale di conferma --}}
+    <section class="mt-2">
+        <div class="container">
+            <div class="resetBox d-flex flex-wrap align-items-center justify-content-end gap-2">
+                <button type="button"
+                        class="ccGradientBtn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#resetBudgetModal">
+                    reset your budget
+                </button>
+            </div>
+        </div>
+    </section>
+
+    {{-- Modale di conferma reset (testo in bianco) --}}
+    <div class="modal fade" id="resetBudgetModal" tabindex="-1" aria-labelledby="resetBudgetModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white" id="resetBudgetModalLabel">Reset budget</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-white">
+                    Do you want to reset your budget?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="{{ route('account-setup.step-one', [], false) }}" class="btn btn-danger">Yes, reset</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <section class="budgetTotalBudgetBanner">
         <div class="container">
@@ -135,10 +197,11 @@
                     <div class="col-3">
                         <h4 id="remainingAmount" class="fw-bold text-primary">£{{ number_format($clearCashBalance, 2) }}</h4>
                     </div>
+                    <div class="col-12 small-muted">Period: {{ $startDate }} – {{ $endDate }}</div>
                 </div>
             </div>
 
-            {{-- ************ DONUT — INCOME vs BUDGETS ************ --}}
+            {{-- Donut --}}
             <script>
                 (function () {
                     function optionsV4() {
@@ -440,7 +503,7 @@
         </div>
     </section>
 
-    {{-- Script legacy opzionale (non interferisce col donut) --}}
+    {{-- Script legacy opzionale --}}
     <script>
         @if ($totalBudget) var totalAmount = {{ $totalBudget }}; @else var totalAmount = 1000; @endif
         @if ($amountSpent) var amountSpent = {{ $amountSpent }}; @else var amountSpent = 0; @endif

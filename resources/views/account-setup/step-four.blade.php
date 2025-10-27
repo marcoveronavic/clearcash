@@ -1,29 +1,81 @@
 @extends('layouts.customer')
+
 @section('styles_in_head')
-    {{-- Add your link below --}}
     <link rel="stylesheet" href="{{ asset('build/assets/account-setup.css') }}">
 @endsection
+
 @section('content')
     <style>
-        header,
-        aside.sidebar {
-            display: none;
-        }
+        header, aside.sidebar { display:none; }
+        main.dashboardMain { padding-top:2rem; width:100%; }
 
-        main.dashboardMain {
-            padding-top: 2rem;
-            width: 100%;
-        }
+        .setupStepsWrapper h1 { font-size:32px; }
+        @media (min-width:1200px){ h1,.h1{ font-size:2.25rem; } }
 
-        main.dashboardMain.full {
-            padding-top: 2rem;
+        /* --- Card riepilogo --- */
+        .setupStepsWrapper .cardish{
+            background:#0f2629;
+            border:1px solid rgba(255,255,255,.12);
+            border-radius:12px;
+            padding:16px 18px;
+            margin-bottom:12px;
+            opacity:1 !important;           /* annulla eventuali opacità globali */
         }
+        .rowItem{display:flex;justify-content:space-between;align-items:center;
+            padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.18)}
+        .rowItem:last-child{border-bottom:0}
 
-        .setupStepsWrapper form .expensesWrap .expenseItem {
-            border-bottom: 1px solid rgba(255, 255, 255, .05);
-            padding: 1rem 0;
+        /* ---- OVERRIDE CONTRASTO (solo in questa pagina) ---- */
+        .setupStepsWrapper .cardish,
+        .setupStepsWrapper .cardish *{
+            color:#FFFFFF !important;       /* testo bianco ovunque nella card */
+            opacity:1 !important;           /* niente testo “sbiadito”         */
+        }
+        .setupStepsWrapper .cardish h6{ color:#E9FAFF !important; }
+        .setupStepsWrapper .cardish .label{ color:#D4EEF6 !important; font-weight:600; }
+        .setupStepsWrapper .cardish .value{ color:#FFFFFF !important; font-weight:700; }
+
+        /* anche i blocchi “Expenses/Other” se presenti in questa pagina */
+        .setupStepsWrapper .expensesWrap,
+        .setupStepsWrapper .expensesWrap *{
+            color:#FFFFFF !important;
+            opacity:1 !important;
         }
     </style>
+
+    @php
+        $acc = $accSetup ?? [];
+
+        $salaryDate   = $acc['salary_date']   ?? null;
+        $salaryAmount = isset($acc['salary_amount']) ? (float)$acc['salary_amount'] : 0;
+
+        $expenseRows = [];
+        foreach ($acc as $k => $v) {
+            if (preg_match('/^expense_(.+)_amount$/', $k, $m)) {
+                $expenseRows[] = ['name' => ucwords(str_replace('_',' ', $m[1])), 'amount' => (float)$v];
+            }
+        }
+
+        $otherRows = [];
+        $otherNames   = $acc['other_name']   ?? [];
+        $otherAmounts = $acc['other_amounts']?? [];
+        if (is_array($otherNames) && is_array($otherAmounts)) {
+            foreach ($otherNames as $i => $n) {
+                $n = trim((string)$n);
+                if ($n === '') continue;
+                $otherRows[] = ['name'=>$n, 'amount'=>(float)($otherAmounts[$i] ?? 0)];
+            }
+        }
+
+        $total = isset($totalAmount) ? (float)$totalAmount : 0.0;
+        if ($total === 0.0) {
+            $total = array_reduce($expenseRows, fn($c,$r)=>$c+$r['amount'], 0.0)
+                   + array_reduce($otherRows,   fn($c,$r)=>$c+$r['amount'], 0.0)
+                   + (float)($acc['savings_pension_amount'] ?? 0)
+                   + (float)($acc['savings_investments_amount'] ?? 0);
+        }
+    @endphp
+
     <section class="setupStepsWrapper">
         <div class="container">
             <div class="row mb-4">
@@ -32,7 +84,7 @@
                         <div class="titles">
                             <div class="item active">Create your budget</div>
                             <div class="sep"></div>
-                            <div class="item">Add bank accounts</div>
+                            <div class="item active">Add bank accounts</div>
                             <div class="sep"></div>
                             <div class="item">Add your investments and pensions</div>
                             <div class="sep"></div>
@@ -40,187 +92,77 @@
                         </div>
                         <div class="boxes">
                             <div class="box active"></div>
-                            <div class="box active "></div>
                             <div class="box active"></div>
-                            <div class="box "></div>
+                            <div class="box"></div>
+                            <div class="box"></div>
                             <div class="box"></div>
                             <div class="box"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row ">
-                <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <h1>Confirm your budget</h1>
-                    <p>
-                        Please check the details of your budget are correct. You can change this at any time.
-                    </p>
-                </div>
-            </div>
+
             <div class="row mt-md-4 mt-0">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <form action="{{ route('account-setup-step-four-store') }}" method="post">
-                        @csrf
-                        <div class="row">
-                            <div class="col-12">
-                                <h6 class="formSectionTitle">Expenses</h6>
-                            </div>
-                        </div>
-                        <div class="expensesWrap">
-                            <div class="expenseItem">
+                    <h1>Confirm your budget</h1>
+                    <p>Please check the details of your budget are correct. You can change this at any time.</p>
+                </div>
+            </div>
 
-                                <div class="row align-items-center gy-md-2 gy-1 gx-5">
-                                    @foreach (['mortgage', 'rent', 'utilities', 'groceries', 'loans', 'credit_card', 'transport', 'insurance', 'eating_out', 'entertainment', 'home__family', 'shopping', 'gifts', 'education', 'charity', 'other'] as $expense)
-                                        <div class="col-lg-6 ">
-                                            <div class="row align-items-center">
-                                                <div class="col-8">
-                                                    <label
-                                                        for="">{{ ucfirst(str_replace('_', ' ', $expense)) }}</label>
-                                                </div>
-                                                <div class="col-4 d-flex justify-content-end">
-                                                    <span class="confirmAmount">£
-                                                        {{ $accSetup['expense_' . $expense . '_amount'] ?? 0.0 }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+            <div class="row mt-3">
+                <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+
+                    <div class="cardish">
+                        <div class="rowItem">
+                            <span class="label">Salary date</span>
+                            <span class="value">{{ $salaryDate ? \Carbon\Carbon::parse($salaryDate)->format('d/m/Y') : '—' }}</span>
+                        </div>
+                        <div class="rowItem">
+                            <span class="label">Salary amount</span>
+                            <span class="value">£{{ number_format($salaryAmount, 2) }}</span>
+                        </div>
+                    </div>
+
+                    @if(count($expenseRows))
+                        <div class="cardish">
+                            <h6 class="mb-2">Expenses</h6>
+                            @foreach($expenseRows as $r)
+                                <div class="rowItem">
+                                    <span class="label">{{ $r['name'] }}</span>
+                                    <span class="value">£{{ number_format($r['amount'], 2) }}</span>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
-                        {{-- <div class="row">
-                            <div class="col-12">
-                                <h6 class="formSectionTitle">Savings</h6>
-                            </div>
-                        </div>
-                        <div class="expensesWrap">
+                    @endif
 
-                            <div class="expenseItem">
-                                <div class="row align-items-center">
-                                    <div class="col-8">
-                                        <label for="">Investments</label>
-                                    </div>
-                                    <div class="col-4 d-flex justify-content-end">
-                                        <span class="confirmAmount">£{{ $accSetup['savings_investments_amount'] ?? 0.00 }}</span>
-                                    </div>
+                    @if(count($otherRows))
+                        <div class="cardish">
+                            <h6 class="mb-2">Other</h6>
+                            @foreach($otherRows as $r)
+                                <div class="rowItem">
+                                    <span class="label">{{ $r['name'] }}</span>
+                                    <span class="value">£{{ number_format($r['amount'], 2) }}</span>
                                 </div>
-                            </div>
-                            <div class="expenseItem">
-                                <div class="row align-items-center">
-                                    <div class="col-8">
-                                        <label for="">Pension</label>
-                                    </div>
-                                    <div class="col-4 d-flex justify-content-end">
-                                        <span class="confirmAmount">£{{ $accSetup['savings_pension_amount'] ?? 0.00 }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-                        <div class="row">
-                            <div class="col-12">
-                                <h6 class="formSectionTitle">Other</h6>
-                            </div>
+                            @endforeach
                         </div>
-                        <div class="expensesWrap">
-                            <div class="expenseItem">
-                                @php
-                                    $otherNames = old('other_name', $accSetup['other_name'] ?? []);
-                                    $otherAmounts = old('other_amounts', $accSetup['other_amounts'] ?? []);
-                                @endphp
+                    @endif
 
-                                @if (!empty($otherNames))
-                                    @foreach ($otherNames as $index => $name)
-                                        <div class="expenseItem">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-8 col-6">
-                                                    <label for="">{{ $name }}</label>
+                    <div class="cardish">
+                        <div class="rowItem">
+                            <span class="label">Total</span>
+                            <span class="value">£{{ number_format($total, 2) }}</span>
+                        </div>
+                    </div>
 
-                                                </div>
-                                                <div class="col-md-4 col-6 d-md-flex justify-content-md-end">
-                                                    <span class="confirmAmount">£{{ $otherAmounts[$index] ?? '' }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="expenseItemInner">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-8 col-6">
-                                                <input type="text" name="other_name[]" placeholder="Description..."
-                                                    style="width: 100%">
-                                            </div>
-                                            <div class="col-md-4 col-6 d-md-flex justify-content-md-end">
-                                                <div class="input-group">
-                                                    <label class="input-group-text">£</label>
-                                                    <input type="number" class="form-control" name="other_amounts[]"
-                                                        placeholder="0.00">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
+                    <div class="d-flex justify-content-between mt-3">
+                        <a class="setupStepsBackButton" href="{{ route('account-setup.step-three', [], false) }}">Back</a>
 
-                                <div class="row mt-2">
-                                    <div class="col-12">
-                                        <button type="button" class="add-expense"><i class="fa-solid fa-circle-plus"></i>
-                                            Add another budget item</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-4" style="margin-bottom: 1rem;">
-                            <div class="col-12 text-center">
-                                <a href="{{ route('account-setup.step-three') }}" class="editBudgetItemButton">
-                                    <i class="fas fa-pencil"></i> Edit budget
-                                </a>
-                            </div>
-                        </div>
-                        <div class="expensesWrap">
-                            <div class="expenseItem">
-                                <div class="row align-items-center">
-                                    <div class="col-8">
-                                        <label for="">Total Budget</label>
-                                    </div>
-                                    <div class="col-4 d-flex justify-content-end">
-                                        <span class="confirmAmount">£{{ $totalAmount }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="expensesWrap">
-                            <div class="expenseItem">
-                                <div class="row align-items-center">
-                                    <div class="col-md-7 col-4">
-                                        <label for="">Period</label>
-                                    </div>
-                                    <div class="col-md-5 d-flex justify-content-end col-8">
-                                        <span class="confirmAmount">
-                                            @if ($accSetup['period_selection'] == 'first_day')
-                                                First to last day of the month
-                                            @elseif($accSetup['period_selection'] == 'last_working')
-                                                Last working day of the month
-                                            @elseif($accSetup['period_selection'] == 'fixed_date')
-                                                Fixed monthly date
-                                            @endif
+                        <form action="/account-setup-step-four-store" method="post" class="m-0 p-0">
+                            @csrf
+                            <button type="submit" class="twoToneBlueGreenBtn">Continue</button>
+                        </form>
+                    </div>
 
-                                            <a href="{{ route('account-setup.step-one') }}" class="editBtn">
-                                                <i class="fas fa-pencil"></i>
-                                            </a>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row align-items-center my-4">
-                            <div class="col-6 d-flex justify-content-start">
-                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-three') }}">Back</a>
-                            </div>
-                            <div class="col-6 d-flex justify-content-end">
-                                <button type="submit" class="twoToneBlueGreenBtn">Continue</button>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>

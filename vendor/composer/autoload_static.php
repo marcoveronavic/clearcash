@@ -159,6 +159,7 @@ class ComposerStaticInitfc3ee74b31b88c952499b0f59a764af3
         'F' => 
         array (
             'Fruitcake\\Cors\\' => 15,
+            'Firebase\\JWT\\' => 13,
             'Faker\\' => 6,
         ),
         'E' => 
@@ -522,6 +523,10 @@ class ComposerStaticInitfc3ee74b31b88c952499b0f59a764af3
         array (
             0 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
         ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
         'Faker\\' => 
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
@@ -624,6 +629,7 @@ class ComposerStaticInitfc3ee74b31b88c952499b0f59a764af3
         'App\\Http\\Controllers\\Customer\\CustomerRecurringPayments' => __DIR__ . '/../..' . '/app/Http/Controllers/Customer/CustomerRecurringPayments.php',
         'App\\Http\\Controllers\\Customer\\CustomerTransactionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Customer/CustomerTransactionController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
+        'App\\Http\\Controllers\\PlaidLinkController' => __DIR__ . '/../..' . '/app/Http/Controllers/PlaidLinkController.php',
         'App\\Http\\Controllers\\Staff\\StaffDashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/Staff/StaffDashboardController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
@@ -636,10 +642,12 @@ class ComposerStaticInitfc3ee74b31b88c952499b0f59a764af3
         'App\\Http\\Middleware\\ValidateSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/ValidateSignature.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Models\\BankAccount' => __DIR__ . '/../..' . '/app/Models/BankAccount.php',
+        'App\\Models\\BankConnection' => __DIR__ . '/../..' . '/app/Models/BankConnection.php',
         'App\\Models\\Budget' => __DIR__ . '/../..' . '/app/Models/Budget.php',
         'App\\Models\\BudgetCategory' => __DIR__ . '/../..' . '/app/Models/BudgetCategory.php',
         'App\\Models\\CustomerAccountDetails' => __DIR__ . '/../..' . '/app/Models/CustomerAccountDetails.php',
         'App\\Models\\DefaultBudgetCategories' => __DIR__ . '/../..' . '/app/Models/DefaultBudgetCategories.php',
+        'App\\Models\\PlaidTransaction' => __DIR__ . '/../..' . '/app/Models/PlaidTransaction.php',
         'App\\Models\\RecurringPayment' => __DIR__ . '/../..' . '/app/Models/RecurringPayment.php',
         'App\\Models\\Transaction' => __DIR__ . '/../..' . '/app/Models/Transaction.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
@@ -649,6 +657,8 @@ class ComposerStaticInitfc3ee74b31b88c952499b0f59a764af3
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
+        'App\\Services\\PlaidClient' => __DIR__ . '/../..' . '/app/Services/PlaidClient.php',
+        'App\\Services\\PlaidService' => __DIR__ . '/../..' . '/app/Services/PlaidService.php',
         'App\\View\\Components\\Dashboard\\PageHero' => __DIR__ . '/../..' . '/app/View/Components/Dashboard/PageHero.php',
         'App\\View\\Components\\Forms\\FormFIeldError' => __DIR__ . '/../..' . '/app/View/Components/Forms/FormFIeldError.php',
         'App\\View\\Components\\Forms\\FormMainErrors' => __DIR__ . '/../..' . '/app/View/Components/Forms/FormMainErrors.php',
@@ -810,7 +820,6 @@ class ComposerStaticInitfc3ee74b31b88c952499b0f59a764af3
         'Cron\\MonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
         'Database\\Factories\\UserFactory' => __DIR__ . '/../..' . '/database/factories/UserFactory.php',
         'Database\\Seeders\\AdminSeeder' => __DIR__ . '/../..' . '/database/seeders/AdminSeeder.php',
-        'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
         'Database\\Seeders\\DefaultBudgetCategoriesSeeder' => __DIR__ . '/../..' . '/database/seeders/DefaultBudgetCategoriesSeeder.php',
         'Database\\Seeders\\RoleSeeder' => __DIR__ . '/../..' . '/database/seeders/RoleSeeder.php',
         'Database\\Seeders\\SuperAdminSeeder' => __DIR__ . '/../..' . '/database/seeders/SuperAdminSeeder.php',
@@ -1942,6 +1951,14 @@ class ComposerStaticInitfc3ee74b31b88c952499b0f59a764af3
         'Faker\\Provider\\zh_TW\\Text' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Text.php',
         'Faker\\UniqueGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/UniqueGenerator.php',
         'Faker\\ValidGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/ValidGenerator.php',
+        'Firebase\\JWT\\BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
+        'Firebase\\JWT\\CachedKeySet' => __DIR__ . '/..' . '/firebase/php-jwt/src/CachedKeySet.php',
+        'Firebase\\JWT\\ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
+        'Firebase\\JWT\\JWK' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWK.php',
+        'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
+        'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
+        'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
+        'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
         'Fruitcake\\Cors\\CorsService' => __DIR__ . '/..' . '/fruitcake/php-cors/src/CorsService.php',
         'Fruitcake\\Cors\\Exceptions\\InvalidOptionException' => __DIR__ . '/..' . '/fruitcake/php-cors/src/Exceptions/InvalidOptionException.php',
         'GrahamCampbell\\ResultType\\Error' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Error.php',

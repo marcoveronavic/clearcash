@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DefaultBudgetCategories extends Model
 {
-    use HasFactory;
+    protected $table = 'default_budget_categories';
 
-    protected $guarded = [];
+    protected $fillable = ['slug', 'name'];
+
+    public $timestamps = false;
 }
