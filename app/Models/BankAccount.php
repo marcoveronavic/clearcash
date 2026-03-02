@@ -15,8 +15,8 @@ class BankAccount extends Model
         return $this->belongsTo(User::class);
     }
 
-     public function transactions()
+    public function transactions()
     {
-        return $this->hasMany(Transaction::class, 'bank_account_id');
+        return $this->hasMany(\App\Models\Transaction::class, 'bank_account_id', 'id');
     }
 }

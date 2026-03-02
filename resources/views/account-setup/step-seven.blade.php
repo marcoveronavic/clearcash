@@ -26,7 +26,7 @@
 
     <section class="setupStepsWrapper">
         <div class="container">
-                      <div class="row mb-4">
+            <div class="row mb-4">
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
@@ -58,7 +58,9 @@
                     <p>
                         The next step is to set up your recurring payments and start adding transactions.
                     </p>
-                    <a href="{{ route('dashboard') }}" class="twoToneBlueGreenBtn">
+
+                    {{-- ✅ passa flag per bypassare redirect al setup (fix nel prossimo step) --}}
+                    <a href="{{ route('dashboard', ['from_setup' => 1]) }}" class="twoToneBlueGreenBtn">
                         Go to dashboard
                     </a>
                 </div>

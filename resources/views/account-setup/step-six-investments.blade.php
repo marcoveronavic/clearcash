@@ -52,7 +52,85 @@
         .addAnotherBankBtn {
             background: #007bff;
         }
+
+        /* --- Connected accounts look (come la banca) --- */
+        .connectedAccountsTitle{
+            color:#2ef0b3;
+            font-weight:700;
+            margin: 20px 0 12px 0;
+        }
+        .connectedAccountCard{
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:14px;
+            padding:14px 16px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            background: rgba(0,0,0,0.08);
+            margin-bottom:12px;
+        }
+        .connectedAccountCard .name{
+            font-size:18px;
+            font-weight:700;
+            color:#fff;
+            line-height:1.1;
+        }
+        .connectedAccountCard .type{
+            opacity:.7;
+            color:#fff;
+            margin-top:4px;
+            text-transform: lowercase;
+        }
+        .connectedAccountCard .balance{
+            font-size:18px;
+            font-weight:700;
+            color:#fff;
+        }
+        .connectedAccountsHint{
+            opacity:.6;
+            color:#fff;
+            text-align:center;
+            margin-top:8px;
+        }
+
+        /* ✅ CTA button centrale (come step 5) */
+        .manualCtaWrap{
+            text-align:center;
+            margin: 26px 0 6px 0;
+        }
+        .manualCtaBtn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding:14px 22px;
+            border-radius:12px;
+            font-weight:800;
+            letter-spacing:.2px;
+            min-width:320px;
+            height:56px;
+            text-decoration:none;
+            background:linear-gradient(90deg,#58f0a8,#43caff);
+            color:#052026;
+            border:0;
+            box-shadow:0 0 0 1px rgba(0,0,0,.12) inset;
+            cursor:pointer;
+        }
+        .manualCtaBtn:hover{
+            filter:brightness(1.03);
+            transform:translateY(-1px);
+        }
+        @media (max-width:576px){
+            .manualCtaBtn{
+                width:100%;
+                min-width:0;
+                height:54px;
+            }
+        }
     </style>
+
+    @php
+        $hasInvestmentsOrPensions = (($investmentAccounts ?? collect())->isNotEmpty());
+    @endphp
 
     <section class="setupStepsWrapper">
         <div class="container">
@@ -92,6 +170,26 @@
                 </section>
             @endif
 
+            @if (session('success'))
+                <section class="errorsBanner">
+                    <div class="container">
+                        <ul>
+                            <li style="color:white">{{ session('success') }}</li>
+                        </ul>
+                    </div>
+                </section>
+            @endif
+
+            @if (session('error'))
+                <section class="errorsBanner">
+                    <div class="container">
+                        <ul>
+                            <li style="color:white">{{ session('error') }}</li>
+                        </ul>
+                    </div>
+                </section>
+            @endif
+
             <div class="row mt-4">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
                     <h1>Add your investments and pensions</h1>
@@ -99,22 +197,66 @@
                 </div>
             </div>
 
+            {{-- ✅ SAVED LIKE BANK PAGE (Connected accounts cards) --}}
+            @if(($investmentAccounts ?? collect())->isNotEmpty())
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                        <div class="connectedAccountsTitle">Connected accounts</div>
+
+                        @foreach($investmentAccounts as $acc)
+                            <div class="connectedAccountCard">
+                                <div class="left">
+                                    <div class="name">{{ $acc->account_name }}</div>
+                                    <div class="type">{{ $acc->account_type === 'pension' ? 'pension' : 'investment' }}</div>
+                                </div>
+                                <div class="right">
+                                    <div class="balance">£{{ number_format((float)$acc->starting_balance, 2) }}</div>
+                                </div>
+                            </div>
+                        @endforeach
+
+                        <div class="connectedAccountsHint">
+                            You can continue, or add more accounts via the form below.
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- ✅ CTA centrale SOLO se non hai ancora nulla salvato --}}
+            @if(!$hasInvestmentsOrPensions)
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                        <div class="manualCtaWrap">
+                            <button type="button" id="toggleManualInvest" class="manualCtaBtn">
+                                <i class="fas fa-plus-circle" style="margin-right:10px;"></i>
+                                Add your investment or pension manually
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="row">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <form action="{{ route('account-setup.step-six-investments-store') }}" method="post">
+                    <form id="investmentsForm" action="{{ route('account-setup.step-six-investments-store') }}" method="post">
                         @csrf
-                        <div class="bankDetailsInputMainWrap">
+
+                        {{-- hidden intent set by buttons --}}
+                        <input type="hidden" name="intent" id="intentField" value="save">
+
+                        {{-- ✅ HIDDEN BY DEFAULT: appare solo quando clicchi CTA o "Add another account" --}}
+                        <div id="bankDetailsWrapper" class="bankDetailsInputMainWrap" style="display:none;">
                             <div class="bankItem">
                                 <div class="row">
                                     <div class="col-12">
                                         <label>Name of Account</label>
-                                        <input type="text" name="name_of_pension_investment_account[]"  >
+                                        <input type="text" name="name_of_pension_investment_account[]" required>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <label>Account type</label>
-                                        <select name="pension_investment_type[]"  >
+                                        <select name="pension_investment_type[]" required>
                                             <option value="" disabled selected>Select an option...</option>
                                             <option value="pension">Pension</option>
                                             <option value="investment">Investment</option>
@@ -124,7 +266,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <label>Starting Balance</label>
-                                        <input type="number" name="pension_investment_account_starting_balance[]" step="any"  >
+                                        <input type="number" name="pension_investment_account_starting_balance[]" step="any" required>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -137,7 +279,8 @@
                             </div>
                         </div>
 
-                        <div class="row my-4">
+                        {{-- ✅ "Add another account" in basso SOLO dopo che hai salvato almeno 1 --}}
+                        <div class="row my-4" id="addAnotherRow" style="{{ $hasInvestmentsOrPensions ? '' : 'display:none' }}">
                             <div class="col-12 text-center">
                                 <button type="button" class="addAnotherBankBtn">
                                     <i class="fas fa-plus-circle"></i> Add another account
@@ -150,8 +293,21 @@
                                 <a class="setupStepsBackButton" href="{{ route('account-setup.step-five') }}">Back</a>
                             </div>
                             <div class="col-6 d-flex justify-content-end gap-4">
-                                <button type="submit" class="twoToneBlueGreenBtn">Skip & Continue</button>
-                                <button type="submit" class="twoToneBlueGreenBtn">Continue</button>
+                                @if(!$hasInvestmentsOrPensions)
+                                    <button type="submit"
+                                            class="twoToneBlueGreenBtn"
+                                            formnovalidate
+                                            onclick="document.getElementById('intentField').value='skip'">
+                                        Skip & Continue
+                                    </button>
+                                @endif
+
+                                <button type="submit"
+                                        class="twoToneBlueGreenBtn"
+                                        formnovalidate
+                                        onclick="document.getElementById('intentField').value='continue'">
+                                    Continue
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -160,132 +316,156 @@
         </div>
     </section>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const addAnotherBankBtn = document.querySelector(".addAnotherBankBtn");
-        const bankDetailsWrapper = document.querySelector(".bankDetailsInputMainWrap");
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const addAnotherBankBtn = document.querySelector(".addAnotherBankBtn");
+            const bankDetailsWrapper = document.getElementById("bankDetailsWrapper");
+            const intentField = document.getElementById("intentField");
+            const form = document.getElementById("investmentsForm");
 
-        function checkIfComplete(bankItem) {
-            let allFilled = true;
-            bankItem.querySelectorAll("input, select").forEach(field => {
-                if (!field.value.trim()) {
-                    allFilled = false;
-                }
-            });
-            if (allFilled) {
-                bankItem.classList.add("completed");
-            } else {
-                bankItem.classList.remove("completed");
-            }
-        }
+            // ✅ CTA centrale
+            const toggleManualInvest = document.getElementById("toggleManualInvest");
 
-        function attachEvents(bankItem) {
-            bankItem.querySelectorAll("input, select").forEach(field => {
-                field.addEventListener("input", () => checkIfComplete(bankItem));
-            });
-
-            const saveBtn = bankItem.querySelector(".saveBankBtn");
-            const editBtn = bankItem.querySelector(".editBankBtn");
-
-            saveBtn.addEventListener("click", function() {
-                let valid = true;
-                bankItem.querySelectorAll("input[required], select[required]").forEach(field => {
+            function checkIfComplete(bankItem) {
+                let allFilled = true;
+                bankItem.querySelectorAll("input, select").forEach(field => {
                     if (!field.value.trim()) {
-                        valid = false;
-                        field.style.border = "1px solid red";
-                    } else {
-                        field.style.border = "";
+                        allFilled = false;
                     }
                 });
-
-                if (!valid) {
-                    alert("Please fill all required fields before saving.");
-                    return;
-                }
-
-                bankItem.querySelectorAll("input, select").forEach(field => {
-                    if (field.tagName === "SELECT") {
-                        // prevent duplicate hidden
-                        let existingHidden = bankItem.querySelector(
-                            `input[type="hidden"][name="${field.name}"]`
-                        );
-                        if (!existingHidden) {
-                            const hidden = document.createElement("input");
-                            hidden.type = "hidden";
-                            hidden.name = field.name;
-                            hidden.value = field.value;
-                            bankItem.appendChild(hidden);
-                        } else {
-                            existingHidden.value = field.value;
-                        }
-                        field.setAttribute("disabled", true);
-                    } else {
-                        field.setAttribute("readonly", true);
-                    }
-                });
-
-                bankItem.classList.add("completed");
-                saveBtn.textContent = "Saved";
-                saveBtn.disabled = true;
-                editBtn.style.display = "inline-block";
-            });
-
-            editBtn.addEventListener("click", function() {
-                bankItem.querySelectorAll("input, select").forEach(field => {
-                    field.removeAttribute("readonly");
-                    field.removeAttribute("disabled");
-                });
-
-                // remove hidden inputs on edit
-                bankItem.querySelectorAll('input[type="hidden"]').forEach(h => h.remove());
-
-                saveBtn.textContent = "Save";
-                saveBtn.disabled = false;
-                editBtn.style.display = "none";
-            });
-        }
-
-        // Attach events for first item
-        attachEvents(bankDetailsWrapper.querySelector(".bankItem"));
-
-        // Add new account block
-        addAnotherBankBtn.addEventListener("click", function() {
-            const firstBankItem = bankDetailsWrapper.querySelector(".bankItem");
-            const newBankItem = firstBankItem.cloneNode(true);
-
-            newBankItem.classList.remove("completed");
-            newBankItem.querySelectorAll("input, select").forEach(field => {
-                field.removeAttribute("readonly");
-                field.removeAttribute("disabled");
-                field.style.border = "";
-                if (field.tagName === "SELECT") {
-                    field.selectedIndex = 0;
+                if (allFilled) {
+                    bankItem.classList.add("completed");
                 } else {
-                    field.value = "";
-                }
-            });
-
-            newBankItem.querySelector(".saveBankBtn").textContent = "Save";
-            newBankItem.querySelector(".saveBankBtn").disabled = false;
-            newBankItem.querySelector(".editBankBtn").style.display = "none";
-
-            // remove hidden inputs from clone
-            newBankItem.querySelectorAll('input[type="hidden"]').forEach(h => h.remove());
-
-            bankDetailsWrapper.appendChild(newBankItem);
-            attachEvents(newBankItem);
-        });
-
-        // Remove account
-        bankDetailsWrapper.addEventListener("click", function(event) {
-            if (event.target.classList.contains("removeBankBtn")) {
-                const bankItem = event.target.closest(".bankItem");
-                if (bankDetailsWrapper.querySelectorAll(".bankItem").length > 1) {
-                    bankItem.remove();
+                    bankItem.classList.remove("completed");
                 }
             }
+
+            function attachEvents(bankItem) {
+                bankItem.querySelectorAll("input, select").forEach(field => {
+                    field.addEventListener("input", () => checkIfComplete(bankItem));
+                });
+
+                const saveBtn = bankItem.querySelector(".saveBankBtn");
+                const editBtn = bankItem.querySelector(".editBankBtn");
+
+                saveBtn.addEventListener("click", function() {
+                    let valid = true;
+                    bankItem.querySelectorAll("input[required], select[required]").forEach(field => {
+                        if (!field.value.trim()) {
+                            valid = false;
+                            field.style.border = "1px solid red";
+                        } else {
+                            field.style.border = "";
+                        }
+                    });
+
+                    if (!valid) {
+                        alert("Please fill all required fields before saving.");
+                        return;
+                    }
+
+                    // blocca i campi (come prima)
+                    bankItem.querySelectorAll("input, select").forEach(field => {
+                        if (field.tagName === "SELECT") {
+                            let existingHidden = bankItem.querySelector(
+                                `input[type="hidden"][name="${field.name}"]`
+                            );
+                            if (!existingHidden) {
+                                const hidden = document.createElement("input");
+                                hidden.type = "hidden";
+                                hidden.name = field.name;
+                                hidden.value = field.value;
+                                bankItem.appendChild(hidden);
+                            } else {
+                                existingHidden.value = field.value;
+                            }
+                            field.setAttribute("disabled", true);
+                        } else {
+                            field.setAttribute("readonly", true);
+                        }
+                    });
+
+                    bankItem.classList.add("completed");
+                    saveBtn.textContent = "Saved";
+                    saveBtn.disabled = true;
+                    editBtn.style.display = "inline-block";
+
+                    // ✅ salva su DB e resta sulla pagina
+                    intentField.value = "save";
+                    form.submit();
+                });
+
+                editBtn.addEventListener("click", function() {
+                    bankItem.querySelectorAll("input, select").forEach(field => {
+                        field.removeAttribute("readonly");
+                        field.removeAttribute("disabled");
+                    });
+
+                    bankItem.querySelectorAll('input[type="hidden"]').forEach(h => h.remove());
+
+                    saveBtn.textContent = "Save";
+                    saveBtn.disabled = false;
+                    editBtn.style.display = "none";
+                });
+            }
+
+            // Attach events for first item (template)
+            attachEvents(bankDetailsWrapper.querySelector(".bankItem"));
+
+            // ✅ CTA centrale: mostra il form la prima volta
+            if (toggleManualInvest) {
+                toggleManualInvest.addEventListener("click", function() {
+                    bankDetailsWrapper.style.display = "block";
+                    bankDetailsWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+
+            // ✅ Add another account:
+            // - prima volta: mostra il form
+            // - dalla seconda: clona
+            if (addAnotherBankBtn) {
+                addAnotherBankBtn.addEventListener("click", function() {
+                    if (bankDetailsWrapper.style.display === "none") {
+                        bankDetailsWrapper.style.display = "block";
+                        return;
+                    }
+
+                    const firstBankItem = bankDetailsWrapper.querySelector(".bankItem");
+                    const newBankItem = firstBankItem.cloneNode(true);
+
+                    newBankItem.classList.remove("completed");
+                    newBankItem.querySelectorAll("input, select").forEach(field => {
+                        field.removeAttribute("readonly");
+                        field.removeAttribute("disabled");
+                        field.style.border = "";
+                        if (field.tagName === "SELECT") {
+                            field.selectedIndex = 0;
+                        } else {
+                            field.value = "";
+                        }
+                    });
+
+                    newBankItem.querySelector(".saveBankBtn").textContent = "Save";
+                    newBankItem.querySelector(".saveBankBtn").disabled = false;
+                    newBankItem.querySelector(".editBankBtn").style.display = "none";
+
+                    newBankItem.querySelectorAll('input[type="hidden"]').forEach(h => h.remove());
+
+                    bankDetailsWrapper.appendChild(newBankItem);
+                    attachEvents(newBankItem);
+                });
+            }
+
+            // Remove account (solo dal form, non dal DB)
+            bankDetailsWrapper.addEventListener("click", function(event) {
+                if (event.target.classList.contains("removeBankBtn")) {
+                    const bankItem = event.target.closest(".bankItem");
+                    if (bankDetailsWrapper.querySelectorAll(".bankItem").length > 1) {
+                        bankItem.remove();
+                    }
+                }
+            });
         });
-    });
-</script>
+    </script>
 
 @endsection

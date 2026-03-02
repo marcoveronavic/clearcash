@@ -8,6 +8,43 @@
         main.dashboardMain { padding-top: 2rem; width: 100%; }
         main.dashboardMain.full { padding-top: 2rem; }
         .singleDateSelect .input-group-text{ border:none; }
+
+        /* ✅ FIX: testi grigi invisibili su sfondo scuro (palette app) */
+        .setupStepsWrapper h4{
+            color: rgba(255,255,255,0.75) !important;
+        }
+        .setupStepsWrapper p,
+        .setupStepsWrapper label,
+        .setupStepsWrapper .form-label,
+        .setupStepsWrapper .text-muted,
+        .setupStepsWrapper small{
+            color: rgba(255,255,255,0.72) !important;
+        }
+        .setupStepsWrapper h1{
+            color: #ffffff !important;
+        }
+
+        /* ✅ FIX: input date leggibile */
+        .setupStepsWrapper .form-control,
+        .setupStepsWrapper .form-select{
+            background: rgba(255,255,255,0.06) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255,255,255,0.14) !important;
+        }
+        .setupStepsWrapper .form-control:focus,
+        .setupStepsWrapper .form-select:focus{
+            outline: none !important;
+            box-shadow: 0 0 0 0.2rem rgba(46,240,179,0.18) !important;
+            border-color: rgba(46,240,179,0.55) !important;
+        }
+        .setupStepsWrapper input[type="date"]::-webkit-calendar-picker-indicator{
+            filter: invert(1);
+            opacity: .85;
+            cursor: pointer;
+        }
+
+        /* ✅ error text leggibile */
+        .errorsBanner li { color: #ffffff !important; }
     </style>
 
     @php
@@ -90,8 +127,8 @@
 
             <div class="my-2 px-0">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 pe-0">
-                    <form action="/account-setup-step-two-store" method="post">
-                    @csrf
+                    <form id="stepTwoForm" action="/account-setup-step-two-store" method="post">
+                        @csrf
 
                         {{-- FIXED DATE --}}
                         @if($selection === 'fixed_date')
@@ -138,6 +175,14 @@
                                         <input type="date" id="custom_end_date" name="custom_end_date" class="form-control" required>
                                     </div>
                                 </div>
+
+                                {{-- ✅ compatibilità con validazioni diverse --}}
+                                <input type="hidden" id="start_date" name="start_date" value="">
+                                <input type="hidden" id="end_date" name="end_date" value="">
+
+                                {{-- ✅ IMPORTANT: controller si aspetta "date" come giorno 1-31 --}}
+                                <input type="hidden" id="dateField" name="date" value="">
+
                                 <p class="mt-2 text-muted">End date must be the same or after the start date.</p>
                             </div>
                         @endif
@@ -171,6 +216,67 @@
                     else if (day % 10 === 3 && day !== 13) suffix = 'rd';
                     if (strong) strong.textContent = `${day}${suffix} of each month`;
                 }));
+            });
+        </script>
+    @endif
+
+    @if(($accSetup['period_selection'] ?? null) === 'custom')
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const form = document.getElementById('stepTwoForm');
+                const start = document.getElementById('custom_start_date');
+                const end = document.getElementById('custom_end_date');
+
+                const hiddenStart = document.getElementById('start_date');
+                const hiddenEnd = document.getElementById('end_date');
+                const dateField = document.getElementById('dateField');
+
+                function syncHiddenFields() {
+                    const s = start ? start.value : '';
+                    const en = end ? end.value : '';
+
+                    if (hiddenStart) hiddenStart.value = s;
+                    if (hiddenEnd) hiddenEnd.value = en;
+
+                    // date deve essere un numero 1-31: prendo il giorno dalla start date YYYY-MM-DD
+                    if (dateField) {
+                        if (s && s.includes('-')) {
+                            const parts = s.split('-'); // [YYYY, MM, DD]
+                            const day = parseInt(parts[2], 10); // 1..31
+                            dateField.value = isNaN(day) ? '' : String(day);
+                        } else {
+                            dateField.value = '';
+                        }
+                    }
+                }
+
+                if (start) start.addEventListener('change', syncHiddenFields);
+                if (end) end.addEventListener('change', syncHiddenFields);
+
+                form.addEventListener('submit', function (e) {
+                    syncHiddenFields();
+
+                    const s = start ? start.value : '';
+                    const en = end ? end.value : '';
+
+                    if (!s || !en) {
+                        e.preventDefault();
+                        alert('Please select both start and end dates.');
+                        return false;
+                    }
+                    if (en < s) {
+                        e.preventDefault();
+                        alert('End date must be the same or after the start date.');
+                        return false;
+                    }
+
+                    // ultima sicurezza: se dateField è vuoto, blocco
+                    if (!dateField || !dateField.value) {
+                        e.preventDefault();
+                        alert('Please select a valid start date.');
+                        return false;
+                    }
+                });
             });
         </script>
     @endif

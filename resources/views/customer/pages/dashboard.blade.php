@@ -8,68 +8,180 @@
     @endif
 
     @php
-        // Calcolo periodo da CustomerAccountDetails (fallback: mese corrente).
         use Carbon\Carbon;
         use Illuminate\Support\Facades\Auth;
-        use App\Models\CustomerAccountDetails;
-        use App\Models\Budget;
+
+        // Fallback safe se il controller non passa qualcosa
+        $transactions = $transactions ?? collect();
+        $recurringPayments = $recurringPayments ?? collect();
+        $bankAccounts = $bankAccounts ?? collect();
+
+        $cashSavings = $cashSavings ?? 0;
+        $savingsAmount = $savingsAmount ?? 0;
+        $investmentAmountTotal = $investmentAmountTotal ?? 0;
+        $pensionAccountsTotal = $pensionAccountsTotal ?? 0;
+        $credit_card = $credit_card ?? 0;
+        $networth = $networth ?? 0;
+
+        $totalBudget = $totalBudget ?? 0;
+        $amountSpent = $amountSpent ?? 0;
+        $remainingBudget = $remainingBudget ?? 0;
+        $income = $income ?? 0;
+        $expense = $expense ?? 0;
 
         $tz  = config('app.timezone');
         $now = Carbon::now($tz);
 
-        $periodStart = $now->copy()->startOfMonth();
-        $periodEnd   = $now->copy()->endOfMonth();
+        // =========================================================
+        // ✅ PERIOD: prima dal controller, se assente/sbagliato dal SETUP
+        // =========================================================
+        $periodStart = null;
+        $periodEnd = null;
 
-        $details = CustomerAccountDetails::where('customer_id', Auth::id())->latest('id')->first();
-
-        if ($details) {
-            switch ($details->period_selection) {
-                case 'last_working':
-                    $periodStart = $now->copy()->startOfMonth();
-                    $periodEnd   = $now->copy()->endOfMonth();
-                    if ($periodEnd->isSaturday())   $periodEnd->subDay();     // venerdì
-                    elseif ($periodEnd->isSunday()) $periodEnd->subDays(2);   // venerdì
-                    break;
-
-                case 'fixed_date':
-                    $day = (int)($details->renewal_date ?? 1);
-                    $day = max(1, min($day, $now->daysInMonth));
-                    $anchor = Carbon::create($now->year, $now->month, $day, 0, 0, 0, $tz);
-                    if ($now->lt($anchor)) { // finestra precedente
-                        $periodStart = $anchor->copy()->subMonthNoOverflow();
-                        $periodEnd   = $anchor->copy()->subDay();
-                    } else { // finestra fino alla prossima ancora - 1
-                        $periodStart = $anchor->copy();
-                        $periodEnd   = $anchor->copy()->addMonthNoOverflow()->subDay();
-                    }
-                    break;
-
-                case 'weekly':
-                    $periodStart = $now->copy()->startOfWeek(Carbon::MONDAY);
-                    $periodEnd   = $now->copy()->endOfWeek(Carbon::SUNDAY);
-                    break;
-
-                case 'custom':
-                    if (!empty($details->custom_start) && !empty($details->custom_end)) {
-                        $periodStart = Carbon::parse($details->custom_start, $tz)->startOfDay();
-                        $periodEnd   = Carbon::parse($details->custom_end,   $tz)->endOfDay();
-                    } else {
-                        // fallback: prova dal budget più recente
-                        $b = Budget::where('user_id', Auth::id())->orderByDesc('budget_end_date')->first();
-                        if ($b) {
-                            $periodStart = Carbon::parse($b->budget_start_date, $tz)->startOfDay();
-                            $periodEnd   = Carbon::parse($b->budget_end_date,   $tz)->endOfDay();
-                        }
-                    }
-                    break;
-
-                // 'first_day' o default → già impostato mensile
+        // 1) Dal controller
+        if (!empty($budgetStartDate) && !empty($budgetEndDate)) {
+            try {
+                $periodStart = Carbon::parse($budgetStartDate, $tz)->startOfDay();
+                $periodEnd   = Carbon::parse($budgetEndDate,   $tz)->endOfDay();
+            } catch (\Throwable $e) {
+                $periodStart = null;
+                $periodEnd = null;
             }
+        }
+
+        // helper pick
+        $pick = function ($obj, array $fields) {
+            foreach ($fields as $f) {
+                if ($obj && isset($obj->{$f}) && $obj->{$f} !== null && $obj->{$f} !== '') return $obj->{$f};
+            }
+            return null;
+        };
+
+        // 2) Se non c’è (o è nullo), prova DAL SETUP (customer_account_details)
+        if (!$periodStart || !$periodEnd) {
+            try {
+                $details = \App\Models\CustomerAccountDetails::query()
+                    ->where(function ($q) {
+                        // prova entrambi: customer_id e user_id
+                        $q->orWhere('customer_id', Auth::id())
+                          ->orWhere('user_id', Auth::id());
+                    })
+                    ->latest('id')
+                    ->first();
+
+                // priorità assoluta: custom start/end
+                $setupStartRaw = $pick($details, [
+                    'custom_start', 'custom_start_date',
+                    'period_start', 'period_start_date',
+                    'budget_start_date', 'budget_period_start',
+                    'start_date'
+                ]);
+                $setupEndRaw = $pick($details, [
+                    'custom_end', 'custom_end_date',
+                    'period_end', 'period_end_date',
+                    'budget_end_date', 'budget_period_end',
+                    'end_date'
+                ]);
+
+                if (!empty($setupStartRaw) && !empty($setupEndRaw)) {
+                    $periodStart = Carbon::parse($setupStartRaw, $tz)->startOfDay();
+                    $periodEnd   = Carbon::parse($setupEndRaw,   $tz)->endOfDay();
+                } else {
+                    $selection = $pick($details, ['period_selection', 'period_type', 'budget_period_type']);
+
+                    // fallback logica selection
+                    $periodStart = $now->copy()->startOfMonth()->startOfDay();
+                    $periodEnd   = $now->copy()->endOfMonth()->endOfDay();
+
+                    switch ($selection) {
+                        case 'last_working':
+                            if ($periodEnd->isSaturday()) $periodEnd->subDay();
+                            elseif ($periodEnd->isSunday()) $periodEnd->subDays(2);
+                            break;
+
+                        case 'fixed_date':
+                            $renewalDay = (int)($pick($details, ['renewal_date', 'renewal_day', 'fixed_day']) ?? 1);
+                            $renewalDay = max(1, min($renewalDay, $now->daysInMonth));
+
+                            $anchor = Carbon::create($now->year, $now->month, $renewalDay, 0, 0, 0, $tz);
+
+                            if ($now->lt($anchor)) {
+                                $periodStart = $anchor->copy()->subMonthNoOverflow()->startOfDay();
+                                $periodEnd   = $anchor->copy()->subDay()->endOfDay();
+                            } else {
+                                $periodStart = $anchor->copy()->startOfDay();
+                                $periodEnd   = $anchor->copy()->addMonthNoOverflow()->subDay()->endOfDay();
+                            }
+                            break;
+
+                        case 'weekly':
+                            $periodStart = $now->copy()->startOfWeek(Carbon::MONDAY)->startOfDay();
+                            $periodEnd   = $now->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay();
+                            break;
+
+                        // default => mese corrente
+                    }
+                }
+            } catch (\Throwable $e) {
+                // se CustomerAccountDetails non esiste/colonne non esistono ecc.
+                $periodStart = null;
+                $periodEnd = null;
+            }
+        }
+
+        // 3) Ultimo fallback: mese corrente
+        if (!$periodStart || !$periodEnd) {
+            $periodStart = $now->copy()->startOfMonth()->startOfDay();
+            $periodEnd   = $now->copy()->endOfMonth()->endOfDay();
+        }
+
+        // =========================================================
+        // ✅ BANK ACCOUNTS FALLBACK: se il controller passa vuoto, prova query qui
+        // =========================================================
+        if ($bankAccounts->isEmpty()) {
+            try {
+                $bankAccounts = \App\Models\BankAccount::query()
+                    ->where(function ($q) {
+                        $q->orWhere('user_id', Auth::id())
+                          ->orWhere('customer_id', Auth::id());
+                    })
+                    ->get();
+            } catch (\Throwable $e) {
+                // se customer_id non esiste ecc., prova solo user_id
+                try {
+                    $bankAccounts = \App\Models\BankAccount::where('user_id', Auth::id())->get();
+                } catch (\Throwable $e2) {
+                    $bankAccounts = collect();
+                }
+            }
+        }
+
+        // Se i totali dal controller sono tutti 0 ma ho conti, ricalcolali da $bankAccounts
+        if ($bankAccounts->isNotEmpty() && ((float)$networth) == 0.0) {
+
+            $typeGroups = [
+                'bank'        => ['current_account', 'current', 'bank', 'current account'],
+                'savings'     => ['savings_account', 'savings'],
+                'credit_card' => ['credit_card', 'credit card'],
+                'pension'     => ['pension', 'pensions'],
+                'investment'  => ['investment', 'investment_account', 'investments', 'isa_account', 'isa'],
+            ];
+
+            $sumByTypes = function ($accounts, array $types) {
+                return (float) $accounts->whereIn('account_type', $types)->sum('starting_balance');
+            };
+
+            $cashSavings           = $sumByTypes($bankAccounts, $typeGroups['bank']);
+            $savingsAmount         = $sumByTypes($bankAccounts, $typeGroups['savings']);
+            $credit_card           = $sumByTypes($bankAccounts, $typeGroups['credit_card']);
+            $pensionAccountsTotal  = $sumByTypes($bankAccounts, $typeGroups['pension']);
+            $investmentAmountTotal = $sumByTypes($bankAccounts, $typeGroups['investment']);
+
+            $networth = (float) $bankAccounts->sum('starting_balance');
         }
     @endphp
 
     <style>
-        /* Card periodo con stessa estetica dei box */
         .periodBox{ padding: 16px 18px; }
         .periodText{
             font-weight: 700; font-size: 1.05rem; letter-spacing: .2px;
@@ -90,8 +202,6 @@
             color:#04262a; background:linear-gradient(90deg,#33BBC5,#44E0AC);
             border-color:transparent; text-decoration:none;
         }
-
-        /* Testo modale in bianco (come nella pagina Budget) */
         #resetBudgetModal .modal-title,
         #resetBudgetModal .modal-body { color:#fff !important; }
     </style>
@@ -139,7 +249,6 @@
         </section>
     @endif
 
-    {{-- ===== Card periodo largo come "Current Balances" (col-lg-6) ===== --}}
     <section class="mb-3">
         <div class="container">
             <div class="row">
@@ -151,7 +260,6 @@
                             {{ $periodStart->isoFormat('ddd DD MMM') }} – {{ $periodEnd->isoFormat('ddd DD MMM') }}
                         </div>
 
-                        {{-- Clic su "Edit Budget Period" → apre il pop-up di conferma reset --}}
                         <a href="#"
                            class="editBudgetPeriodBtn"
                            data-bs-toggle="modal"
@@ -164,7 +272,6 @@
             </div>
         </div>
     </section>
-    {{-- =============================================================== --}}
 
     <section class="dashboardInfoBoxesBanner">
         <div class="container">
@@ -174,66 +281,30 @@
                     <div class="infoBox">
                         <div class="row align-items-center mb-lg-0 mb-2">
                             <div class="col-6"><strong>Bank</strong></div>
-                            <div class="col-6 d-flex justify-content-end">£
-                                @if (Auth::user()->has_completed_setup == true)
-                                    {{ number_format($cashSavings, 2) }}
-                                @else
-                                    0.00
-                                @endif
-                            </div>
+                            <div class="col-6 d-flex justify-content-end">£ {{ number_format((float)$cashSavings, 2) }}</div>
                         </div>
                         <div class="row align-items-center mb-lg-0 mb-2">
                             <div class="col-6"><strong>Savings</strong></div>
-                            <div class="col-6 d-flex justify-content-end">£
-                                @if (Auth::user()->has_completed_setup == true)
-                                    @if ($savingsAmount) {{ number_format($savingsAmount, 2) }} @else 0.00 @endif
-                                @else
-                                    0.00
-                                @endif
-                            </div>
+                            <div class="col-6 d-flex justify-content-end">£ {{ number_format((float)$savingsAmount, 2) }}</div>
                         </div>
                         <div class="row align-items-center mb-lg-0 mb-2">
                             <div class="col-6"><strong>Investments</strong></div>
-                            <div class="col-6 d-flex justify-content-end">£
-                                @if (Auth::user()->has_completed_setup == true)
-                                    @if ($investmentAmountTotal) {{ number_format($investmentAmountTotal, 2) }} @else 0.00 @endif
-                                @else
-                                    0.00
-                                @endif
-                            </div>
+                            <div class="col-6 d-flex justify-content-end">£ {{ number_format((float)$investmentAmountTotal, 2) }}</div>
                         </div>
                         <div class="row align-items-center mb-lg-0 mb-2">
                             <div class="col-6"><strong>Pensions</strong></div>
-                            <div class="col-6 d-flex justify-content-end">£
-                                @if (Auth::user()->has_completed_setup == true)
-                                    @if ($pensionAccountsTotal) {{ number_format($pensionAccountsTotal, 2) }} @else 0.00 @endif
-                                @else
-                                    0.00
-                                @endif
-                            </div>
+                            <div class="col-6 d-flex justify-content-end">£ {{ number_format((float)$pensionAccountsTotal, 2) }}</div>
                         </div>
                         <div class="row align-items-center mb-lg-0 mb-2">
                             <div class="col-6"><strong>Credit Card</strong></div>
-                            <div class="col-6 d-flex justify-content-end">£
-                                @if (Auth::user()->has_completed_setup == true)
-                                    {{ number_format($credit_card, 2) }}
-                                @else
-                                    0.00
-                                @endif
-                            </div>
+                            <div class="col-6 d-flex justify-content-end">£ {{ number_format((float)$credit_card, 2) }}</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-6">
                     <div class="infoBox text-center">
-                        <h2>
-                            @if ($customer->customerDetails && Auth::user()->has_completed_setup == true)
-                                £{{ number_format($networth, 2) }}
-                            @else
-                                £XXX,XX
-                            @endif
-                        </h2>
+                        <h2>£{{ number_format((float)$networth, 2) }}</h2>
                         <h5>Net Worth</h5>
                     </div>
                 </div>
@@ -249,31 +320,22 @@
                         <div class="col-8">
                             <h4>Income and Expenses</h4>
                         </div>
-                        @if (Auth::user()->has_completed_setup == true && $transactions->isNotEmpty())
+                        @if ($transactions->isNotEmpty())
                             <div class="col-4">
                                 <a href="{{ route('transactions.index') }}" class="viewMoreDetailsBtn">See more</a>
                             </div>
                         @endif
                     </div>
                     <div class="infoBox">
-                        @if (Auth::user()->has_completed_setup == true)
-                            @if ($transactions->isNotEmpty())
-                                <div class="row">
-                                    <div class="col-6 px-0"><canvas id="incomeChart"></canvas></div>
-                                    <div class="col-6 px-0"><canvas id="expenseChart"></canvas></div>
-                                </div>
-                            @else
-                                <p>
-                                    To see a summary of your income and expenses, <a
-                                        href="{{ route('transactions.create') }}">add transactions</a> or <a
-                                        href="{{ route('recurring-payments.index') }}">recurring payments</a>.
-                                </p>
-                            @endif
+                        @if ($transactions->isNotEmpty())
+                            <div class="row">
+                                <div class="col-6 px-0"><canvas id="incomeChart"></canvas></div>
+                                <div class="col-6 px-0"><canvas id="expenseChart"></canvas></div>
+                            </div>
                         @else
                             <p>
-                                To see a summary of your income and expenses, <a
-                                    href="{{ route('transactions.create') }}">add transactions</a> or <a
-                                    href="{{ route('recurring-payments.index') }}">recurring payments</a>.
+                                To see a summary of your income and expenses, <a href="{{ route('transactions.create') }}">add transactions</a>
+                                or <a href="{{ route('recurring-payments.index') }}">recurring payments</a>.
                             </p>
                         @endif
                     </div>
@@ -282,36 +344,25 @@
                 <div class="col-lg-6">
                     <div class="row px-0 align-items-center mb-md-4">
                         <div class="col-8"><h4>Remaining Budget</h4></div>
-                        @if (Auth::user()->has_completed_setup == true && $remainingBudget && $amountSpent)
+                        @if ($remainingBudget && $amountSpent)
                             <div class="col-4">
                                 <a href="{{ route('budget.index') }}" class="viewMoreDetailsBtn">View details</a>
                             </div>
                         @endif
                     </div>
                     <div class="infoBox text-center">
-                        @if (Auth::user()->has_completed_setup == true)
-                            @if ($remainingBudget && $amountSpent)
-                                <canvas id="myDoughnutChart" data-remaining="{{ $remainingBudget }}"
-                                        data-total="{{ $totalBudget }}"></canvas>
-                                <h4 class="mb-2">
-                                    <span id="remainingAmount" style="color: #44E0AC">
-                                        £{{ number_format($remainingBudget, 2) }}
-                                    </span> Clearcash left
-                                </h4>
-                                <h5>£{{ number_format($amountSpent, 2) }} spent out of
-                                    £{{ number_format($totalBudget, 2) }}</h5>
-                            @else
-                                <p>
-                                    To see how well you've stuck to budget, <a
-                                        href="{{ route('transactions.create') }}">add transactions</a> or <a
-                                        href="{{ route('recurring-payments.index') }}">recurring payments</a>.
-                                </p>
-                            @endif
+                        @if ($remainingBudget && $amountSpent)
+                            <canvas id="myDoughnutChart" data-remaining="{{ $remainingBudget }}" data-total="{{ $totalBudget }}"></canvas>
+                            <h4 class="mb-2">
+                                <span id="remainingAmount" style="color: #44E0AC">
+                                    £{{ number_format((float)$remainingBudget, 2) }}
+                                </span> Clearcash left
+                            </h4>
+                            <h5>£{{ number_format((float)$amountSpent, 2) }} spent out of £{{ number_format((float)$totalBudget, 2) }}</h5>
                         @else
                             <p>
-                                To see how well you've stuck to budget, <a href="{{ route('transactions.index') }}">add
-                                    transactions</a> or <a href="{{ route('recurring-payments.index') }}">recurring
-                                    payments</a>.
+                                To see how well you've stuck to budget, <a href="{{ route('transactions.create') }}">add transactions</a>
+                                or <a href="{{ route('recurring-payments.index') }}">recurring payments</a>.
                             </p>
                         @endif
                     </div>
@@ -320,7 +371,7 @@
         </div>
     </section>
 
-    {{-- === Modal conferma reset budget (uguale a pagina Budget) === --}}
+    {{-- Modal conferma reset --}}
     <div class="modal fade" id="resetBudgetModal" tabindex="-1" aria-labelledby="resetBudgetModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -338,20 +389,26 @@
             </div>
         </div>
     </div>
-    {{-- ============================================================ --}}
 
-    @if (Auth::user()->has_completed_setup == true)
-        <script>
-            @if ($totalBudget) var totalAmount = {{ $totalBudget }}; @else var totalAmount = 1000; @endif
-            @if ($amountSpent) var amountSpent = {{ $amountSpent }}; @else var amountSpent = 0; @endif
+    {{-- Charts --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-            var remainingAmount = totalAmount - amountSpent;
-            var spentPercentage = (remainingAmount < 0) ? 100 : ((amountSpent / totalAmount) * 100);
-            spentPercentage = Math.min(Math.max(spentPercentage, 0), 100);
+    <script>
+        // Doughnut
+        var totalAmount = {{ $totalBudget ? (float)$totalBudget : 1000 }};
+        var amountSpent = {{ $amountSpent ? (float)$amountSpent : 0 }};
 
-            var ctx = document.getElementById('myDoughnutChart').getContext('2d');
+        if (totalAmount <= 0) totalAmount = 1;
 
-            var myDoughnutChart = new Chart(ctx, {
+        var remainingAmount = totalAmount - amountSpent;
+        var spentPercentage = (remainingAmount < 0) ? 100 : ((amountSpent / totalAmount) * 100);
+        spentPercentage = Math.min(Math.max(spentPercentage, 0), 100);
+
+        var doughnutEl = document.getElementById('myDoughnutChart');
+        if (doughnutEl && typeof Chart !== 'undefined') {
+            var ctx = doughnutEl.getContext('2d');
+            new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     datasets: [{
@@ -368,69 +425,67 @@
                 }
             });
 
-            document.getElementById('remainingAmount').style.color = remainingAmount < 0 ? '#ff4d4d' : '#44E0AC';
-        </script>
+            var remainingEl = document.getElementById('remainingAmount');
+            if (remainingEl) remainingEl.style.color = remainingAmount < 0 ? '#ff4d4d' : '#44E0AC';
+        }
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+        // Bars
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof Chart === 'undefined') return;
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const income = {{ $income }};
-                const expense = {{ $expense }};
-                const maxValue = Math.max(income, expense);
+            const income = {{ (float)$income }};
+            const expense = {{ (float)$expense }};
+            const maxValue = Math.max(income, expense);
 
-                if (document.getElementById('incomeChart')) {
-                    renderChart('incomeChart', 'Income', income, '#44E0AC');
-                }
-                if (document.getElementById('expenseChart')) {
-                    renderChart('expenseChart', 'Expense', expense, '#31D2F7');
-                }
+            if (typeof ChartDataLabels !== 'undefined') {
+                Chart.register(ChartDataLabels);
+            }
 
-                function renderChart(canvasId, label, amount, color) {
-                    Chart.register(ChartDataLabels);
-                    const ctx = document.getElementById(canvasId).getContext('2d');
+            if (document.getElementById('incomeChart')) renderChart('incomeChart', 'Income', income, '#44E0AC');
+            if (document.getElementById('expenseChart')) renderChart('expenseChart', 'Expense', expense, '#31D2F7');
 
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: [label],
-                            datasets: [{
-                                label: label,
-                                data: [amount],
-                                backgroundColor: color,
-                                borderRadius: 10,
-                                barThickness: 120
-                            }]
+            function renderChart(canvasId, label, amount, color) {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [label],
+                        datasets: [{
+                            label: label,
+                            data: [amount],
+                            backgroundColor: color,
+                            borderRadius: 10,
+                            barThickness: 120
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: {
+                                align: 'top',
+                                anchor: 'end',
+                                backgroundColor: 'white',
+                                borderRadius: 12,
+                                padding: { top: 10, bottom: 4, left: 10, right: 10 },
+                                color: 'black',
+                                font: { weight: 'bold' },
+                                formatter: (value) => `£${value}`
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                datalabels: {
-                                    align: 'top',
-                                    anchor: 'end',
-                                    backgroundColor: 'white',
-                                    borderRadius: 12,
-                                    padding: { top: 10, bottom: 4, left: 10, right: 10 },
-                                    color: 'black',
-                                    font: { weight: 'bold' },
-                                    formatter: (value) => `£${value}`
-                                }
-                            },
-                            scales: {
-                                x: { grid: { display: false }, ticks: { color: 'white', font: { size: 14, weight: 'bold' } } },
-                                y: {
-                                    display: false, min: 0, max: maxValue + 100, grid: { display: false },
-                                    ticks: { color: 'white', font: { size: 14, weight: 'bold' }, stepSize: Math.ceil((maxValue + 100) / 5) }
-                                }
-                            },
-                            layout: { padding: { top: 40, bottom: 20 } }
-                        }
-                    });
-                }
-            });
-        </script>
-    @endif
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: 'white', font: { size: 14, weight: 'bold' } } },
+                            y: {
+                                display: false, min: 0, max: maxValue + 100, grid: { display: false },
+                                ticks: { color: 'white', font: { size: 14, weight: 'bold' }, stepSize: Math.ceil((maxValue + 100) / 5) }
+                            }
+                        },
+                        layout: { padding: { top: 40, bottom: 20 } }
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

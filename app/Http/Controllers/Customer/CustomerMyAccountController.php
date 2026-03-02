@@ -13,178 +13,171 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class CustomerMyAccountController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * My Account page.
      */
     public function index()
     {
-        $details = User::where('id', Auth::user()->id)->first();
+        $details = Auth::user();
 
         return view('customer.pages.my-account.index', compact('details'));
     }
 
+    /**
+     * Update name + email.
+     */
     public function mainDetailsStore(Request $request)
     {
-        $details = User::where('id', Auth::user()->id)->first();
+        $user = Auth::user();
 
         $validated = $request->validate([
             'first_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore(Auth::id())],
+            'last_name'  => ['nullable', 'string', 'max:255'],
+            'email'      => ['nullable', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
         ]);
 
-        $currentEmail = $details->email;
-        $newEmail = $validated['email'];
+        // fallback ai valori correnti se i campi sono omessi
+        $first = $validated['first_name'] ?? $user->first_name;
+        $last  = $validated['last_name']  ?? $user->last_name;
+        $email = $validated['email']      ?? $user->email;
 
-        if ($currentEmail != $newEmail) {
-            $details->update([
-                'first_name' => $validated['first_name'],
-                'last_name' => $validated['last_name'],
-                'full_name' => $validated['first_name'] . ' ' . $validated['last_name'],
-                'email' => $newEmail,
-            ]);
+        $user->first_name = $first;
+        $user->last_name  = $last;
+        $user->full_name  = trim($first . ' ' . $last);
 
-            return redirect()->route('my-account.index')->with('success', 'Your account details have been updated.');
-        } else {
-            $details->update([
-                'first_name' => $validated['first_name'],
-                'last_name' => $validated['last_name'],
-                'full_name' => $validated['first_name'] . ' ' . $validated['last_name'],
-            ]);
-
-            return redirect()->route('my-account.index')->with('success', 'Your account details have been updated.');
+        if ($email !== $user->email) {
+            $user->email = $email;
+            // Se vuoi forzare la riverifica email, sblocca la riga sotto:
+            // $user->email_verified_at = null;
         }
+
+        $user->save();
+
+        return redirect()->route('my-account.index')
+            ->with('success', 'Your account details have been updated.');
     }
 
+    /**
+     * Update password.
+     */
     public function passwordUpdateStore(Request $request)
     {
-        $details = User::where('id', Auth::user()->id)->first();
+        $user = Auth::user();
 
         $validated = $request->validate([
             'current_password' => ['required', 'string', 'min:8'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        // Check if the current password is correct
-        if (!Hash::check($validated['current_password'], $details->password)) {
-            return redirect()->back()->with('error', 'Your current password is incorrect');
+        if (! Hash::check($validated['current_password'], $user->password)) {
+            return back()->with('error', 'Your current password is incorrect');
         }
 
-        // Check if the new password is the same as the current password
-        if (Hash::check($validated['password'], $details->password)) {
-            return redirect()->back()->with('error', 'Your new password must be different from your current password.');
+        if (Hash::check($validated['password'], $user->password)) {
+            return back()->with('error', 'Your new password must be different from your current password.');
         }
 
-        // Update the password
-        $details->update([
-            'password' => Hash::make($validated['password']),
-        ]);
+        $user->password = Hash::make($validated['password']);
+        $user->save();
 
         return redirect()->route('my-account.index')->with('success', 'Your password has been updated.');
     }
 
-
-    public function store(Request $request)
-    {
-        //
-    }
+    public function store(Request $request) { /* not used */ }
+    public function show(string $id) { /* not used */ }
+    public function update(Request $request, string $id) { /* not used */ }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Delete account + all user data, then logout.
      */
     public function destroy(string $id, Request $request)
     {
         $customer = User::findOrFail($id);
 
-        if ($customer) {
-
-            //Remove Budget
+        DB::beginTransaction();
+        try {
+            // Purge data (ordine non critico, ma coerente)
             Budget::where('user_id', $id)->delete();
-
-            //Remove Recurring Payments
+            BudgetCategory::where('user_id', $id)->delete();
             RecurringPayment::where('user_id', $id)->delete();
-
-            //Remove Transactions
             Transaction::where('user_id', $id)->delete();
+            CustomerAccountDetails::where('customer_id', $id)->delete();
 
-            //Remove Bank Account
+            // Bank accounts: delete (funziona sia con che senza SoftDeletes)
             BankAccount::where('user_id', $id)->delete();
 
-            //Remove customer Details
-            CustomerAccountDetails::where('user_id', $id)->delete();
-
-            //Log the user out
             Auth::logout();
 
-            //Remove the user
             $customer->delete();
 
-            //Clear session for user and regen token
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            //Redirect to login
-            return redirect()->route('login')->with('success', 'Your account details have been deleted and your data has been removed.');
-        } else {
-            return redirect()->back('dashboard');
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', 'Unable to delete your account: ' . $e->getMessage());
         }
+
+        return redirect()->route('login')
+            ->with('success', 'Your account has been deleted and your data removed.');
     }
 
+    /**
+     * Hard reset: azzera tutto ma lascia l'utente attivo per ripetere il setup.
+     */
     public function resetAccount(Request $request)
     {
-
         $userId = Auth::id();
 
-        // Delete all budgets, recurring payments, transactions, customer details, and bank accounts
-        Budget::where('user_id', $userId)->delete();
-        RecurringPayment::where('user_id', $userId)->delete();
-        Transaction::where('user_id', $userId)->delete();
-        CustomerAccountDetails::where('customer_id', $userId)->delete();
-
+        DB::beginTransaction();
         try {
-            $deleted = BankAccount::where('user_id', $userId)->forceDelete();
-            // dd('Deleted count: ' . $deleted);
-        } catch (\Exception $e) {
-            dd('Error: ' . $e->getMessage());
+            Budget::where('user_id', $userId)->delete();
+            BudgetCategory::where('user_id', $userId)->delete();
+            RecurringPayment::where('user_id', $userId)->delete();
+            Transaction::where('user_id', $userId)->delete();
+            CustomerAccountDetails::where('customer_id', $userId)->delete();
+            BankAccount::where('user_id', $userId)->delete();
+
+            // Flag di setup
+            $user = User::find($userId);
+            if ($user) {
+                $user->has_completed_setup = 0;
+                $user->save();
+            }
+
+            // Pulisci eventuali dati di sessione legati al setup
+            $request->session()->forget([
+                'budgets',
+                'recurring_payments',
+                'transactions',
+                'customer_account_details',
+                'bank_accounts',
+                'accSetup',
+            ]);
+            $request->session()->regenerate();
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+            }
+            return back()->with('error', 'Reset failed: ' . $e->getMessage());
         }
 
-        $user = User::find($userId);
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success']);
+        }
 
-        $user->has_completed_setup = 0;
-        $user->save();
-
-        // Optionally clear related session data if you store any
-        $request->session()->forget([
-            'budgets',
-            'recurring_payments',
-            'transactions',
-            'customer_account_details',
-            'bank_accounts',
-            'accSetup',
-        ]);
-        // Regenerate session ID for security
-        $request->session()->regenerate();
-
-        return response()->json(['status' => 'success']);
+        // In UI classica rimanda allo step iniziale
+        return redirect()->route('account-setup.step-one')
+            ->with('success', 'Your account has been reset. Start the setup again.');
     }
 }

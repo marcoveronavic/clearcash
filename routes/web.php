@@ -5,15 +5,15 @@ use App\Http\Controllers\Admin\AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminImageUploadController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Customer\AccountSetupInvestmentsController;
 use App\Http\Controllers\Customer\CustomerBankAccountController;
 use App\Http\Controllers\Customer\CustomerBudgetController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerMyAccountController;
 use App\Http\Controllers\Customer\CustomerRecurringPayments;
 use App\Http\Controllers\Customer\CustomerTransactionController;
-use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Http\Controllers\PlaidController;
-use App\Http\Controllers\YapilyController; // <<< AGGIUNTO
+use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -36,53 +36,21 @@ Route::redirect('/home', '/dashboard', 301)->name('home');
 
 /*
 |--------------------------------------------------------------------------
-| Plaid pages + API endpoints
+| Plaid
 |--------------------------------------------------------------------------
 */
 
 Route::get('/plaid-link', function () {
-    return view('plaid-link'); // facoltativa (resources/views/plaid-link.blade.php)
+    return view('plaid-link');
 })->name('plaid.link.page');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // (facoltativa) demo UI se esiste resources/views/plaid/demo.blade.php
     Route::view('/plaid-link-demo', 'plaid.demo')->name('plaid.demo');
 
-    // API Plaid
     Route::post('/plaid/link-token', [PlaidController::class, 'createLinkToken'])->name('plaid.link-token');
     Route::post('/plaid/exchange',    [PlaidController::class, 'exchangePublicToken'])->name('plaid.exchange');
 
-    // CALLBACK OAUTH → view che riapre Link con receivedRedirectUri
     Route::view('/plaid/oauth-return', 'plaid.oauth-return')->name('plaid.oauth.return');
-});
-
-/*
-|--------------------------------------------------------------------------
-| YAPILY (Open Banking) - rotte minime
-|--------------------------------------------------------------------------
-|
-| - callback pubblico: Yapily redireziona l'utente qui dopo l'SCA della banca
-| - le altre rotte sono dietro auth/verified
-|
-*/
-
-// Callback pubblico (ritorno consenso da Yapily/banca)
-Route::get('/yapily/callback', [YapilyController::class, 'callback'])->name('yapily.callback');
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::prefix('yapily')->name('yapily.')->group(function () {
-        // Elenco istituti (per UI di scelta banca)
-        Route::get('/institutions', [YapilyController::class, 'institutions'])->name('institutions');
-
-        // Avvio autorizzazione per una banca (usa {institutionId} es. modelo-sandbox / intesa-smp / barclays)
-        Route::get('/start/{institutionId}', [YapilyController::class, 'start'])->name('start');
-
-        // Lettura conti (richiede token di consenso in sessione ottenuto nel callback)
-        Route::get('/accounts', [YapilyController::class, 'accounts'])->name('accounts');
-
-        // Lettura transazioni per account (passa l'ID dell'account restituito da /accounts)
-        Route::get('/transactions/{accountId}', [YapilyController::class, 'transactions'])->name('transactions');
-    });
 });
 
 /*
@@ -95,21 +63,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('account-setup-step-one-store', [AccountSetupController::class, 'indexStore'])->name('account-setup.step-one-store');
 
     Route::get('account-setup-step-two',  [AccountSetupController::class, 'stepTwoShow'])->name('account-setup.step-two');
-    Route::post('account-setup-step-two-store', [AccountSetupController::class,'stepTwoStore'])->name('account-setup-step-two-store');
+    Route::post('account-setup-step-two-store', [AccountSetupController::class, 'stepTwoStore'])->name('account-setup-step-two-store');
 
     Route::get('account-setup-step-three', [AccountSetupController::class, 'stepThreeShow'])->name('account-setup.step-three');
-    Route::post('account-setup-step-three-store', [AccountSetupController::class, 'stepThreeStore'])->name('account-setup.step-three-store');
+    Route::post('account-setup-step-three-store', [AccountSetupController::class, 'stepThreeStore'])->name('account-setup-step-three-store');
 
     Route::get('account-setup-step-four', [AccountSetupController::class, 'stepFourShow'])->name('account-setup.step-four');
-    Route::post('account-setup-step-four-store', [AccountSetupController::class, 'stepFourStore'])->name('account-setup.step-four-store');
+    Route::post('account-setup-step-four-store', [AccountSetupController::class, 'stepFourStore'])->name('account-setup-step-four-store');
 
     Route::get('account-setup-step-five', [AccountSetupController::class, 'stepFiveShow'])->name('account-setup.step-five');
     Route::post('account-setup-step-five-store', [AccountSetupController::class, 'stepFiveStore'])->name('account-setup.step-five-store');
 
-    Route::get('account-setup-step-six',  [AccountSetupController::class, 'stepSixShow'])->name('account-setup.step-six');
+    // Step 6 (bank accounts)
+    Route::get('account-setup-step-six', [AccountSetupController::class, 'stepSixShow'])->name('account-setup.step-six');
 
-    Route::get('account-setup-step-six-investments', [AccountSetupController::class, 'stepSixInvestmentsShow'])->name('account-setup.step-six-investments');
-    Route::post('account-setup-step-six-investments-store', [AccountSetupController::class, 'stepSixInvestmentsStore'])->name('account-setup-step-six-investments-store');
+    // Step 6 (investments & pensions) - controller dedicato
+    Route::get('account-setup-step-six-investments', [AccountSetupInvestmentsController::class, 'index'])
+        ->name('account-setup.step-six-investments');
+
+    Route::post('account-setup-step-six-investments', [AccountSetupInvestmentsController::class, 'store'])
+        ->name('account-setup.step-six-investments-store');
+
+    Route::put('account-setup-step-six-investments/{id}', [AccountSetupInvestmentsController::class, 'update'])
+        ->name('account-setup.step-six-investments-update');
+
+    Route::delete('account-setup-step-six-investments/{id}', [AccountSetupInvestmentsController::class, 'destroy'])
+        ->name('account-setup.step-six-investments-destroy');
 
     Route::get('account-setup-step-seven', [AccountSetupController::class, 'stepSevenShow'])->name('account-setup.step-seven');
 });
@@ -127,7 +106,8 @@ Route::middleware(['auth', 'role:super admin|customer', 'verified'])->group(func
 
     // Bank Accounts
     Route::resource('bank-accounts', CustomerBankAccountController::class);
-    Route::post('bank-accounts/global-add-bank-account', [CustomerBankAccountController::class, 'globalAddBankAccount'])->name('bank-accounts.global-add-bank-account');
+    Route::post('bank-accounts/global-add-bank-account', [CustomerBankAccountController::class, 'globalAddBankAccount'])
+        ->name('bank-accounts.global-add-bank-account');
 
     // Budget
     Route::prefix('budget')->name('budget.')->group(function () {
@@ -150,7 +130,8 @@ Route::middleware(['auth', 'role:super admin|customer', 'verified'])->group(func
 
     // Recurring Payments
     Route::resource('recurring-payments', CustomerRecurringPayments::class);
-    Route::post('recurring-payment/add-recurring-payment', [CustomerRecurringPayments::class, 'globalAddRecurringPayments'])->name('recurring-payment.add-recurring-payment');
+    Route::post('recurring-payment/add-recurring-payment', [CustomerRecurringPayments::class, 'globalAddRecurringPayments'])
+        ->name('recurring-payment.add-recurring-payment');
 
     // Transactions
     Route::resource('transactions', CustomerTransactionController::class);
@@ -158,7 +139,6 @@ Route::middleware(['auth', 'role:super admin|customer', 'verified'])->group(func
     Route::post('transactions/global-fund-transfer', [CustomerTransactionController::class, 'globalFundTransfer'])->name('transactions.global-fund-transfer');
     Route::get('transactions-filter-by-bank/{bank}', [CustomerTransactionController::class, 'filterByBank'])->name('transactions.filter-by-bank');
 
-    // Cambia la banca della singola transazione
     Route::put('transactions/{transaction}/bank', [CustomerBankAccountController::class, 'updateTransactionBank'])->name('transactions.bank.update');
 });
 
@@ -189,7 +169,7 @@ Route::middleware(['auth', 'role:super admin|staff'])->name('staff.')->prefix('s
 
 /*
 |--------------------------------------------------------------------------
-| Auth scaffolding + Email verification
+| Auth + Email verification
 |--------------------------------------------------------------------------
 */
 Auth::routes(['verify' => true]);

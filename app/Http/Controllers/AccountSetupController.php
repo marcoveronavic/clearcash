@@ -18,12 +18,15 @@ use Illuminate\Support\Facades\DB;
 
 class AccountSetupController extends Controller
 {
-    /** STEP 1 – Selezione tipo di periodo. */
+    /* =========================
+     * STEP 1 – Selezione tipo di periodo
+     * ========================= */
     public function index(Request $request)
     {
         $accSetup = $request->session()->get('accSetup', []);
         if (!is_array($accSetup)) $accSetup = [];
-        unset($accSetup['period_selection']); // riparte la scelta
+        // ricomincia la scelta
+        unset($accSetup['period_selection']);
         $request->session()->put('accSetup', $accSetup);
 
         return view('account-setup.index', ['accSetup' => $accSetup]);
@@ -32,7 +35,7 @@ class AccountSetupController extends Controller
     public function indexStore(Request $request)
     {
         $validated = $request->validate([
-            'period_selection' => 'required|in:first_day,last_working,fixed_date,weekly,custom',
+            'period_selection' => ['required', 'in:first_day,last_working,fixed_date,weekly,custom'],
         ]);
 
         $accSetup = $request->session()->get('accSetup', []);
@@ -51,6 +54,7 @@ class AccountSetupController extends Controller
                 $lastDay = Carbon::now()->endOfMonth();
                 if ($lastDay->isSaturday())   $lastDay->subDay();
                 elseif ($lastDay->isSunday()) $lastDay->subDays(2);
+
                 $accSetup = array_merge($accSetup, [
                     'period_selection' => 'last_working',
                     'date'             => $lastDay->day,
@@ -65,7 +69,9 @@ class AccountSetupController extends Controller
         }
     }
 
-    /** STEP 2 – Parametri aggiuntivi (es. day per fixed_date). */
+    /* =========================
+     * STEP 2 – Parametri aggiuntivi (es. day per fixed_date)
+     * ========================= */
     public function stepTwoShow(Request $request)
     {
         $accSetup = $request->session()->get('accSetup', []);
@@ -77,13 +83,47 @@ class AccountSetupController extends Controller
 
     public function stepTwoStore(Request $request)
     {
-        $validated = $request->validate([
-            'date' => 'required|integer|between:1,31',
-        ]);
-
         $accSetup = $request->session()->get('accSetup', []);
         if (!is_array($accSetup) || !isset($accSetup['period_selection'])) {
             return redirect()->route('account-setup.step-one');
+        }
+
+        $selection = $accSetup['period_selection'];
+
+        // ✅ validate based on selected period
+        if ($selection === 'fixed_date') {
+            $validated = $request->validate([
+                'date' => ['required', 'integer', 'between:1,31'],
+            ]);
+        } elseif ($selection === 'weekly') {
+            $validated = $request->validate([
+                'weekday' => ['required', 'integer', 'between:1,7'],
+            ]);
+        } elseif ($selection === 'custom') {
+            $validated = $request->validate([
+                'custom_start_date' => ['required', 'date'],
+                'custom_end_date'   => ['required', 'date', 'after_or_equal:custom_start_date'],
+            ]);
+
+            // ✅ keep both naming conventions used across the app
+            $accSetup['custom_start_date'] = $validated['custom_start_date'];
+            $accSetup['custom_end_date']   = $validated['custom_end_date'];
+            $accSetup['custom_start']      = $validated['custom_start_date'];
+            $accSetup['custom_end']        = $validated['custom_end_date'];
+
+            // ✅ compatibility: store "date" as day-of-month (1..31) from custom_start
+            try {
+                $accSetup['date'] = (int) Carbon::parse($validated['custom_start_date'])->format('d');
+            } catch (\Throwable $e) {
+                // no-op
+            }
+
+            $request->session()->put('accSetup', $accSetup);
+
+            return redirect()->route('account-setup.step-three');
+        } else {
+            // first_day / last_working: no step-two params needed
+            $validated = [];
         }
 
         $accSetup = array_merge($accSetup, $validated);
@@ -92,7 +132,9 @@ class AccountSetupController extends Controller
         return redirect()->route('account-setup.step-three');
     }
 
-    /** STEP 3 – Inserimento importi (stipendio/spese). */
+    /* =========================
+     * STEP 3 – Inserimento importi (stipendio/spese)
+     * ========================= */
     public function stepThreeShow(Request $request)
     {
         $accSetup = $request->session()->get('accSetup', []);
@@ -100,7 +142,7 @@ class AccountSetupController extends Controller
             return redirect()->route('account-setup.step-one');
         }
 
-        // Autoseed se vuoto (comodo in dev)
+        // seed di comodo se tabella vuota (solo in dev/locale)
         if (DefaultBudgetCategories::count() === 0) {
             (new \Database\Seeders\DefaultBudgetCategoriesSeeder())->run();
         }
@@ -133,7 +175,9 @@ class AccountSetupController extends Controller
         return redirect()->route('account-setup.step-four');
     }
 
-    /** STEP 4 – Riepilogo. */
+    /* =========================
+     * STEP 4 – Riepilogo
+     * ========================= */
     public function stepFourShow(Request $request)
     {
         $accSetup = $request->session()->get('accSetup', []);
@@ -165,7 +209,9 @@ class AccountSetupController extends Controller
         return redirect()->route('account-setup.step-five');
     }
 
-    /** STEP 5 – Banche iniziali. */
+    /* =========================
+     * STEP 5 – Banche iniziali
+     * ========================= */
     public function stepFiveShow(Request $request)
     {
         $accSetup = $request->session()->get('accSetup', []);
@@ -177,17 +223,25 @@ class AccountSetupController extends Controller
     }
 
     /**
-     * STEP 5 – Salva conti manuali nel DB (uno per riga).
-     * Se esiste "skip_manual", prosegue direttamente allo step 6 investimenti.
+     * STEP 5 – Salva conti manuali (supporta più card).
+     * - Se "skip_manual" o "go_next": prosegue allo step 6.
+     * - Altrimenti salva e resta nello step 5 (così aggiungi altre banche).
      */
     public function stepFiveStore(Request $request)
     {
-        // Se ho già conti collegati via Plaid e l'utente vuole proseguire
-        if ($request->boolean('skip_manual')) {
+        // ✅ SE VAI AVANTI MA HAI COMPILATO UNA BANCA, SALVA COMUNQUE.
+        // (Se invece clicchi skip/go_next senza aver compilato nulla, allora vai avanti senza salvare.)
+        $hasAnyBankInput =
+            $request->has('name_of_bank_account') ||
+            $request->has('bank_account_type') ||
+            $request->has('bank_account_starting_balance') ||
+            $request->has('is_salary_account');
+
+        if (($request->boolean('skip_manual') || $request->boolean('go_next')) && !$hasAnyBankInput) {
             return redirect()->route('account-setup.step-six-investments');
         }
 
-        // Validazione array dal form
+        // Valida e salva
         $validated = $request->validate([
             'name_of_bank_account'            => ['required','array','min:1'],
             'name_of_bank_account.*'          => ['required','string','max:255'],
@@ -195,47 +249,68 @@ class AccountSetupController extends Controller
             'bank_account_type.*'             => ['required','string','in:current_account,savings_account,isa_account,investment_account,credit_card'],
             'bank_account_starting_balance'   => ['required','array'],
             'bank_account_starting_balance.*' => ['required','numeric'],
+
+            // ✅ NEW: salary flags (0/1)
+            'is_salary_account'               => ['nullable','array'],
+            'is_salary_account.*'             => ['nullable','in:0,1'],
         ]);
 
-        $names    = $validated['name_of_bank_account'];
-        $types    = $validated['bank_account_type'];
-        $balances = $validated['bank_account_starting_balance'];
+        $names    = array_values($validated['name_of_bank_account']);
+        $types    = array_values($validated['bank_account_type']);
+        $balances = array_values($validated['bank_account_starting_balance']);
+
+        $salaryFlags = array_values($validated['is_salary_account'] ?? []);
+        $salaryIndex = null;
+
+        for ($i = 0; $i < count($salaryFlags); $i++) {
+            if ((string)$salaryFlags[$i] === '1') {
+                $salaryIndex = $i;
+                break;
+            }
+        }
 
         DB::beginTransaction();
         try {
-            $count = min(count($names), count($types), count($balances));
-            $now   = now();
             $userId = Auth::id();
+            $now    = now();
+            $count  = min(count($names), count($types), count($balances));
 
             $rowsForInsert  = [];
             $rowsForSession = [];
 
             for ($i = 0; $i < $count; $i++) {
-                $name = trim((string) $names[$i]);
-                $type = (string) $types[$i];
-                $bal  = (float)  $balances[$i];
+                $name = trim((string)$names[$i]);
+                if ($name === '') continue;
+
+                $isSalary = ($salaryIndex !== null && $i === $salaryIndex) ? 1 : 0;
 
                 $rowsForInsert[] = [
-                    'user_id'          => $userId,
-                    'account_name'     => $name,
-                    'account_type'     => $type,
-                    'starting_balance' => $bal,
-                    'created_at'       => $now,
-                    'updated_at'       => $now,
+                    'user_id'           => $userId,
+                    'account_name'      => $name,
+                    'account_type'      => (string)$types[$i],
+                    'starting_balance'  => (float)$balances[$i],
+                    'is_salary_account' => $isSalary,
+                    'created_at'        => $now,
+                    'updated_at'        => $now,
                 ];
 
                 $rowsForSession[] = [
                     'name_of_bank_account'          => $name,
-                    'bank_account_type'             => $type,
-                    'bank_account_starting_balance' => $bal,
+                    'bank_account_type'             => (string)$types[$i],
+                    'bank_account_starting_balance' => (float)$balances[$i],
+                    'is_salary_account'             => $isSalary,
                 ];
             }
 
-            if (!empty($rowsForInsert)) {
+            if ($rowsForInsert) {
+                if ($salaryIndex !== null) {
+                    DB::table('bank_accounts')->where('user_id', $userId)->update(['is_salary_account' => 0]);
+                }
+
                 DB::table('bank_accounts')->insert($rowsForInsert);
             }
 
-            // aggiorno accSetup in sessione (opzionale, solo per coerenza UI)
+            // stato in sessione (solo per coerenza UI)
             $accSetup = $request->session()->get('accSetup', []);
             $accSetup['bank_accounts'] = $rowsForSession;
             $request->session()->put('accSetup', $accSetup);
@@ -244,17 +319,23 @@ class AccountSetupController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             report($e);
-
-            return back()
-                ->withErrors(['general' => 'Could not save bank accounts: '.$e->getMessage()])
-                ->withInput();
+            return back()->withErrors(['general' => 'Could not save bank accounts: '.$e->getMessage()])->withInput();
         }
 
-        return redirect()->route('account-setup.step-six-investments')
-            ->with('success', 'Bank accounts saved.');
+        // ✅ Se avevi cliccato Next/Skip, ora prosegui dopo aver salvato
+        if ($request->boolean('skip_manual') || $request->boolean('go_next')) {
+            return redirect()->route('account-setup.step-six-investments');
+        }
+
+        // Resta nello step 5 per aggiungere altre banche
+        return redirect()
+            ->route('account-setup.step-five')
+            ->with('success', 'Bank account saved. You can add more.');
     }
 
-    /** STEP 6 – Investimenti & pensioni (schermata). */
+    /* =========================
+     * STEP 6 – Investimenti & pensioni (view)
+     * ========================= */
     public function stepSixInvestmentsShow(Request $request)
     {
         $accSetup = $request->session()->get('accSetup', []);
@@ -265,7 +346,9 @@ class AccountSetupController extends Controller
         return view('account-setup.step-six-investments', ['accSetup' => $accSetup]);
     }
 
-    /** STEP 6 – Salvataggio finale + creazione record chiave. */
+    /* =========================
+     * STEP 6 – Salvataggio finale + creazione record chiave
+     * ========================= */
     public function stepSixInvestmentsStore(Request $request)
     {
         $accSetup = $request->session()->get('accSetup', []);
@@ -278,51 +361,66 @@ class AccountSetupController extends Controller
         $now  = Carbon::now($tz);
 
         // 1) Period window
-        if (($accSetup['period_selection'] ?? null) === 'first_day') {
-            $periodStart = $now->copy()->startOfMonth();
-            $periodEnd   = $now->copy()->endOfMonth();
+        switch ($accSetup['period_selection'] ?? 'first_day') {
+            case 'first_day':
+                $periodStart = $now->copy()->startOfMonth();
+                $periodEnd   = $now->copy()->endOfMonth();
+                break;
 
-        } elseif (($accSetup['period_selection'] ?? null) === 'last_working') {
-            $periodStart = $now->copy()->startOfMonth();
-            $periodEnd   = $now->copy()->endOfMonth();
-            if ($periodEnd->isSaturday())   $periodEnd->subDay();
-            elseif ($periodEnd->isSunday()) $periodEnd->subDays(2);
+            case 'last_working':
+                $periodStart = $now->copy()->startOfMonth();
+                $periodEnd   = $now->copy()->endOfMonth();
+                if ($periodEnd->isSaturday())   $periodEnd->subDay();
+                elseif ($periodEnd->isSunday()) $periodEnd->subDays(2);
+                break;
 
-        } elseif (($accSetup['period_selection'] ?? null) === 'fixed_date') {
-            $day    = (int)($accSetup['date'] ?? 1);
-            $day    = max(1, min($day, $now->daysInMonth));
-            $anchor = Carbon::create($now->year, $now->month, $day, 0, 0, 0, $tz);
+            case 'fixed_date':
+                $day    = (int)($accSetup['date'] ?? 1);
+                $day    = max(1, min($day, $now->daysInMonth));
+                $anchor = Carbon::create($now->year, $now->month, $day, 0, 0, 0, $tz);
+                if ($now->lt($anchor)) {
+                    $periodStart = $anchor->copy()->subMonthNoOverflow();
+                    $periodEnd   = $anchor->copy()->subDay();
+                } else {
+                    $periodStart = $anchor->copy();
+                    $periodEnd   = $anchor->copy()->addMonthNoOverflow()->subDay();
+                }
+                break;
 
-            if ($now->lt($anchor)) {
-                $periodStart = $anchor->copy()->subMonthNoOverflow();
-                $periodEnd   = $anchor->copy()->subDay();
-            } else {
-                $periodStart = $anchor->copy();
-                $periodEnd   = $anchor->copy()->addMonthNoOverflow()->subDay();
-            }
+            case 'weekly':
+                $periodStart = $now->copy()->startOfWeek(Carbon::MONDAY);
+                $periodEnd   = $now->copy()->endOfWeek(Carbon::SUNDAY);
+                break;
 
-        } elseif (($accSetup['period_selection'] ?? null) === 'weekly') {
-            $periodStart = $now->copy()->startOfWeek(Carbon::MONDAY);
-            $periodEnd   = $now->copy()->endOfWeek(Carbon::SUNDAY);
-
-        } elseif (($accSetup['period_selection'] ?? null) === 'custom'
-            && !empty($accSetup['custom_start']) && !empty($accSetup['custom_end'])) {
-            $periodStart = Carbon::parse($accSetup['custom_start'], $tz)->startOfDay();
-            $periodEnd   = Carbon::parse($accSetup['custom_end'],   $tz)->endOfDay();
-
-        } else {
-            $periodStart = $now->copy()->startOfMonth();
-            $periodEnd   = $now->copy()->endOfMonth();
+            case 'custom':
+            default:
+                if (!empty($accSetup['custom_start']) && !empty($accSetup['custom_end'])) {
+                    $periodStart = Carbon::parse($accSetup['custom_start'], $tz)->startOfDay();
+                    $periodEnd   = Carbon::parse($accSetup['custom_end'],   $tz)->endOfDay();
+                } else {
+                    $periodStart = $now->copy()->startOfMonth();
+                    $periodEnd   = $now->copy()->endOfMonth();
+                }
+                break;
         }
 
         $budget_start_date = $periodStart->toDateString();
         $budgetExpiryDate  = $periodEnd->toDateString();
 
-        // 2) CustomerAccountDetails – solo colonne presenti
+        // 2) CustomerAccountDetails – mappa sul campo presente (avoid NOT NULL error)
         $payload = [
             'period_selection' => $accSetup['period_selection'] ?? 'first_day',
-            'renewal_date'     => $accSetup['date'] ?? null,
         ];
+        $renewal = (int)($accSetup['date'] ?? $periodStart->day);
+
+        if (Schema::hasColumn('customer_account_details', 'renewal_date')) {
+            $payload['renewal_date'] = $renewal;
+        } elseif (Schema::hasColumn('customer_account_details', 'renewal_day')) {
+            $payload['renewal_day'] = $renewal;
+        } elseif (Schema::hasColumn('customer_account_details', 'renewal_start')) {
+            $payload['renewal_start'] = $renewal;
+        }
+
         if (Schema::hasColumn('customer_account_details', 'custom_start')) {
             $payload['custom_start'] = $accSetup['custom_start'] ?? null;
         }
@@ -335,20 +433,33 @@ class AccountSetupController extends Controller
             $payload
         );
 
-        // 3) Budget dalle spese step 3
-        $expenses = [];
+        // 3) Spese (default + custom "Other") -> Budget
+        $items = [];
+
+        // Default expense_*_amount
         foreach ($accSetup as $k => $v) {
             if (preg_match('/^expense_(.+)_amount$/', (string)$k, $m)) {
-                $slug   = strtolower(str_replace('__', '_', $m[1]));
-                $amount = (float) $v;
-                if ($amount > 0) $expenses[$slug] = $amount;
+                $name   = str_replace('_', ' ', strtolower($m[1]));
+                $amount = (float)$v;
+                if ($amount > 0) $items[$name] = $amount;
+            }
+        }
+        // Custom (other_name[] + other_amounts[])
+        $otherNames = $accSetup['other_name'] ?? [];
+        $otherAmts  = $accSetup['other_amounts'] ?? [];
+        if (is_array($otherNames) && is_array($otherAmts)) {
+            $n = min(count($otherNames), count($otherAmts));
+            for ($i = 0; $i < $n; $i++) {
+                $name   = trim((string)$otherNames[$i]);
+                $amount = (float)($otherAmts[$i] ?? 0);
+                if ($name !== '' && $amount > 0) $items[$name] = $amount;
             }
         }
 
-        foreach ($expenses as $slug => $amount) {
+        foreach ($items as $name => $amount) {
             $cat = BudgetCategory::firstOrCreate([
                 'user_id' => $user->id,
-                'name'    => str_replace('_', ' ', $slug),
+                'name'    => $name,
             ]);
 
             Budget::updateOrCreate(
@@ -374,11 +485,29 @@ class AccountSetupController extends Controller
                     'budget_start_date' => $budget_start_date,
                     'budget_end_date'   => $budgetExpiryDate,
                 ],
-                ['amount' => (float) $accSetup['salary_amount']]
+                ['amount' => (float)$accSetup['salary_amount']]
             );
 
-            $bank = BankAccount::where('user_id', $user->id)->first();
+            $bank = BankAccount::where('user_id', $user->id)
+                ->orderByDesc('is_salary_account')
+                ->orderBy('id')
+                ->first();
+
             if ($bank) {
+                // ✅ FIX ROBUSTO: sposta Salary su qualunque valore (case-insensitive + trim)
+                RecurringPayment::where('user_id', $user->id)
+                    ->whereRaw('LOWER(TRIM(COALESCE(transaction_type,""))) = ?', ['income'])
+                    ->whereRaw('LOWER(TRIM(COALESCE(name,""))) = ?', ['salary'])
+                    ->update(['bank_account_id' => $bank->id]);
+
+                Transaction::where('user_id', $user->id)
+                    ->whereRaw('LOWER(TRIM(COALESCE(transaction_type,""))) = ?', ['income'])
+                    ->where(function ($q) {
+                        $q->whereRaw('LOWER(TRIM(COALESCE(category_name,""))) = ?', ['salary'])
+                            ->orWhereRaw('LOWER(TRIM(COALESCE(name,""))) = ?', ['salary']);
+                    })
+                    ->update(['bank_account_id' => $bank->id]);
+
                 RecurringPayment::updateOrCreate(
                     [
                         'user_id'         => $user->id,
@@ -389,7 +518,7 @@ class AccountSetupController extends Controller
                     [
                         'repeat'     => 'monthly',
                         'start_date' => $accSetup['salary_date'] ?? $now->toDateString(),
-                        'amount'     => (float) $accSetup['salary_amount'],
+                        'amount'     => (float)$accSetup['salary_amount'],
                     ]
                 );
 
@@ -399,7 +528,7 @@ class AccountSetupController extends Controller
                     'date'            => $accSetup['salary_date'] ?? $now->toDateString(),
                     'category_name'   => 'salary',
                     'bank_account_id' => $bank->id,
-                    'amount'          => (float) $accSetup['salary_amount'],
+                    'amount'          => (float)$accSetup['salary_amount'],
                     'transaction_type'=> 'income',
                 ]);
 
@@ -408,7 +537,7 @@ class AccountSetupController extends Controller
             }
         }
 
-        // 5) Uncategorised sempre presente a 0
+        // 5) Uncategorised = 0
         Budget::updateOrCreate(
             [
                 'user_id'           => $user->id,

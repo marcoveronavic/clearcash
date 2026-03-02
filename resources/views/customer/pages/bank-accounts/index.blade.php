@@ -1,17 +1,33 @@
 {{-- resources/views/customer/pages/bank-accounts/index.blade.php --}}
 @extends('layouts.customer')
 
-{{-- Fix per la “riga bianca” in alto: uniforma la top-bar/ header al tema scuro --}}
 @section('styles_in_head')
     <style>
-        /* Uniforma l'header/toolbar al tema scuro (se presenti queste classi) */
         header, .customerHeader, .contentTopBar, .page-header, .navbar {
             background: #0f2222 !important;
             border: 0 !important;
             box-shadow: none !important;
         }
-        /* Evita gap visivo dovuto a margin-top del primo H1 */
         main.dashboardMain h1 { margin-top: 0 !important; }
+
+        /* ✅ footer buttons layout (keep existing styles) */
+        .ccModalFooterActions{
+            width:100%;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+        }
+        .ccModalFooterActions form{ margin:0; }
+        .ccCancelBtn{
+            padding:10px 18px;
+            border-radius:12px;
+            font-weight:800;
+            height:44px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+        }
     </style>
 @endsection
 
@@ -26,7 +42,6 @@
         </div>
     </section>
 
-    {{-- Barra azioni: Add Bank Account + Connect your bank (Plaid) --}}
     <section class="addBanner">
         <div class="container">
             <div class="row">
@@ -38,7 +53,6 @@
                         Add Bank Account
                     </button>
 
-                    {{-- Bottone Plaid (incluso qui, non prima di @extends) --}}
                     @include('customer.pages.bank-accounts._plaid_link')
                 </div>
             </div>
@@ -69,7 +83,7 @@
                                     </div>
                                 </button>
 
-                                {{-- Modal Edit account --}}
+                                {{-- Modal Edit --}}
                                 <div class="modal fade" id="acc_{{ $account->id }}" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                         <div class="modal-content">
@@ -113,7 +127,8 @@
 
                                                     <div class="row mb-4">
                                                         <div class="col-12">
-                                                            <label for="bank_account_starting_balance_{{ $account->id }}">New balance</label>
+                                                            {{-- ✅ label change --}}
+                                                            <label for="bank_account_starting_balance_{{ $account->id }}">Balance</label>
                                                             <input type="number"
                                                                    step="any"
                                                                    name="bank_account_starting_balance"
@@ -131,48 +146,83 @@
                                                     </div>
                                                 </form>
 
-                                                {{-- Transactions preview --}}
-                                                @if ($account->transactions->isNotEmpty())
-                                                    <div class="transactionList">
-                                                        <h4 class="mb-3 fw-semibold text-white">Recent Transactions</h4>
-                                                        <ul class="list-group">
-                                                            @foreach ($account->transactions as $transaction)
+                                                {{-- Recent Transactions passate dal controller --}}
+                                                @php $recent = $account->recentTransactions ?? collect(); @endphp
+
+                                                <div class="transactionList">
+                                                    <h4 class="mb-3 fw-semibold text-white">Recent Transactions</h4>
+                                                    <ul class="list-group">
+
+                                                        {{-- ✅ Starting balance sempre come prima riga --}}
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center my-1"
+                                                            style="background-color:#d1f9ff0d;border:none;">
+                                                            <div class="d-flex flex-column">
+                                                                <span class="fs-5 fw-semibold text-white">Starting balance</span>
+                                                                <small class="text-white">
+                                                                    {{ $account->created_at ? \Carbon\Carbon::parse($account->created_at)->format('d M, Y') : '' }}
+                                                                </small>
+                                                            </div>
+                                                            <span class="badge bg-secondary fs-6">
+                                                                £{{ number_format((float) $account->starting_balance, 2) }}
+                                                            </span>
+                                                        </li>
+
+                                                        @if ($recent->isNotEmpty())
+                                                            @foreach ($recent as $transaction)
                                                                 <li class="list-group-item d-flex justify-content-between align-items-center my-1"
                                                                     style="background-color:#d1f9ff0d;border:none;">
                                                                     <div class="d-flex flex-column">
-                                                                        <span class="fs-5 fw-semibold text-white">{{ $transaction->name ?? 'No Name' }}</span>
+                                                                        <span class="fs-5 fw-semibold text-white">
+                                                                            {{ $transaction->name ?? $transaction->description ?? 'No Name' }}
+                                                                        </span>
                                                                         <small class="text-white">
                                                                             {{ \Carbon\Carbon::parse($transaction->date)->format('d M, Y') }}
                                                                         </small>
                                                                     </div>
-                                                                    @if ($transaction->transaction_type == 'income')
-                                                                        <span class="badge bg-success fs-6">£+{{ number_format($transaction->amount, 2) }}</span>
-                                                                    @else
-                                                                        <span class="badge bg-danger fs-6">£{{ number_format($transaction->amount, 2) }}</span>
-                                                                    @endif
+                                                                    @php
+                                                                        $isIncome = $transaction->transaction_type === 'income';
+                                                                        $amount   = number_format((float) $transaction->amount, 2);
+                                                                    @endphp
+                                                                    <span class="badge {{ $isIncome ? 'bg-success' : 'bg-danger' }} fs-6">
+                                                                        {{ $isIncome ? '£+'.$amount : '£'.$amount }}
+                                                                    </span>
                                                                 </li>
                                                             @endforeach
-                                                        </ul>
-                                                    </div>
-                                                @else
-                                                    <ul class="list-group">
-                                                        <li class="list-group-item d-flex justify-content-between align-items-center"
-                                                            style="background-color:#d1f9ff0d;border:none;">
-                                                            <div class="d-flex flex-column">
-                                                                <span class="text-white">No Transaction recorded yet for this Bank</span>
-                                                            </div>
-                                                        </li>
+                                                        @else
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center"
+                                                                style="background-color:#d1f9ff0d;border:none;">
+                                                                <div class="d-flex flex-column">
+                                                                    <span class="text-white">No Transaction recorded yet for this Bank</span>
+                                                                </div>
+                                                            </li>
+                                                        @endif
                                                     </ul>
-                                                @endif
+                                                </div>
                                             </div>
 
+                                            {{-- ✅ footer: Delete left, Cancel right (palette) --}}
                                             <div class="modal-footer">
-                                                <form action="{{ route('bank-accounts.destroy', $account->id) }}" method="post">
-                                                    @csrf
-                                                    @method('delete')
-                                                    <button type="submit" class="dangerBtn">Delete</button>
-                                                </form>
+                                                <div class="ccModalFooterActions">
+                                                    <form id="deleteBankAccountForm-{{ $account->id }}"
+                                                          action="{{ route('bank-accounts.destroy', $account->id) }}"
+                                                          method="post">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button type="button"
+                                                                class="dangerBtn confirmDeleteBankAccountBtn"
+                                                                data-form-id="deleteBankAccountForm-{{ $account->id }}">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+
+                                                    <button type="button"
+                                                            class="twoToneBlueGreenBtn ccCancelBtn"
+                                                            data-bs-dismiss="modal">
+                                                        Cancel
+                                                    </button>
+                                                </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -192,7 +242,6 @@
                                     Add Bank Account
                                 </button>
 
-                                {{-- Bottone Plaid anche nello stato “vuoto” --}}
                                 @include('customer.pages.bank-accounts._plaid_link')
                             </div>
                         </div>
@@ -272,5 +321,114 @@
             const note = document.getElementById("creditNote");
             if (note) note.style.display = (value === "credit_card") ? "block" : "none";
         }
+
+        /**
+         * FIX: collega il pulsante flottante “+” (in basso a destra) all'apertura del modal Add Bank Account.
+         * Il FAB è nel layout e spesso non ha data-bs-target, quindi non fa nulla.
+         */
+        (function wireFloatingPlusToAddBankAccountModal() {
+            function hasBootstrapModal() {
+                return window.bootstrap && window.bootstrap.Modal;
+            }
+
+            function openAddBankModal() {
+                const modalEl = document.getElementById('addBankAccountModal');
+                if (!modalEl) return false;
+                if (!hasBootstrapModal()) return false;
+                window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                return true;
+            }
+
+            function findFloatingFab() {
+                // Cerchiamo un elemento "cliccabile" fisso vicino all'angolo bottom-right
+                const candidates = Array.from(document.querySelectorAll('button, a, [role="button"], div'));
+                let best = null;
+                let bestScore = Infinity;
+
+                for (const el of candidates) {
+                    const cs = window.getComputedStyle(el);
+                    if (cs.position !== 'fixed') continue;
+
+                    const rect = el.getBoundingClientRect();
+                    const distRight  = window.innerWidth  - rect.right;
+                    const distBottom = window.innerHeight - rect.bottom;
+
+                    // deve stare vicino al corner
+                    if (distRight < -5 || distBottom < -5) continue;
+                    if (distRight > 140 || distBottom > 140) continue;
+
+                    // deve assomigliare a un FAB (dimensione ragionevole)
+                    if (rect.width < 30 || rect.height < 30) continue;
+                    if (rect.width > 120 || rect.height > 120) continue;
+
+                    // icona plus/x oppure aria-label "add"
+                    const hasIcon =
+                        el.querySelector('.fa-plus, .fa-circle-plus, .fa-xmark, .fa-times, .bi-plus') ||
+                        /add|plus/i.test((el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || ''));
+
+                    if (!hasIcon) continue;
+
+                    const score = distRight + distBottom;
+                    if (score < bestScore) {
+                        bestScore = score;
+                        best = el;
+                    }
+                }
+
+                return best;
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const fab = findFloatingFab();
+                if (!fab) return;
+
+                // Evita di attaccare più volte
+                if (fab.dataset.ccWired === '1') return;
+                fab.dataset.ccWired = '1';
+
+                fab.addEventListener('click', function (e) {
+                    // Se su questa pagina c'è il modal, lo apriamo.
+                    const opened = openAddBankModal();
+                    if (opened) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }, true);
+            });
+        })();
+
+        // ✅ Confirm prima di eliminare bank account (testo richiesto)
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.confirmDeleteBankAccountBtn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const formId = btn.getAttribute('data-form-id');
+                    const form = formId ? document.getElementById(formId) : null;
+                    if (!form) return;
+
+                    const message = 'Are you sure you want to cancel your bank account?';
+
+                    if (window.Swal && typeof window.Swal.fire === 'function') {
+                        window.Swal.fire({
+                            icon: 'warning',
+                            title: 'Are you sure?',
+                            text: message,
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit();
+                            }
+                        });
+                    } else {
+                        if (window.confirm(message)) {
+                            form.submit();
+                        }
+                    }
+                });
+            });
+        });
     </script>
 @endsection
