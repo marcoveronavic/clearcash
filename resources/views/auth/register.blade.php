@@ -11,8 +11,8 @@
         }
         .authCardHeader { text-align: center; margin-bottom: 28px; }
         .authLogo { height: 48px; margin-bottom: 16px; }
-        .authCardHeader h1 { color: #fff; font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
-        .authCardHeader p { color: rgba(255,255,255,0.5); font-size: 0.95rem; margin: 0; }
+        .authCardHeader h1 { color: #fff !important; font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+        .authCardHeader p { color: rgba(255,255,255,0.6) !important; font-size: 0.95rem; margin: 0; }
         .authCard label { color: rgba(255,255,255,0.7); font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; display: block; }
         .authCard .form-control {
             background: rgba(255,255,255,0.06);
