@@ -338,7 +338,7 @@
 
                                                     <div class="row mb-3">
                                                         <div class="col-12">
-                                                            <label for="currency_{{ $account->id }}">Valuta</label>
+                                                            <label for="currency_{{ $account->id }}">{{ __('messages.currency') }}</label>
                                                             <select name="currency" id="currency_{{ $account->id }}">
                                                                 @foreach ($currencyOptions as $code => $label)
                                                                     <option value="{{ $code }}" @selected(($account->currency ?? $userBaseCurrency) === $code)>
@@ -558,7 +558,7 @@
 
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="currency">Valuta</label>
+                                <label for="currency">{{ __('messages.currency') }}</label>
                                 <select name="currency" id="currency" required>
                                     @foreach ($currencyOptions as $code => $label)
                                         <option value="{{ $code }}" @selected($userBaseCurrency === $code)>

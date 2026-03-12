@@ -358,4 +358,12 @@ return [
     'step7_desc1'      => 'Il tuo account ClearCash è ora configurato e pronto all\'uso.',
     'step7_desc2'      => 'Il passo successivo è impostare i pagamenti ricorrenti e iniziare ad aggiungere transazioni.',
     'go_to_dashboard'  => 'Vai alla dashboard',
+    // ── Account Setup Step 6 Investments ──
+    // ── Account Setup Step 6 Investments ──
+    'step6inv_title'        => 'Aggiungi investimenti e pensioni',
+    'step6inv_desc'         => 'Inserisci i saldi attuali dei tuoi investimenti e fondi pensione.',
+    'step6inv_hint'         => 'Puoi continuare o aggiungere altri conti con il modulo qui sotto.',
+    'step6inv_add_btn'      => 'Aggiungi investimento o pensione manualmente',
+    'step6inv_account_name' => 'Nome del conto',
+    'step6inv_skip'         => 'Salta e continua',
     ];

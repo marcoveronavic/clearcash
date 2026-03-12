@@ -1,25 +1,6 @@
 @extends('layouts.customer')
 @section('styles_in_head')
     <link rel="stylesheet" href="{{ asset('build/assets/account-setup.css') }}">
-
-    <script>
-    (function(){
-        var btn = document.createElement('button');
-        btn.innerHTML = document.body.classList.contains('light-mode') ? '?? Dark' : '?? Light';
-        btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-        document.body.appendChild(btn);
-        btn.addEventListener('click', function(){
-            if (document.body.classList.contains('light-mode')) {
-                document.body.classList.remove('light-mode');
-                localStorage.setItem('cc-theme','dark');
-            } else {
-                document.body.classList.add('light-mode');
-                localStorage.setItem('cc-theme','light');
-            }
-            window.location.reload();
-        });
-    })();
-    </script>
 @endsection
 @section('content')
     <style>
@@ -58,6 +39,12 @@
 
     @php
         $hasInvestmentsOrPensions = (($investmentAccounts ?? collect())->isNotEmpty());
+        $tInv = [
+            'fill_required' => @json(__('messages.fill_required_fields')),
+            'saved'         => @json(__('messages.saved')),
+            'pension'       => @json(__('messages.pension')),
+            'investment'    => @json(__('messages.investment')),
+        ];
     @endphp
 
     <section class="setupStepsWrapper">
@@ -66,10 +53,10 @@
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
-                            <div class="item">Crea il tuo budget</div><div class="sep"></div>
-                            <div class="item">Aggiungi conti bancari</div><div class="sep"></div>
-                            <div class="item active">Investimenti e pensioni</div><div class="sep"></div>
-                            <div class="item">Fatto</div>
+                            <div class="item">{{ __('messages.setup_step_budget') }}</div><div class="sep"></div>
+                            <div class="item">{{ __('messages.setup_step_banks') }}</div><div class="sep"></div>
+                            <div class="item active">{{ __('messages.setup_step_investments') }}</div><div class="sep"></div>
+                            <div class="item">{{ __('messages.setup_step_done') }}</div>
                         </div>
                         <div class="boxes">
                             <div class="box active"></div><div class="box active"></div><div class="box active"></div>
@@ -95,27 +82,27 @@
 
             <div class="row mt-4">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <h1>Aggiungi investimenti e pensioni</h1>
-                    <p>Inserisci i saldi attuali dei tuoi investimenti e fondi pensione.</p>
+                    <h1>{{ __('messages.step6inv_title') }}</h1>
+                    <p>{{ __('messages.step6inv_desc') }}</p>
                 </div>
             </div>
 
             @if(($investmentAccounts ?? collect())->isNotEmpty())
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                        <div class="connectedAccountsTitle">Conti collegati</div>
+                        <div class="connectedAccountsTitle">{{ __('messages.connected_accounts') }}</div>
                         @foreach($investmentAccounts as $acc)
                             <div class="connectedAccountCard">
                                 <div class="left">
                                     <div class="name">{{ $acc->account_name }}</div>
-                                    <div class="type">{{ $acc->account_type === 'pension' ? 'pensione' : 'investimento' }}</div>
+                                    <div class="type">{{ $acc->account_type === 'pension' ? __('messages.pension') : __('messages.investment') }}</div>
                                 </div>
                                 <div class="right">
                                     <div class="balance">€{{ number_format((float)$acc->starting_balance, 2) }}</div>
                                 </div>
                             </div>
                         @endforeach
-                        <div class="connectedAccountsHint">Puoi continuare o aggiungere altri conti con il modulo qui sotto.</div>
+                        <div class="connectedAccountsHint">{{ __('messages.step6inv_hint') }}</div>
                     </div>
                 </div>
             @endif
@@ -126,7 +113,7 @@
                         <div class="manualCtaWrap">
                             <button type="button" id="toggleManualInvest" class="manualCtaBtn">
                                 <i class="fas fa-plus-circle" style="margin-right:10px;"></i>
-                                Aggiungi investimento o pensione manualmente
+                                {{ __('messages.step6inv_add_btn') }}
                             </button>
                         </div>
                     </div>
@@ -141,19 +128,19 @@
 
                         <div id="bankDetailsWrapper" class="bankDetailsInputMainWrap" style="display:none;">
                             <div class="bankItem">
-                                <div class="row"><div class="col-12"><label>Nome del conto</label><input type="text" name="name_of_pension_investment_account[]" required></div></div>
-                                <div class="row"><div class="col-12"><label>Tipo di conto</label>
+                                <div class="row"><div class="col-12"><label>{{ __('messages.step6inv_account_name') }}</label><input type="text" name="name_of_pension_investment_account[]" required></div></div>
+                                <div class="row"><div class="col-12"><label>{{ __('messages.account_type_label') }}</label>
                                         <select name="pension_investment_type[]" required>
-                                            <option value="" disabled selected>Seleziona un'opzione...</option>
-                                            <option value="pension">Pensione</option>
-                                            <option value="investment">Investimento</option>
+                                            <option value="" disabled selected>{{ __('messages.select_option') }}</option>
+                                            <option value="pension">{{ __('messages.pension') }}</option>
+                                            <option value="investment">{{ __('messages.investment') }}</option>
                                         </select>
                                     </div></div>
-                                <div class="row"><div class="col-12"><label>Saldo iniziale</label><input type="number" name="pension_investment_account_starting_balance[]" step="any" required></div></div>
+                                <div class="row"><div class="col-12"><label>{{ __('messages.starting_balance_label') }}</label><input type="number" name="pension_investment_account_starting_balance[]" step="any" required></div></div>
                                 <div class="row"><div class="col-12 d-flex justify-content-end">
-                                        <button type="button" class="saveBankBtn">Salva</button>
-                                        <button type="button" class="editBankBtn" style="display:none;">Modifica</button>
-                                        <button type="button" class="removeBankBtn">Rimuovi</button>
+                                        <button type="button" class="saveBankBtn">{{ __('messages.save') }}</button>
+                                        <button type="button" class="editBankBtn" style="display:none;">{{ __('messages.edit') }}</button>
+                                        <button type="button" class="removeBankBtn">{{ __('messages.remove') }}</button>
                                     </div></div>
                             </div>
                         </div>
@@ -161,25 +148,25 @@
                         <div class="row my-4" id="addAnotherRow" style="{{ $hasInvestmentsOrPensions ? '' : 'display:none' }}">
                             <div class="col-12 text-center">
                                 <button type="button" class="addAnotherBankBtn">
-                                    <i class="fas fa-plus-circle"></i> Aggiungi un altro conto
+                                    <i class="fas fa-plus-circle"></i> {{ __('messages.add_another_account') }}
                                 </button>
                             </div>
                         </div>
 
                         <div class="row align-items-center my-4">
                             <div class="col-6 d-flex justify-content-start">
-                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-five') }}">Indietro</a>
+                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-five') }}">{{ __('messages.back') }}</a>
                             </div>
                             <div class="col-6 d-flex justify-content-end gap-4">
                                 @if(!$hasInvestmentsOrPensions)
                                     <button type="submit" class="twoToneBlueGreenBtn" formnovalidate
                                             onclick="document.getElementById('intentField').value='skip'">
-                                        Salta e continua
+                                        {{ __('messages.step6inv_skip') }}
                                     </button>
                                 @endif
                                 <button type="submit" class="twoToneBlueGreenBtn" formnovalidate
                                         onclick="document.getElementById('intentField').value='continue'">
-                                    Continua
+                                    {{ __('messages.continue') }}
                                 </button>
                             </div>
                         </div>
@@ -190,6 +177,11 @@
     </section>
 
     <script>
+        const tInv = @json([
+            'fill_required' => __('messages.fill_required_fields'),
+            'saved'         => __('messages.saved'),
+        ]);
+
         document.addEventListener("DOMContentLoaded", function() {
             const addAnotherBankBtn = document.querySelector(".addAnotherBankBtn");
             const bankDetailsWrapper = document.getElementById("bankDetailsWrapper");
@@ -213,7 +205,7 @@
                     bankItem.querySelectorAll("input[required], select[required]").forEach(field => {
                         if (!field.value.trim()) { valid = false; field.style.border = "1px solid red"; } else { field.style.border = ""; }
                     });
-                    if (!valid) { alert("Compila tutti i campi obbligatori prima di salvare."); return; }
+                    if (!valid) { alert(tInv.fill_required); return; }
 
                     bankItem.querySelectorAll("input, select").forEach(field => {
                         if (field.tagName === "SELECT") {
@@ -224,7 +216,7 @@
                     });
 
                     bankItem.classList.add("completed");
-                    saveBtn.textContent = "Salvato";
+                    saveBtn.textContent = tInv.saved;
                     saveBtn.disabled = true;
                     editBtn.style.display = "inline-block";
                     intentField.value = "save";
@@ -234,7 +226,7 @@
                 editBtn.addEventListener("click", function() {
                     bankItem.querySelectorAll("input, select").forEach(field => { field.removeAttribute("readonly"); field.removeAttribute("disabled"); });
                     bankItem.querySelectorAll('input[type="hidden"]').forEach(h => h.remove());
-                    saveBtn.textContent = "Salva";
+                    saveBtn.textContent = {{ Js::from(__('messages.save')) }};
                     saveBtn.disabled = false;
                     editBtn.style.display = "none";
                 });
@@ -256,7 +248,7 @@
                     const newBankItem = firstBankItem.cloneNode(true);
                     newBankItem.classList.remove("completed");
                     newBankItem.querySelectorAll("input, select").forEach(field => { field.removeAttribute("readonly"); field.removeAttribute("disabled"); field.style.border = ""; if (field.tagName === "SELECT") field.selectedIndex = 0; else field.value = ""; });
-                    newBankItem.querySelector(".saveBankBtn").textContent = "Salva";
+                    newBankItem.querySelector(".saveBankBtn").textContent = {{ Js::from(__('messages.save')) }};
                     newBankItem.querySelector(".saveBankBtn").disabled = false;
                     newBankItem.querySelector(".editBankBtn").style.display = "none";
                     newBankItem.querySelectorAll('input[type="hidden"]').forEach(h => h.remove());
@@ -273,24 +265,4 @@
             });
         });
     </script>
-        <script>
-        (function(){
-            var btn = document.createElement('button');
-            var ico = document.createElement('i'); ico.className = document.body.classList.contains('light-mode') ? 'fa-solid fa-moon' : 'fa-solid fa-sun'; ico.style.marginRight = '6px'; ico.style.color = document.body.classList.contains('light-mode') ? '#fbbf24' : '#f59e0b'; btn.appendChild(ico); btn.appendChild(document.createTextNode(document.body.classList.contains('light-mode') ? ' Dark' : ' Light'));
-            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-            document.body.appendChild(btn);
-            btn.addEventListener('click', function(){
-                if (document.body.classList.contains('light-mode')) {
-                    document.body.classList.remove('light-mode');
-                    localStorage.setItem('cc-theme','dark');
-                } else {
-                    document.body.classList.add('light-mode');
-                    localStorage.setItem('cc-theme','light');
-                }
-                window.location.reload();
-            });
-        })();
-    </script>
 @endsection
-
-

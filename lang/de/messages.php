@@ -358,4 +358,10 @@ return [
     'step7_desc1'      => 'Ihr ClearCash-Konto ist jetzt eingerichtet und einsatzbereit.',
     'step7_desc2'      => 'Der nächste Schritt ist die Einrichtung Ihrer wiederkehrenden Zahlungen und das Hinzufügen von Transaktionen.',
     'go_to_dashboard'  => 'Zum Dashboard',
+    'step6inv_title'        => 'Investitionen und Renten hinzufügen',
+    'step6inv_desc'         => 'Geben Sie die aktuellen Salden Ihrer Investitionen und Rentenfonds ein.',
+    'step6inv_hint'         => 'Sie können fortfahren oder weitere Konten über das Formular unten hinzufügen.',
+    'step6inv_add_btn'      => 'Investition oder Rente manuell hinzufügen',
+    'step6inv_account_name' => 'Kontoname',
+    'step6inv_skip'         => 'Überspringen und weiter',
     ];

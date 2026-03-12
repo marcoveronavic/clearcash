@@ -349,4 +349,11 @@ return [
     'step7_desc1'      => 'Votre compte ClearCash est maintenant configuré et prêt à l\'emploi.',
     'step7_desc2'      => 'La prochaine étape consiste à configurer vos paiements récurrents et à commencer à ajouter des transactions.',
     'go_to_dashboard'  => 'Aller au tableau de bord',
+
+    'step6inv_title'        => 'Ajouter des investissements et retraites',
+    'step6inv_desc'         => 'Entrez les soldes actuels de vos investissements et fonds de retraite.',
+    'step6inv_hint'         => 'Vous pouvez continuer ou ajouter d\'autres comptes avec le formulaire ci-dessous.',
+    'step6inv_add_btn'      => 'Ajouter un investissement ou une retraite manuellement',
+    'step6inv_account_name' => 'Nom du compte',
+    'step6inv_skip'         => 'Passer et continuer',
     ];

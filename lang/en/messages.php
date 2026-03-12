@@ -358,4 +358,11 @@ return [
     'step7_desc1'      => 'Your ClearCash account is now set up and ready to go.',
     'step7_desc2'      => 'The next step is to set up your recurring payments and start adding transactions.',
     'go_to_dashboard'  => 'Go to dashboard',
+
+    'step6inv_title'        => 'Add investments and pensions',
+    'step6inv_desc'         => 'Enter the current balances of your investments and pension funds.',
+    'step6inv_hint'         => 'You can continue or add more accounts using the form below.',
+    'step6inv_add_btn'      => 'Add investment or pension manually',
+    'step6inv_account_name' => 'Account name',
+    'step6inv_skip'         => 'Skip and continue',
     ];
