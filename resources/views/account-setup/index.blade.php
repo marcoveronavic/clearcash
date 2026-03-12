@@ -21,39 +21,26 @@
         .inputWrap .content h5 { margin:0 0 .25rem 0; }
         .inputWrap .content p { margin:0; opacity:.8; }
 
-        /* ── Lang button ── */
-        #langBtn {
-            position:fixed;top:20px;right:20px;z-index:999999;
-            padding:8px 16px;border-radius:20px;
-            border:1px solid rgba(255,255,255,0.15);
-            background:rgba(255,255,255,0.07);
-            color:#fff;font-size:13px;font-weight:600;
-            cursor:pointer;display:flex;align-items:center;gap:6px;
-            backdrop-filter:blur(6px);transition:all .15s;
-        }
-        #langBtn:hover { background:rgba(255,255,255,0.15); }
-        body.light-mode #langBtn {
-            background:#fff;border:1px solid rgba(0,0,0,0.1);color:#0D2020;
-            box-shadow:0 2px 8px rgba(0,0,0,0.1);
-        }
-
         /* ── Lang overlay ── */
         #langOverlay {
-            position:fixed;inset:0;background:rgba(0,0,0,0.7);
-            z-index:999998;display:none;align-items:center;justify-content:center;
+            position:fixed;inset:0;background:rgba(0,0,0,0.75);
+            z-index:99999;display:none;align-items:center;justify-content:center;
         }
         #langCard {
             background:#0f2629;border:1px solid rgba(255,255,255,0.08);
-            border-radius:20px;width:100%;max-width:380px;margin:16px;overflow:hidden;
+            border-radius:20px;width:100%;max-width:400px;margin:16px;overflow:hidden;
         }
         #langCardHeader {
             padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,0.06);
-            display:flex;align-items:center;justify-content:space-between;
+            display:flex;align-items:center;gap:10px;
         }
         #langCardHeader h5 { margin:0;color:#fff;font-weight:800;font-size:1.05rem; }
-        #langCloseBtn { background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.1rem;cursor:pointer;padding:0; }
-        #langCloseBtn:hover { color:#fff; }
+        #langCardHeader i { color:#44E0AC; }
         #langCardBody { padding:16px; }
+        #langCardFooter {
+            padding:14px 24px;border-top:1px solid rgba(255,255,255,0.06);
+            display:flex;justify-content:flex-end;
+        }
         .langOption {
             display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;
             cursor:pointer;transition:background .15s;text-decoration:none;
@@ -61,21 +48,29 @@
         .langOption:hover { background:rgba(255,255,255,0.07); }
         .langOption.active { background:rgba(68,224,172,0.12); }
         .langFlag {
-            width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);
+            width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);
             display:flex;align-items:center;justify-content:center;
-            font-size:0.75rem;font-weight:800;color:#44E0AC;letter-spacing:1px;
+            font-size:0.75rem;font-weight:800;color:#44E0AC;letter-spacing:1px;flex-shrink:0;
         }
         .langOption.active .langFlag { background:rgba(68,224,172,0.2); }
         .langName { color:#fff;font-size:0.95rem;font-weight:600; }
         .langNative { color:rgba(255,255,255,0.4);font-size:0.8rem; }
         .langCheck { margin-left:auto;color:#44E0AC;display:none; }
         .langOption.active .langCheck { display:block; }
+        #skipLangBtn {
+            padding:10px 20px;border-radius:12px;
+            border:1px solid rgba(255,255,255,0.1);
+            background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);
+            font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .15s;
+        }
+        #skipLangBtn:hover { background:rgba(255,255,255,0.12);color:#fff; }
 
+        body.light-mode #langOverlay { background:rgba(0,0,0,0.35); }
         body.light-mode #langCard { background:#fff;border:1px solid rgba(0,0,0,0.1);box-shadow:0 20px 60px rgba(0,0,0,0.15); }
         body.light-mode #langCardHeader { border-bottom:1px solid rgba(0,0,0,0.08); }
         body.light-mode #langCardHeader h5 { color:#0D2020; }
-        body.light-mode #langCloseBtn { color:rgba(0,0,0,0.3); }
-        body.light-mode #langCloseBtn:hover { color:#0D2020; }
+        body.light-mode #langCardHeader i { color:#0D9488; }
+        body.light-mode #langCardFooter { border-top:1px solid rgba(0,0,0,0.08); }
         body.light-mode .langOption:hover { background:rgba(0,0,0,0.04); }
         body.light-mode .langOption.active { background:rgba(13,148,136,0.08); }
         body.light-mode .langFlag { background:rgba(0,0,0,0.05);color:#0D9488; }
@@ -83,22 +78,16 @@
         body.light-mode .langName { color:#0D2020; }
         body.light-mode .langNative { color:rgba(13,32,32,0.4); }
         body.light-mode .langCheck { color:#0D9488; }
+        body.light-mode #skipLangBtn { background:#f1f5f5;border:1px solid rgba(0,0,0,0.1);color:#374151; }
+        body.light-mode #skipLangBtn:hover { background:#e5eaea;color:#0D2020; }
     </style>
-
-    {{-- ── Language button ── --}}
-    <button id="langBtn" onclick="document.getElementById('langOverlay').style.display='flex'">
-        <i class="fa-solid fa-globe"></i>
-        <span>{{ strtoupper(app()->getLocale()) }}</span>
-    </button>
 
     {{-- ── Language overlay ── --}}
     <div id="langOverlay">
         <div id="langCard">
             <div id="langCardHeader">
-                <h5><i class="fa-solid fa-globe" style="margin-right:8px;color:#44E0AC;"></i>Seleziona lingua</h5>
-                <button id="langCloseBtn" onclick="document.getElementById('langOverlay').style.display='none'">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <i class="fa-solid fa-globe"></i>
+                <h5>Seleziona la tua lingua</h5>
             </div>
             <div id="langCardBody">
                 @php
@@ -123,6 +112,9 @@
                         <i class="fa-solid fa-check langCheck"></i>
                     </a>
                 @endforeach
+            </div>
+            <div id="langCardFooter">
+                <button type="button" id="skipLangBtn">Salta</button>
             </div>
         </div>
     </div>
@@ -230,32 +222,51 @@
     </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('periodForm');
-            const wraps = document.querySelectorAll('.inputWrap');
-            wraps.forEach(w => {
-                w.addEventListener('click', function (e) {
-                    if (e.target && e.target.tagName.toLowerCase() === 'input') return;
-                    wraps.forEach(x => x.classList.remove('active'));
-                    this.classList.add('active');
-                    const radio = this.querySelector('input[type="radio"]');
-                    if (!radio) return;
-                    radio.checked = true;
-                    const old = form.querySelector('input[type="hidden"][name="period_selection"]');
-                    if (old) old.remove();
-                    const hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = 'period_selection';
-                    hidden.value = radio.value;
-                    form.appendChild(hidden);
-                    setTimeout(() => form.submit(), 250);
+        (function () {
+            var STORAGE_KEY = 'cc_lang_confirmed_v1';
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var overlay = document.getElementById('langOverlay');
+
+                if (!localStorage.getItem(STORAGE_KEY)) {
+                    overlay.style.display = 'flex';
+                }
+
+                document.getElementById('skipLangBtn').addEventListener('click', function () {
+                    localStorage.setItem(STORAGE_KEY, 'skipped');
+                    overlay.style.display = 'none';
+                });
+
+                // Salva su localStorage quando si clicca una lingua
+                document.querySelectorAll('.langOption').forEach(function (el) {
+                    el.addEventListener('click', function () {
+                        localStorage.setItem(STORAGE_KEY, 'confirmed');
+                    });
+                });
+
+                // Form period
+                var form = document.getElementById('periodForm');
+                var wraps = document.querySelectorAll('.inputWrap');
+                wraps.forEach(function (w) {
+                    w.addEventListener('click', function (e) {
+                        if (e.target && e.target.tagName.toLowerCase() === 'input') return;
+                        wraps.forEach(function (x) { x.classList.remove('active'); });
+                        this.classList.add('active');
+                        var radio = this.querySelector('input[type="radio"]');
+                        if (!radio) return;
+                        radio.checked = true;
+                        var old = form.querySelector('input[type="hidden"][name="period_selection"]');
+                        if (old) old.remove();
+                        var hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'period_selection';
+                        hidden.value = radio.value;
+                        form.appendChild(hidden);
+                        setTimeout(function () { form.submit(); }, 250);
+                    });
                 });
             });
-
-            document.getElementById('langOverlay').addEventListener('click', function(e) {
-                if (e.target === this) this.style.display = 'none';
-            });
-        });
+        })();
     </script>
 
     <script>
