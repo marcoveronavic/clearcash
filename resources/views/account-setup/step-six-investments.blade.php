@@ -1,6 +1,25 @@
 @extends('layouts.customer')
 @section('styles_in_head')
     <link rel="stylesheet" href="{{ asset('build/assets/account-setup.css') }}">
+
+    <script>
+    (function(){
+        var btn = document.createElement('button');
+        btn.innerHTML = document.body.classList.contains('light-mode') ? '?? Dark' : '?? Light';
+        btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+        document.body.appendChild(btn);
+        btn.addEventListener('click', function(){
+            if (document.body.classList.contains('light-mode')) {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('cc-theme','dark');
+            } else {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('cc-theme','light');
+            }
+            window.location.reload();
+        });
+    })();
+    </script>
 @endsection
 @section('content')
     <style>
@@ -198,7 +217,7 @@
 
                     bankItem.querySelectorAll("input, select").forEach(field => {
                         if (field.tagName === "SELECT") {
-                            let existingHidden = bankItem.querySelector('input[type="hidden"][name="' + field.name + '"]');
+                            let existingHidden = bankItem.querySelector(`input[type="hidden"][name="${field.name}"]`);
                             if (!existingHidden) { const hidden = document.createElement("input"); hidden.type = "hidden"; hidden.name = field.name; hidden.value = field.value; bankItem.appendChild(hidden); } else { existingHidden.value = field.value; }
                             field.setAttribute("disabled", true);
                         } else { field.setAttribute("readonly", true); }
@@ -254,17 +273,11 @@
             });
         });
     </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function(){
-            var isLight = document.body.classList.contains('light-mode');
+        <script>
+        (function(){
             var btn = document.createElement('button');
-            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:flex;align-items:center;gap:6px;';
-            var ico = document.createElement('i');
-            ico.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
-            ico.style.color = isLight ? '#fbbf24' : '#f59e0b';
-            btn.appendChild(ico);
-            btn.appendChild(document.createTextNode(isLight ? 'Dark' : 'Light'));
+            var ico = document.createElement('i'); ico.className = document.body.classList.contains('light-mode') ? 'fa-solid fa-moon' : 'fa-solid fa-sun'; ico.style.marginRight = '6px'; ico.style.color = document.body.classList.contains('light-mode') ? '#fbbf24' : '#f59e0b'; btn.appendChild(ico); btn.appendChild(document.createTextNode(document.body.classList.contains('light-mode') ? ' Dark' : ' Light'));
+            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
             document.body.appendChild(btn);
             btn.addEventListener('click', function(){
                 if (document.body.classList.contains('light-mode')) {
@@ -276,6 +289,8 @@
                 }
                 window.location.reload();
             });
-        });
+        })();
     </script>
 @endsection
+
+

@@ -55,7 +55,7 @@
 
         $otherRows = [];
         $otherNames   = $acc['other_name']   ?? [];
-        $otherAmounts = $acc['other_amounts']?? [];
+        $otherAmounts = $acc['other_amounts'] ?? [];
         if (is_array($otherNames) && is_array($otherAmounts)) {
             foreach ($otherNames as $i => $n) {
                 $n = trim((string)$n);
@@ -71,6 +71,9 @@
                    + (float)($acc['savings_pension_amount'] ?? 0)
                    + (float)($acc['savings_investments_amount'] ?? 0);
         }
+
+        $currency = auth()->user()->base_currency ?? 'GBP';
+        $symbol   = match($currency) { 'GBP' => '£', 'USD' => '$', 'CHF' => 'Fr', default => '€' };
     @endphp
 
     <section class="setupStepsWrapper">
@@ -79,13 +82,13 @@
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
-                            <div class="item active">Crea il tuo budget</div>
+                            <div class="item active">{{ __('messages.setup_step_budget') }}</div>
                             <div class="sep"></div>
-                            <div class="item active">Aggiungi conti bancari</div>
+                            <div class="item active">{{ __('messages.setup_step_banks') }}</div>
                             <div class="sep"></div>
-                            <div class="item">Investimenti e pensioni</div>
+                            <div class="item">{{ __('messages.setup_step_investments') }}</div>
                             <div class="sep"></div>
-                            <div class="item">Fatto</div>
+                            <div class="item">{{ __('messages.setup_step_done') }}</div>
                         </div>
                         <div class="boxes">
                             <div class="box active"></div>
@@ -101,8 +104,8 @@
 
             <div class="row mt-md-4 mt-0">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <h1>Conferma il tuo budget</h1>
-                    <p>Verifica che i dettagli del tuo budget siano corretti. Puoi modificarli in qualsiasi momento.</p>
+                    <h1>{{ __('messages.step4_title') }}</h1>
+                    <p>{{ __('messages.step4_desc') }}</p>
                 </div>
             </div>
 
@@ -111,22 +114,22 @@
 
                     <div class="cardish">
                         <div class="rowItem">
-                            <span class="label">Data stipendio</span>
+                            <span class="label">{{ __('messages.salary_date') }}</span>
                             <span class="value">{{ $salaryDate ? \Carbon\Carbon::parse($salaryDate)->format('d/m/Y') : '—' }}</span>
                         </div>
                         <div class="rowItem">
-                            <span class="label">Importo stipendio</span>
-                            <span class="value">€{{ number_format($salaryAmount, 2) }}</span>
+                            <span class="label">{{ __('messages.salary_amount') }}</span>
+                            <span class="value">{{ $symbol }}{{ number_format($salaryAmount, 2) }}</span>
                         </div>
                     </div>
 
                     @if(count($expenseRows))
                         <div class="cardish">
-                            <h6 class="mb-2">Spese</h6>
+                            <h6 class="mb-2">{{ __('messages.expenses') }}</h6>
                             @foreach($expenseRows as $r)
                                 <div class="rowItem">
                                     <span class="label">{{ $r['name'] }}</span>
-                                    <span class="value">€{{ number_format($r['amount'], 2) }}</span>
+                                    <span class="value">{{ $symbol }}{{ number_format($r['amount'], 2) }}</span>
                                 </div>
                             @endforeach
                         </div>
@@ -134,11 +137,11 @@
 
                     @if(count($otherRows))
                         <div class="cardish">
-                            <h6 class="mb-2">Altro</h6>
+                            <h6 class="mb-2">{{ __('messages.other') }}</h6>
                             @foreach($otherRows as $r)
                                 <div class="rowItem">
                                     <span class="label">{{ $r['name'] }}</span>
-                                    <span class="value">€{{ number_format($r['amount'], 2) }}</span>
+                                    <span class="value">{{ $symbol }}{{ number_format($r['amount'], 2) }}</span>
                                 </div>
                             @endforeach
                         </div>
@@ -146,17 +149,17 @@
 
                     <div class="cardish">
                         <div class="rowItem">
-                            <span class="label">Totale</span>
-                            <span class="value">€{{ number_format($total, 2) }}</span>
+                            <span class="label">{{ __('messages.total') }}</span>
+                            <span class="value">{{ $symbol }}{{ number_format($total, 2) }}</span>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between mt-3">
-                        <a class="setupStepsBackButton" href="{{ route('account-setup.step-three', [], false) }}">Indietro</a>
+                        <a class="setupStepsBackButton" href="{{ route('account-setup.step-three', [], false) }}">{{ __('messages.back') }}</a>
 
                         <form action="/account-setup-step-four-store" method="post" class="m-0 p-0">
                             @csrf
-                            <button type="submit" class="twoToneBlueGreenBtn">Continua</button>
+                            <button type="submit" class="twoToneBlueGreenBtn">{{ __('messages.continue') }}</button>
                         </form>
                     </div>
 
@@ -164,23 +167,4 @@
             </div>
         </div>
     </section>
-    <script>
-        (function(){
-            var btn = document.createElement('button');
-            btn.innerHTML = document.body.classList.contains('light-mode') ? '🌙 Dark' : '☀️ Light';
-            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-            document.body.appendChild(btn);
-            btn.addEventListener('click', function(){
-                if (document.body.classList.contains('light-mode')) {
-                    document.body.classList.remove('light-mode');
-                    localStorage.setItem('cc-theme','dark');
-                } else {
-                    document.body.classList.add('light-mode');
-                    localStorage.setItem('cc-theme','light');
-                }
-                window.location.reload();
-            });
-        })();
-    </script>
 @endsection
-

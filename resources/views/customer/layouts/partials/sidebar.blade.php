@@ -86,16 +86,16 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{{ route("my-account.index") }}">My Account</a>
+                                <a class="dropdown-item" href="{{ route("my-account.index") }}">{{ __('messages.my_account') }}</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" style="cursor: pointer" onclick="resetAccount()">Reset Account</a>
+                                <a class="dropdown-item" style="cursor: pointer" onclick="resetAccount()">{{ __('messages.reset_account') }}</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
+                                    {{ __('messages.logout') }}
                                 </a>
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -131,13 +131,13 @@
         }
 
         Swal.fire({
-            title: 'Are you sure?',
-            text: 'Are you sure you want to reset your account? This action cannot be undone.',
+            title: @json(__('messages.are_you_sure')),
+            text: @json(__('messages.reset_budget_confirm')),
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, reset it!'
+            confirmButtonText: @json(__('messages.yes_reset'))
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch("{{ route('reset-account') }}", {
@@ -151,12 +151,12 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        Swal.fire('Reset!', 'Your account has been reset.', 'success').then(() => {
+                        Swal.fire(@json(__('messages.yes_reset')), @json(__('messages.success')), 'success').then(() => {
                             window.location.href = "{{ route('account-setup.step-one') }}";
                         });
                     })
                     .catch(() => {
-                        Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                        Swal.fire(@json(__('messages.error')), @json(__('messages.error')), 'error');
                     });
             }
         });

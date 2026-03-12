@@ -94,11 +94,7 @@
 
         /* ── Currency overlay – light mode overrides ── */
         body.light-mode #currencyOverlay { background:rgba(0,0,0,0.35); }
-        body.light-mode #currencyCard {
-            background:#ffffff;
-            border:1px solid rgba(0,0,0,0.1);
-            box-shadow:0 20px 60px rgba(0,0,0,0.15);
-        }
+        body.light-mode #currencyCard { background:#ffffff; border:1px solid rgba(0,0,0,0.1); box-shadow:0 20px 60px rgba(0,0,0,0.15); }
         body.light-mode #currencyCardHeader { border-bottom:1px solid rgba(0,0,0,0.08); }
         body.light-mode #currencyCardHeader h5 { color:#0D2020; }
         body.light-mode #currencyCardHeader .loc-icon { color:#0D9488; }
@@ -108,24 +104,13 @@
         body.light-mode #detectedCurrencyLabel { color:#0D9488; }
         body.light-mode #currencyIconWrap { background:rgba(13,148,136,0.1); }
         body.light-mode #currencyIconWrap i { color:#0D9488; }
-        body.light-mode .flagBadge {
-            background:rgba(13,148,136,0.1) !important;
-            border-color:rgba(13,148,136,0.3) !important;
-            color:#0D9488 !important;
-        }
-        body.light-mode #currencyManualWrap {
-            background:rgba(0,0,0,0.03);
-            border:1px solid rgba(0,0,0,0.08);
-        }
+        body.light-mode .flagBadge { background:rgba(13,148,136,0.1) !important; border-color:rgba(13,148,136,0.3) !important; color:#0D9488 !important; }
+        body.light-mode #currencyManualWrap { background:rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.08); }
         body.light-mode #currencyManualWrap label { color:rgba(13,32,32,0.45); }
-        body.light-mode #currencyModalSelect {
-            background:#f8fafa;border:1px solid rgba(0,0,0,0.12);color:#0D2020;
-        }
-        body.light-mode #currencyModalSelect option { background:#fff;color:#0D2020; }
+        body.light-mode #currencyModalSelect { background:#f8fafa; border:1px solid rgba(0,0,0,0.12); color:#0D2020; }
+        body.light-mode #currencyModalSelect option { background:#fff; color:#0D2020; }
         body.light-mode #overlayFooter { border-top:1px solid rgba(0,0,0,0.08); }
-        body.light-mode #skipCurrencyBtn {
-            background:#f1f5f5;border:1px solid rgba(0,0,0,0.1);color:#374151;
-        }
+        body.light-mode #skipCurrencyBtn { background:#f1f5f5; border:1px solid rgba(0,0,0,0.1); color:#374151; }
         body.light-mode #skipCurrencyBtn:hover { background:#e5eaea !important; color:#0D2020 !important; }
     </style>
 
@@ -165,42 +150,38 @@
     {{-- ===== CURRENCY OVERLAY ===== --}}
     <div id="currencyOverlay" style="display:none;">
         <div id="currencyCard">
-
             <div id="currencyCardHeader">
                 <i class="fa-solid fa-location-dot loc-icon"></i>
-                <h5>Residenza e valuta</h5>
+                <h5>{{ __('messages.currency_overlay_title') }}</h5>
             </div>
-
             <div id="currencyCardBody">
                 <div id="detectingState">
-                    <i class="fa-solid fa-circle-notch fa-spin" style="margin-right:6px;"></i> Rilevamento posizione in corso...
+                    <i class="fa-solid fa-circle-notch fa-spin" style="margin-right:6px;"></i> {{ __('messages.detecting_location') }}
                 </div>
-
                 <div id="detectedState" style="display:none;">
                     <div id="currencyIconWrap">
                         <i class="fa-solid fa-earth-europe"></i>
                     </div>
                     <div id="detectedFlag" style="text-align:center;margin-bottom:12px;"></div>
                     <p>
-                        Abbiamo rilevato che ti trovi in <strong id="detectedCountryName"></strong>.<br>
-                        Vuoi impostare <strong id="detectedCurrencyLabel"></strong> come valuta principale?
+                        {{ __('messages.currency_detected_intro') }} <strong id="detectedCountryName"></strong>.<br>
+                        {{ __('messages.currency_detected_question') }} <strong id="detectedCurrencyLabel"></strong> {{ __('messages.currency_detected_question_post') }}
                     </p>
                     <div id="currencyManualWrap">
-                        <label>Oppure scegli manualmente</label>
+                        <label>{{ __('messages.choose_manually') }}</label>
                         <select id="currencyModalSelect">
-                            <option value="GBP">GB - Regno Unito — GBP (£)</option>
-                            <option value="EUR">EU - Europa — EUR (€)</option>
-                            <option value="USD">US - Stati Uniti — USD ($)</option>
-                            <option value="CHF">CH - Svizzera — CHF (Fr)</option>
+                            <option value="GBP">{{ __('messages.currency_gb') }}</option>
+                            <option value="EUR">{{ __('messages.currency_eu') }}</option>
+                            <option value="USD">{{ __('messages.currency_us') }}</option>
+                            <option value="CHF">{{ __('messages.currency_ch') }}</option>
                         </select>
                     </div>
                 </div>
             </div>
-
             <div id="overlayFooter">
-                <button type="button" id="skipCurrencyBtn">Salta</button>
+                <button type="button" id="skipCurrencyBtn">{{ __('messages.skip') }}</button>
                 <button type="button" id="confirmCurrencyBtn">
-                    <i class="fa-solid fa-check"></i> Conferma
+                    <i class="fa-solid fa-check"></i> {{ __('messages.confirm') }}
                 </button>
             </div>
         </div>
@@ -214,10 +195,10 @@
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
-                            <div class="item active">Crea il tuo budget</div><div class="sep"></div>
-                            <div class="item">Aggiungi conti bancari</div><div class="sep"></div>
-                            <div class="item">Investimenti e pensioni</div><div class="sep"></div>
-                            <div class="item">Fatto</div>
+                            <div class="item active">{{ __('messages.setup_step_budget') }}</div><div class="sep"></div>
+                            <div class="item">{{ __('messages.setup_step_banks') }}</div><div class="sep"></div>
+                            <div class="item">{{ __('messages.setup_step_investments') }}</div><div class="sep"></div>
+                            <div class="item">{{ __('messages.setup_step_done') }}</div>
                         </div>
                         <div class="boxes">
                             <div class="box active"></div>
@@ -234,8 +215,8 @@
             {{-- Title --}}
             <div class="row mt-4">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <h1>Seleziona quanto vuoi spendere per ogni categoria</h1>
-                    <p>Il budget per categoria ti aiuterà a tenere traccia delle tue spese quotidiane.</p>
+                    <h1>{{ __('messages.step3_title') }}</h1>
+                    <p>{{ __('messages.step3_desc') }}</p>
                 </div>
             </div>
 
@@ -258,7 +239,7 @@
                         <input type="hidden" name="base_currency" id="baseCurrencyInput" value="{{ $savedCurrency }}">
 
                         {{-- Stipendio --}}
-                        <div class="row"><div class="col-12"><h6 class="formSectionTitle"><i class="fa-solid fa-wallet cat-icon"></i>Stipendio</h6></div></div>
+                        <div class="row"><div class="col-12"><h6 class="formSectionTitle"><i class="fa-solid fa-wallet cat-icon"></i>{{ __('messages.salary') }}</h6></div></div>
                         <div class="expensesWrap">
                             <div class="expenseItem">
                                 <div class="row align-items-center">
@@ -281,7 +262,7 @@
                         </div>
 
                         {{-- Spese --}}
-                        <div class="row"><div class="col-12"><h6 class="formSectionTitle">Spese</h6></div></div>
+                        <div class="row"><div class="col-12"><h6 class="formSectionTitle">{{ __('messages.expenses') }}</h6></div></div>
                         <div class="expensesWrap">
                             <div class="expenseItem">
                                 <div class="row align-items-center gy-md-2 gy-1 gx-5">
@@ -317,7 +298,7 @@
                         </div>
 
                         {{-- Altro --}}
-                        <div class="row"><div class="col-12"><h6 class="formSectionTitle"><i class="fa-solid fa-ellipsis cat-icon"></i>Altro</h6></div></div>
+                        <div class="row"><div class="col-12"><h6 class="formSectionTitle"><i class="fa-solid fa-ellipsis cat-icon"></i>{{ __('messages.other') }}</h6></div></div>
                         <div class="expensesWrap">
                             <div class="expenseItem">
                                 @php
@@ -331,7 +312,7 @@
                                                 <div class="col-lg-6 other-row">
                                                     <div class="row align-items-center">
                                                         <div class="col-md-8 col-6">
-                                                            <input type="text" name="other_name[]" placeholder="Descrizione..." style="width:100%" value="{{ $nm }}">
+                                                            <input type="text" name="other_name[]" placeholder="{{ __('messages.description_placeholder') }}" style="width:100%" value="{{ $nm }}">
                                                         </div>
                                                         <div class="col-md-4 col-6 d-md-flex justify-content-md-end">
                                                             <div class="input-group mt-0">
@@ -346,7 +327,7 @@
                                             <div class="col-lg-6 other-row">
                                                 <div class="row align-items-center">
                                                     <div class="col-md-8 col-6">
-                                                        <input type="text" name="other_name[]" placeholder="Descrizione..." style="width:100%">
+                                                        <input type="text" name="other_name[]" placeholder="{{ __('messages.description_placeholder') }}" style="width:100%">
                                                     </div>
                                                     <div class="col-md-4 col-6 d-md-flex justify-content-md-end">
                                                         <div class="input-group mt-0">
@@ -362,7 +343,7 @@
                                 <div class="row mt-2">
                                     <div class="col-12">
                                         <button type="button" class="add-expense">
-                                            <i class="fa-solid fa-circle-plus"></i> Aggiungi altra voce
+                                            <i class="fa-solid fa-circle-plus"></i> {{ __('messages.add_another_item') }}
                                         </button>
                                     </div>
                                 </div>
@@ -373,7 +354,7 @@
                         <div class="expensesWrap">
                             <div class="expenseItem">
                                 <div class="row align-items-center">
-                                    <div class="col-md-8 col-6"><label>Totale</label></div>
+                                    <div class="col-md-8 col-6"><label>{{ __('messages.total') }}</label></div>
                                     <div class="col-md-4 col-6 d-flex justify-content-end">
                                         <p><span class="currencySymbolLabel">{{ $savedSymbol }}</span> <span class="totalAmount"></span></p>
                                     </div>
@@ -385,14 +366,14 @@
                         <div class="row align-items-center my-4">
                             <div class="col-6 d-flex justify-content-start">
                                 @php($period = data_get($accSetup ?? [], 'period_selection'))
-                                @if ($period === 'fixed_date')
-                                    <a class="setupStepsBackButton" href="{{ route('account-setup.step-two') }}">Indietro</a>
+                                @if ($period === 'fixed_date' || $period === 'weekly' || $period === 'custom')
+                                    <a class="setupStepsBackButton" href="{{ route('account-setup.step-two') }}">{{ __('messages.back') }}</a>
                                 @else
-                                    <a class="setupStepsBackButton" href="{{ route('account-setup.step-one') }}">Indietro</a>
+                                    <a class="setupStepsBackButton" href="{{ route('account-setup.step-one') }}">{{ __('messages.back') }}</a>
                                 @endif
                             </div>
                             <div class="col-6 d-flex justify-content-end">
-                                <button type="submit" class="twoToneBlueGreenBtn">Continua</button>
+                                <button type="submit" class="twoToneBlueGreenBtn">{{ __('messages.continue') }}</button>
                             </div>
                         </div>
                     </form>
@@ -410,6 +391,12 @@
             var SYMBOLS     = { GBP: '£', EUR: '€', USD: '$', CHF: 'Fr' };
             var EU          = ['AT','BE','CY','EE','FI','FR','DE','GR','IE','IT','LV','LT','LU','MT','NL','PT','SK','SI','ES'];
             var isLight     = document.body.classList.contains('light-mode');
+
+            var COUNTRY_UK      = @json(__('messages.country_uk'));
+            var COUNTRY_US      = @json(__('messages.country_us'));
+            var COUNTRY_CH      = @json(__('messages.country_ch'));
+            var COUNTRY_EUROPE  = @json(__('messages.country_europe'));
+            var LOCATION_UNKNOWN = @json(__('messages.location_not_detected'));
 
             function updateAllSymbols(sym) {
                 document.querySelectorAll('.currencySymbolLabel').forEach(function (el) { el.textContent = sym; });
@@ -433,7 +420,6 @@
 
             document.addEventListener('DOMContentLoaded', function () {
 
-                // ── Mostra overlay solo se non ancora confermato ─────────
                 var alreadyConfirmed = localStorage.getItem(STORAGE_KEY);
                 if (!alreadyConfirmed) {
                     openOverlay();
@@ -444,11 +430,11 @@
                             var code = data.country_code || 'GB';
                             var info;
 
-                            if (code === 'GB')               info = { currency: 'GBP', name: 'Regno Unito',  displayCode: 'GB' };
-                            else if (code === 'US')           info = { currency: 'USD', name: 'Stati Uniti',  displayCode: 'US' };
-                            else if (code === 'CH')           info = { currency: 'CHF', name: 'Svizzera',     displayCode: 'CH' };
-                            else if (EU.indexOf(code) >= 0)   info = { currency: 'EUR', name: data.country_name || 'Europa', displayCode: code };
-                            else                              info = { currency: 'EUR', name: data.country_name || code,     displayCode: code };
+                            if (code === 'GB')             info = { currency: 'GBP', name: COUNTRY_UK,                         displayCode: 'GB' };
+                            else if (code === 'US')         info = { currency: 'USD', name: COUNTRY_US,                         displayCode: 'US' };
+                            else if (code === 'CH')         info = { currency: 'CHF', name: COUNTRY_CH,                         displayCode: 'CH' };
+                            else if (EU.indexOf(code) >= 0) info = { currency: 'EUR', name: data.country_name || COUNTRY_EUROPE, displayCode: code };
+                            else                            info = { currency: 'EUR', name: data.country_name || code,           displayCode: code };
 
                             setFlagBadge(info.displayCode);
                             document.getElementById('detectedCountryName').textContent   = info.name;
@@ -461,7 +447,7 @@
                         })
                         .catch(function () {
                             setFlagBadge('?', isLight ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.4)');
-                            document.getElementById('detectedCountryName').textContent   = 'posizione non rilevata';
+                            document.getElementById('detectedCountryName').textContent   = LOCATION_UNKNOWN;
                             document.getElementById('detectedCurrencyLabel').textContent = 'GBP (£)';
                             document.getElementById('currencyModalSelect').value         = 'GBP';
                             document.getElementById('detectingState').style.display = 'none';
@@ -503,6 +489,7 @@
                 calcTotal();
 
                 // ── Aggiungi voce ────────────────────────────────────────
+                var descPlaceholder = @json(__('messages.description_placeholder'));
                 document.querySelector('.add-expense').addEventListener('click', function () {
                     var sym  = SYMBOLS[document.getElementById('baseCurrencyInput').value] || '£';
                     var wrap = document.createElement('div');
@@ -510,7 +497,7 @@
                     wrap.innerHTML =
                         '<div class="row align-items-center">' +
                         '<div class="col-md-8 col-6">' +
-                        '<input type="text" name="other_name[]" placeholder="Descrizione..." style="width:100%">' +
+                        '<input type="text" name="other_name[]" placeholder="' + descPlaceholder + '" style="width:100%">' +
                         '</div>' +
                         '<div class="col-md-4 col-6 d-md-flex justify-content-md-end">' +
                         '<div class="input-group mt-0">' +
@@ -524,25 +511,4 @@
             });
         })();
     </script>
-
-    {{-- Light/Dark toggle --}}
-    <script>
-        (function () {
-            var btn = document.createElement('button');
-            btn.innerHTML = document.body.classList.contains('light-mode') ? '🌙 Dark' : '☀️ Light';
-            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-            document.body.appendChild(btn);
-            btn.addEventListener('click', function () {
-                if (document.body.classList.contains('light-mode')) {
-                    document.body.classList.remove('light-mode');
-                    localStorage.setItem('cc-theme', 'dark');
-                } else {
-                    document.body.classList.add('light-mode');
-                    localStorage.setItem('cc-theme', 'light');
-                }
-                window.location.reload();
-            });
-        })();
-    </script>
-
 @endsection

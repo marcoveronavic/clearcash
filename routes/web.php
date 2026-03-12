@@ -22,6 +22,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 
 /*
@@ -45,6 +46,11 @@ Route::redirect('/home', '/dashboard', 301)->name('home');
 */
 
 Route::get('/language/{locale}', [LanguageController::class, 'switchLocale'])->name('language.switch');
+
+Route::get('/language/skip', function () {
+    Session::put('locale', app()->getLocale());
+    return redirect()->route('account-setup.step-one');
+})->name('language.skip');
 
 /*
 |--------------------------------------------------------------------------

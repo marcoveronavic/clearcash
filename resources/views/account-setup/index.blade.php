@@ -24,7 +24,7 @@
         /* ── Lang overlay ── */
         #langOverlay {
             position:fixed;inset:0;background:rgba(0,0,0,0.75);
-            z-index:99999;display:none;align-items:center;justify-content:center;
+            z-index:99999;align-items:center;justify-content:center;
         }
         #langCard {
             background:#0f2629;border:1px solid rgba(255,255,255,0.08);
@@ -62,6 +62,7 @@
             border:1px solid rgba(255,255,255,0.1);
             background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);
             font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .15s;
+            text-decoration:none;display:inline-block;
         }
         #skipLangBtn:hover { background:rgba(255,255,255,0.12);color:#fff; }
 
@@ -83,11 +84,11 @@
     </style>
 
     {{-- ── Language overlay ── --}}
-    <div id="langOverlay">
+    <div id="langOverlay" style="display:{{ session()->has('locale') ? 'none' : 'flex' }}">
         <div id="langCard">
             <div id="langCardHeader">
                 <i class="fa-solid fa-globe"></i>
-                <h5>Seleziona la tua lingua</h5>
+                <h5>{{ __('messages.select_your_language') }}</h5>
             </div>
             <div id="langCardBody">
                 @php
@@ -114,7 +115,7 @@
                 @endforeach
             </div>
             <div id="langCardFooter">
-                <button type="button" id="skipLangBtn">Salta</button>
+                <a href="{{ route('language.skip') }}" id="skipLangBtn">{{ __('messages.skip') }}</a>
             </div>
         </div>
     </div>
@@ -125,13 +126,13 @@
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
-                            <div class="item active">Crea il tuo budget</div>
+                            <div class="item active">{{ __('messages.setup_step_budget') }}</div>
                             <div class="sep"></div>
-                            <div class="item">Aggiungi conti bancari</div>
+                            <div class="item">{{ __('messages.setup_step_banks') }}</div>
                             <div class="sep"></div>
-                            <div class="item">Investimenti e pensioni</div>
+                            <div class="item">{{ __('messages.setup_step_investments') }}</div>
                             <div class="sep"></div>
-                            <div class="item">Fatto</div>
+                            <div class="item">{{ __('messages.setup_step_done') }}</div>
                         </div>
                         <div class="boxes">
                             <div class="box active"></div>
@@ -147,8 +148,8 @@
 
             <div class="row mt-4">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <h1>Seleziona il tuo periodo</h1>
-                    <p>Il tuo budget e i tuoi report si sincronizzeranno con questo periodo.</p>
+                    <h1>{{ __('messages.select_your_period') }}</h1>
+                    <p>{{ __('messages.period_sync_desc') }}</p>
                 </div>
             </div>
 
@@ -172,8 +173,8 @@
                         <label class="inputWrap {{ $pre === 'first_day' ? 'active' : '' }}" for="first_day_of_month">
                             <input type="radio" name="period_selection" id="first_day_of_month" value="first_day" {{ $pre === 'first_day' ? 'checked' : '' }}>
                             <div class="content">
-                                <h5>Dal primo all'ultimo giorno del mese</h5>
-                                <p>Il tuo periodo inizierà il 1° giorno del mese e terminerà l'ultimo.</p>
+                                <h5>{{ __('messages.period_first_day') }}</h5>
+                                <p>{{ __('messages.period_first_day_desc') }}</p>
                             </div>
                             <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
                         </label>
@@ -181,8 +182,8 @@
                         <label class="inputWrap {{ $pre === 'last_working' ? 'active' : '' }}" for="last_working_day">
                             <input type="radio" name="period_selection" id="last_working_day" value="last_working" {{ $pre === 'last_working' ? 'checked' : '' }}>
                             <div class="content">
-                                <h5>Ultimo giorno lavorativo del mese</h5>
-                                <p>Il tuo periodo si resetterà l'ultimo giorno lavorativo del mese.</p>
+                                <h5>{{ __('messages.period_last_working') }}</h5>
+                                <p>{{ __('messages.period_last_working_desc') }}</p>
                             </div>
                             <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
                         </label>
@@ -190,8 +191,8 @@
                         <label class="inputWrap {{ $pre === 'fixed_date' ? 'active' : '' }}" for="fixed_monthly_date">
                             <input type="radio" name="period_selection" id="fixed_monthly_date" value="fixed_date" {{ $pre === 'fixed_date' ? 'checked' : '' }}>
                             <div class="content">
-                                <h5>Data fissa mensile</h5>
-                                <p>Il tuo periodo si resetterà nel giorno esatto che scegli.</p>
+                                <h5>{{ __('messages.period_fixed_date') }}</h5>
+                                <p>{{ __('messages.period_fixed_date_desc') }}</p>
                             </div>
                             <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
                         </label>
@@ -199,8 +200,8 @@
                         <label class="inputWrap {{ $pre === 'weekly' ? 'active' : '' }}" for="weekly_period">
                             <input type="radio" name="period_selection" id="weekly_period" value="weekly" {{ $pre === 'weekly' ? 'checked' : '' }}>
                             <div class="content">
-                                <h5>Settimanale</h5>
-                                <p>Il tuo periodo si resetterà ogni settimana (sceglierai il giorno di inizio dopo).</p>
+                                <h5>{{ __('messages.period_weekly') }}</h5>
+                                <p>{{ __('messages.period_weekly_desc') }}</p>
                             </div>
                             <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
                         </label>
@@ -208,13 +209,13 @@
                         <label class="inputWrap {{ $pre === 'custom' ? 'active' : '' }}" for="custom_period">
                             <input type="radio" name="period_selection" id="custom_period" value="custom" {{ $pre === 'custom' ? 'checked' : '' }}>
                             <div class="content">
-                                <h5>Personalizzato</h5>
-                                <p>Definisci un periodo personalizzato (ti chiederemo i dettagli nel prossimo step).</p>
+                                <h5>{{ __('messages.period_custom') }}</h5>
+                                <p>{{ __('messages.period_custom_desc') }}</p>
                             </div>
                             <div class="iconWrap"><i class="fas fa-chevron-right" aria-hidden="true"></i></div>
                         </label>
 
-                        <button type="submit" class="btn btn-primary d-none" id="continueBtn">Continua</button>
+                        <button type="submit" class="btn btn-primary d-none" id="continueBtn">{{ __('messages.continue') }}</button>
                     </form>
                 </div>
             </div>
@@ -222,69 +223,27 @@
     </section>
 
     <script>
-        (function () {
-            var STORAGE_KEY = 'cc_lang_confirmed_v1';
-
-            document.addEventListener('DOMContentLoaded', function () {
-                var overlay = document.getElementById('langOverlay');
-
-                if (!localStorage.getItem(STORAGE_KEY)) {
-                    overlay.style.display = 'flex';
-                }
-
-                document.getElementById('skipLangBtn').addEventListener('click', function () {
-                    localStorage.setItem(STORAGE_KEY, 'skipped');
-                    overlay.style.display = 'none';
-                });
-
-                // Salva su localStorage quando si clicca una lingua
-                document.querySelectorAll('.langOption').forEach(function (el) {
-                    el.addEventListener('click', function () {
-                        localStorage.setItem(STORAGE_KEY, 'confirmed');
-                    });
-                });
-
-                // Form period
-                var form = document.getElementById('periodForm');
-                var wraps = document.querySelectorAll('.inputWrap');
-                wraps.forEach(function (w) {
-                    w.addEventListener('click', function (e) {
-                        if (e.target && e.target.tagName.toLowerCase() === 'input') return;
-                        wraps.forEach(function (x) { x.classList.remove('active'); });
-                        this.classList.add('active');
-                        var radio = this.querySelector('input[type="radio"]');
-                        if (!radio) return;
-                        radio.checked = true;
-                        var old = form.querySelector('input[type="hidden"][name="period_selection"]');
-                        if (old) old.remove();
-                        var hidden = document.createElement('input');
-                        hidden.type = 'hidden';
-                        hidden.name = 'period_selection';
-                        hidden.value = radio.value;
-                        form.appendChild(hidden);
-                        setTimeout(function () { form.submit(); }, 250);
-                    });
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('periodForm');
+            var wraps = document.querySelectorAll('.inputWrap');
+            wraps.forEach(function (w) {
+                w.addEventListener('click', function (e) {
+                    if (e.target && e.target.tagName.toLowerCase() === 'input') return;
+                    wraps.forEach(function (x) { x.classList.remove('active'); });
+                    this.classList.add('active');
+                    var radio = this.querySelector('input[type="radio"]');
+                    if (!radio) return;
+                    radio.checked = true;
+                    var old = form.querySelector('input[type="hidden"][name="period_selection"]');
+                    if (old) old.remove();
+                    var hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'period_selection';
+                    hidden.value = radio.value;
+                    form.appendChild(hidden);
+                    setTimeout(function () { form.submit(); }, 250);
                 });
             });
-        })();
-    </script>
-
-    <script>
-        (function(){
-            var btn = document.createElement('button');
-            btn.innerHTML = document.body.classList.contains('light-mode') ? '🌙 Dark' : '☀️ Light';
-            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-            document.body.appendChild(btn);
-            btn.addEventListener('click', function(){
-                if (document.body.classList.contains('light-mode')) {
-                    document.body.classList.remove('light-mode');
-                    localStorage.setItem('cc-theme','dark');
-                } else {
-                    document.body.classList.add('light-mode');
-                    localStorage.setItem('cc-theme','light');
-                }
-                window.location.reload();
-            });
-        })();
+        });
     </script>
 @endsection

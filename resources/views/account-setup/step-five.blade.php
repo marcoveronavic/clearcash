@@ -131,13 +131,13 @@
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
-                            <div class="item">Crea il tuo budget</div>
+                            <div class="item">{{ __('messages.setup_step_budget') }}</div>
                             <div class="sep"></div>
-                            <div class="item active">Aggiungi conti bancari</div>
+                            <div class="item active">{{ __('messages.setup_step_banks') }}</div>
                             <div class="sep"></div>
-                            <div class="item">Investimenti e pensioni</div>
+                            <div class="item">{{ __('messages.setup_step_investments') }}</div>
                             <div class="sep"></div>
-                            <div class="item">Fatto</div>
+                            <div class="item">{{ __('messages.setup_step_done') }}</div>
                         </div>
                         <div class="boxes">
                             <div class="box active"></div>
@@ -153,26 +153,26 @@
 
             <div class="row">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <h1>Aggiungi conti bancari</h1>
+                    <h1>{{ __('messages.step5_title') }}</h1>
 
                     <div class="actions-row mb-3">
                         @include('customer.pages.bank-accounts._plaid_link', ['fromSetup' => true])
 
                         @if($connectedAccounts->isEmpty())
                             <a id="toggleManual" href="#" class="twoToneBlueGreenBtn cta-btn">
-                                + Aggiungi conto manualmente
+                                {{ __('messages.add_manually_btn') }}
                             </a>
                         @endif
                     </div>
 
-                    <p>Aggiungi i tuoi conti bancari per tenere traccia di tutte le spese e dei saldi attuali.</p>
+                    <p>{{ __('messages.step5_desc') }}</p>
                 </div>
             </div>
 
             <div id="connectedAccountsSection" style="{{ $connectedAccounts->count() ? '' : 'display:none' }}">
                 <div class="row mt-2">
                     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                        <div class="sep-title">Conti collegati</div>
+                        <div class="sep-title">{{ __('messages.connected_accounts') }}</div>
 
                         <div class="connected-accounts" id="connectedAccountsList">
                             @foreach($connectedAccounts as $acc)
@@ -182,17 +182,17 @@
                                             <div>
                                                 <strong>{{ $acc->account_name }}</strong>
                                                 @if(!empty($acc->is_salary_account))
-                                                    <span class="salaryBadge">Conto stipendio</span>
+                                                    <span class="salaryBadge">{{ __('messages.salary_account_badge') }}</span>
                                                 @endif
                                             </div>
                                             <div class="meta">
                                                 {{ str_replace('_', ' ', $acc->account_type) }}
-                                                @if($acc->mask) � ����{{ $acc->mask }} @endif
-                                                @if($acc->institution_name) � {{ $acc->institution_name }} @endif
+                                                @if($acc->mask) · ····{{ $acc->mask }} @endif
+                                                @if($acc->institution_name) · {{ $acc->institution_name }} @endif
                                             </div>
                                         </div>
                                         <div class="col-4" style="text-align:right">
-                                            <div class="balance">�{{ number_format((float)$acc->starting_balance, 2) }}</div>
+                                            <div class="balance">£{{ number_format((float)$acc->starting_balance, 2) }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -200,12 +200,12 @@
                         </div>
 
                         <p class="text-muted" style="font-size:.95rem">
-                            Puoi continuare o aggiungere altri conti con i pulsanti sopra.
+                            {{ __('messages.can_continue_or_add') }}
                         </p>
 
                         <div class="addAnotherInlineWrap" id="addAnotherInlineWrap" style="{{ $connectedAccounts->count() ? '' : 'display:none' }}">
                             <a href="#" id="addAnotherTrigger" class="addAnotherInlineLink">
-                                <i class="fas fa-plus-circle"></i> Aggiungi un altro conto
+                                <i class="fas fa-plus-circle"></i> {{ __('messages.add_another_account') }}
                             </a>
                         </div>
                     </div>
@@ -223,10 +223,10 @@
 
                         <div class="row align-items-center my-4">
                             <div class="col-6 d-flex justify-content-start">
-                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-four') }}">Indietro</a>
+                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-four') }}">{{ __('messages.back') }}</a>
                             </div>
                             <div class="col-6 d-flex justify-content-end">
-                                <button id="manualContinueBtn" type="button" class="twoToneBlueGreenBtn">Continua</button>
+                                <button id="manualContinueBtn" type="button" class="twoToneBlueGreenBtn">{{ __('messages.continue') }}</button>
                             </div>
                         </div>
                     </form>
@@ -234,10 +234,10 @@
                     <div id="quickContinueRow" class="mt-3">
                         <div class="row align-items-center my-4">
                             <div class="col-6 d-flex justify-content-start">
-                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-four') }}">Indietro</a>
+                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-four') }}">{{ __('messages.back') }}</a>
                             </div>
                             <div class="col-6 d-flex justify-content-end">
-                                <button id="quickContinueBtn" type="button" class="twoToneBlueGreenBtn">Continua</button>
+                                <button id="quickContinueBtn" type="button" class="twoToneBlueGreenBtn">{{ __('messages.continue') }}</button>
                             </div>
                         </div>
                     </div>
@@ -250,23 +250,51 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const manualForm = document.getElementById('manualForm');
-            const goNextInput = document.getElementById('goNextInput');
+            const manualForm        = document.getElementById('manualForm');
+            const goNextInput       = document.getElementById('goNextInput');
             const manualContinueBtn = document.getElementById('manualContinueBtn');
-            const toggleBtn  = document.getElementById('toggleManual');
+            const toggleBtn         = document.getElementById('toggleManual');
             const addAnotherTrigger = document.getElementById('addAnotherTrigger');
             const addAnotherInlineWrap = document.getElementById('addAnotherInlineWrap');
-            const quickRow  = document.getElementById('quickContinueRow');
-            const quickBtn  = document.getElementById('quickContinueBtn');
-            const wrap = document.getElementById('bankItemsWrap');
+            const quickRow          = document.getElementById('quickContinueRow');
+            const quickBtn          = document.getElementById('quickContinueBtn');
+            const wrap              = document.getElementById('bankItemsWrap');
             const hiddenSubmissions = document.getElementById('manualHiddenSubmissions');
-            const connectedSection = document.getElementById('connectedAccountsSection');
-            const connectedList = document.getElementById('connectedAccountsList');
+            const connectedSection  = document.getElementById('connectedAccountsSection');
+            const connectedList     = document.getElementById('connectedAccountsList');
+
+            // ── Translated strings ───────────────────────────────────────
+            const t = {
+                saved:            @json(__('messages.saved')),
+                ok:               'OK',
+                fillRequired:     @json(__('messages.fill_required_fields')),
+                moveSalaryTitle:  @json(__('messages.move_salary_title')),
+                moveSalaryText:   @json(__('messages.move_salary_text')),
+                yes:              @json(__('messages.yes')),
+                no:               @json(__('messages.no')),
+                bankNameLabel:    @json(__('messages.bank_name_label')),
+                accountTypeLabel: @json(__('messages.account_type_label')),
+                selectOption:     @json(__('messages.select_option')),
+                startingBalance:  @json(__('messages.starting_balance_label')),
+                salaryCheckbox:   @json(__('messages.salary_account_checkbox')),
+                salaryHint:       @json(__('messages.salary_account_hint')),
+                salaryBadge:      @json(__('messages.salary_account_badge')),
+                save:             @json(__('messages.save')),
+                cancel:           @json(__('messages.cancel')),
+                edit:             @json(__('messages.edit')),
+                remove:           @json(__('messages.remove')),
+                typeCurrentAccount:   @json(__('messages.account_type_current')),
+                typeSavingsAccount:   @json(__('messages.account_type_savings')),
+                typeIsaAccount:       @json(__('messages.account_type_isa')),
+                typeInvestmentAccount:@json(__('messages.account_type_investment')),
+                typeCreditCard:       @json(__('messages.account_type_credit_card')),
+                creditCardNote:       @json(__('messages.credit_card_note')),
+            };
 
             function showSavedPopup(){
                 if (window.Swal && typeof window.Swal.fire === 'function') {
-                    Swal.fire({ icon: 'success', title: 'Salvato.', confirmButtonText: 'OK' });
-                } else { alert('Salvato.'); }
+                    Swal.fire({ icon: 'success', title: t.saved, confirmButtonText: t.ok });
+                } else { alert(t.saved); }
             }
 
             function showQuickContinue(){ if (quickRow) quickRow.style.display = ''; }
@@ -285,7 +313,7 @@
                     const v = String(el.value || '').trim();
                     if (!v) { ok = false; el.style.border = '1px solid red'; } else { el.style.border = ''; }
                 });
-                if (!ok) alert('Compila tutti i campi obbligatori prima di salvare.');
+                if (!ok) alert(t.fillRequired);
                 return ok;
             }
 
@@ -316,16 +344,15 @@
                 if (!titleDiv) return;
                 const badge = document.createElement('span');
                 badge.className = 'salaryBadge';
-                badge.textContent = 'Conto stipendio';
+                badge.textContent = t.salaryBadge;
                 titleDiv.appendChild(badge);
             }
 
             function confirmMoveSalary(){
-                const text = 'Hai gi� selezionato un conto stipendio. Vuoi spostare lo stipendio su questo conto?';
                 if (window.Swal && typeof window.Swal.fire === 'function') {
-                    return Swal.fire({ icon: 'warning', title: 'Spostare il conto stipendio?', text: text, showCancelButton: true, confirmButtonText: 'S�', cancelButtonText: 'No' }).then(r => !!r.isConfirmed);
+                    return Swal.fire({ icon: 'warning', title: t.moveSalaryTitle, text: t.moveSalaryText, showCancelButton: true, confirmButtonText: t.yes, cancelButtonText: t.no }).then(r => !!r.isConfirmed);
                 }
-                return Promise.resolve(window.confirm(text));
+                return Promise.resolve(window.confirm(t.moveSalaryText));
             }
 
             async function handleSalaryToggle(changedBankItem){
@@ -353,7 +380,11 @@
                 syncHiddenForItem(bankItem);
             }
 
-            function formatEUR(n){ const num = Number(n); if (Number.isNaN(num)) return '�0.00'; return '�' + num.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+            function formatBalance(n){
+                const num = Number(n);
+                if (Number.isNaN(num)) return '£0.00';
+                return '£' + num.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
 
             function openManual(){ manualForm.style.display = ''; hideQuickContinue(); manualForm.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             function closeManual(){ manualForm.style.display = 'none'; wrap.innerHTML = ''; showQuickContinue(); }
@@ -362,32 +393,32 @@
                 const bankItem = document.createElement('div');
                 bankItem.className = 'bankItem';
                 bankItem.innerHTML = `
-                    <div class="row"><div class="col-12"><label>Nome della banca</label><input type="text" name="name_of_bank_account[]" required></div></div>
-                    <div class="row mt-3"><div class="col-12"><label>Tipo di conto</label>
+                    <div class="row"><div class="col-12"><label>${t.bankNameLabel}</label><input type="text" name="name_of_bank_account[]" required></div></div>
+                    <div class="row mt-3"><div class="col-12"><label>${t.accountTypeLabel}</label>
                         <select name="bank_account_type[]" required>
-                            <option value="" disabled selected>Seleziona un'opzione...</option>
-                            <option value="current_account">Conto corrente</option>
-                            <option value="savings_account">Conto risparmio</option>
-                            <option value="isa_account">Conto ISA</option>
-                            <option value="investment_account">Conto investimenti</option>
-                            <option value="credit_card">Carta di credito</option>
+                            <option value="" disabled selected>${t.selectOption}</option>
+                            <option value="current_account">${t.typeCurrentAccount}</option>
+                            <option value="savings_account">${t.typeSavingsAccount}</option>
+                            <option value="isa_account">${t.typeIsaAccount}</option>
+                            <option value="investment_account">${t.typeInvestmentAccount}</option>
+                            <option value="credit_card">${t.typeCreditCard}</option>
                         </select>
-                        <div class="creditNote">Se devi ripagare la carta, inserisci un valore negativo.</div>
+                        <div class="creditNote">${t.creditCardNote}</div>
                     </div></div>
-                    <div class="row mt-3"><div class="col-12"><label>Saldo iniziale</label><input type="number" name="bank_account_starting_balance[]" step="any" required></div></div>
+                    <div class="row mt-3"><div class="col-12"><label>${t.startingBalance}</label><input type="number" name="bank_account_starting_balance[]" step="any" required></div></div>
                     <div class="row mt-3"><div class="col-12">
-                        <label class="salaryRowLabel"><input type="checkbox" name="is_salary_account[]" value="1"><span>Questo � il conto dove ricevo lo stipendio</span></label>
-                        <div class="salaryHint">Solo un conto pu� essere impostato come conto stipendio.</div>
+                        <label class="salaryRowLabel"><input type="checkbox" name="is_salary_account[]" value="1"><span>${t.salaryCheckbox}</span></label>
+                        <div class="salaryHint">${t.salaryHint}</div>
                     </div></div>
                     <div class="row mt-3"><div class="col-12 d-flex justify-content-end gap-2">
-                        <button type="button" class="saveBankBtn">Salva</button>
-                        <button type="button" class="cancelBankBtn">Annulla</button>
+                        <button type="button" class="saveBankBtn">${t.save}</button>
+                        <button type="button" class="cancelBankBtn">${t.cancel}</button>
                     </div></div>`;
 
-                const nameInput = bankItem.querySelector('input[name="name_of_bank_account[]"]');
+                const nameInput  = bankItem.querySelector('input[name="name_of_bank_account[]"]');
                 const typeSelect = bankItem.querySelector('select[name="bank_account_type[]"]');
-                const balInput = bankItem.querySelector('input[name="bank_account_starting_balance[]"]');
-                const salaryCb = bankItem.querySelector('input[name="is_salary_account[]"]');
+                const balInput   = bankItem.querySelector('input[name="bank_account_starting_balance[]"]');
+                const salaryCb   = bankItem.querySelector('input[name="is_salary_account[]"]');
 
                 if (existingValues) {
                     if (nameInput) nameInput.value = existingValues.name || '';
@@ -405,9 +436,9 @@
                     if (!validate(bankItem)) return;
                     const allHiddenItems = Array.from(hiddenSubmissions.querySelectorAll('.bankItem'));
                     if (getSalaryState(bankItem)) { allHiddenItems.forEach(it => setSalaryState(it, false)); }
-                    const name = (nameInput.value || '').trim();
+                    const name      = (nameInput.value || '').trim();
                     const typeLabel = typeSelect.options[typeSelect.selectedIndex]?.text || typeSelect.value;
-                    const bal = balInput.value;
+                    const bal       = balInput.value;
                     lockInputs(bankItem);
                     const id = 'm_' + Date.now() + '_' + Math.floor(Math.random()*100000);
                     bankItem.dataset.manualId = id;
@@ -417,10 +448,10 @@
                     if (addAnotherInlineWrap) addAnotherInlineWrap.style.display = '';
                     if (toggleBtn) toggleBtn.style.display = 'none';
                     const card = document.createElement('div'); card.className = 'bankItem'; card.dataset.manualId = id;
-                    card.innerHTML = `<div class="row align-items-center"><div class="col-8"><div><strong></strong></div><div class="meta"></div></div><div class="col-4" style="text-align:right"><div class="balance"></div></div></div><div class="manualCardActions"><button type="button" class="editBtnMini">Modifica</button><button type="button" class="removeBtnMini">Rimuovi</button></div>`;
-                    card.querySelector('strong').textContent = name || '�';
-                    card.querySelector('.meta').textContent = typeLabel || '�';
-                    card.querySelector('.balance').textContent = formatEUR(bal);
+                    card.innerHTML = `<div class="row align-items-center"><div class="col-8"><div><strong></strong></div><div class="meta"></div></div><div class="col-4" style="text-align:right"><div class="balance"></div></div></div><div class="manualCardActions"><button type="button" class="editBtnMini">${t.edit}</button><button type="button" class="removeBtnMini">${t.remove}</button></div>`;
+                    card.querySelector('strong').textContent  = name || '—';
+                    card.querySelector('.meta').textContent   = typeLabel || '—';
+                    card.querySelector('.balance').textContent = formatBalance(bal);
                     connectedList.appendChild(card);
                     refreshSalaryBadges();
                     closeManual();
@@ -440,24 +471,4 @@
             @endif
         });
     </script>
-    <script>
-        (function(){
-            var btn = document.createElement('button');
-            var ico = document.createElement('i'); ico.className = document.body.classList.contains('light-mode') ? 'fa-solid fa-moon' : 'fa-solid fa-sun'; ico.style.marginRight = '6px'; ico.style.color = document.body.classList.contains('light-mode') ? '#fbbf24' : '#f59e0b'; btn.appendChild(ico); btn.appendChild(document.createTextNode(document.body.classList.contains('light-mode') ? ' Dark' : ' Light'));
-            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-            document.body.appendChild(btn);
-            btn.addEventListener('click', function(){
-                if (document.body.classList.contains('light-mode')) {
-                    document.body.classList.remove('light-mode');
-                    localStorage.setItem('cc-theme','dark');
-                } else {
-                    document.body.classList.add('light-mode');
-                    localStorage.setItem('cc-theme','light');
-                }
-                window.location.reload();
-            });
-        })();
-    </script>
 @endsection
-
-
