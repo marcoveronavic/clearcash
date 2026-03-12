@@ -33,6 +33,7 @@
 
         <!-- Scripts -->
         @vite(['resources/sass/app.scss', 'resources/sass/login.scss', 'resources/js/app.js'])
+        @yield('styles_in_head')
 
         <link rel="manifest" href="{{ asset('manifest.json') }}">
 
