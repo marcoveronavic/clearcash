@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bank_accounts', function (Blueprint $table) {
-            $table->string('currency', 3)->default('GBP')->after('account_number');
+            $table->string('currency', 3)->default('GBP');
         });
     }
 
