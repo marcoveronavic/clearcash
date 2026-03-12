@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'powens' => [
+        'domain'        => env('POWENS_DOMAIN', 'clearcash-sandbox.biapi.pro'),
+        'client_id'     => env('POWENS_CLIENT_ID'),
+        'client_secret' => env('POWENS_CLIENT_SECRET'),
+    ],
+
 ];

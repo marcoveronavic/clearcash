@@ -13,9 +13,6 @@ use Illuminate\Support\Str;
 
 class CustomerBankAccountController extends Controller
 {
-    /**
-     * Normalizza i valori dell'account_type per evitare mismatch tra wizard/form/dashboard.
-     */
     private function normalizeAccountType(?string $type): ?string
     {
         if ($type === null) {
@@ -30,18 +27,17 @@ class CustomerBankAccountController extends Controller
 
         return match ($t) {
             'current', 'currentaccount', 'current_account', 'bank' => 'current_account',
-            'savings', 'savingsaccount', 'savings_account' => 'savings_account',
-            'isa', 'isaaccount', 'isa_account' => 'isa_account',
-            'investment', 'investments', 'investmentaccount', 'investment_account', 'investment_accounts' => 'investment',
-            'pension', 'pensions', 'pensionaccount', 'pension_account', 'pension_accounts' => 'pension',
-            'credit', 'creditcard', 'credit_card', 'credit_cards' => 'credit_card',
+            'savings', 'savingsaccount', 'savings_account'          => 'savings_account',
+            'isa', 'isaaccount', 'isa_account'                      => 'isa_account',
+            'investment', 'investments', 'investmentaccount',
+            'investment_account', 'investment_accounts'             => 'investment',
+            'pension', 'pensions', 'pensionaccount',
+            'pension_account', 'pension_accounts'                   => 'pension',
+            'credit', 'creditcard', 'credit_card', 'credit_cards'   => 'credit_card',
             default => $t,
         };
     }
 
-    /**
-     * Ritorna l'ultimo periodo budget salvato (budget_start_date, budget_end_date) se esiste.
-     */
     private function getLatestBudgetPeriodForUser(int $userId): ?array
     {
         if (
@@ -62,14 +58,6 @@ class CustomerBankAccountController extends Controller
         return null;
     }
 
-    /**
-     * Sposta le transazioni stipendio sul bank account selezionato come salary.
-     *
-     * Matching robusto:
-     * - transaction_type = income
-     * - category_name = 'salary' (case-insensitive) OR name contiene 'salary' (case-insensitive)
-     * - se c'è budget period -> solo periodo, altrimenti tutte
-     */
     private function moveSalaryTransactionsToAccount(int $userId, int $bankAccountId): void
     {
         if (!Schema::hasTable('transactions')) {
@@ -80,9 +68,7 @@ class CustomerBankAccountController extends Controller
             ->where('user_id', $userId)
             ->where('transaction_type', 'income')
             ->where(function ($w) {
-                // category_name = salary (case-insensitive)
                 $w->whereRaw('LOWER(COALESCE(category_name, "")) = ?', ['salary'])
-                    // OR transaction name includes salary (case-insensitive)
                     ->orWhereRaw('LOWER(COALESCE(name, "")) LIKE ?', ['%salary%']);
             });
 
@@ -98,7 +84,6 @@ class CustomerBankAccountController extends Controller
     {
         $userId = Auth::id();
 
-        // ✅ FIX AUTOMATICO: se esiste un salary account, forza le salary transactions su quello
         $salaryAccount = BankAccount::where('user_id', $userId)
             ->where('is_salary_account', true)
             ->orderByDesc('id')
@@ -108,12 +93,9 @@ class CustomerBankAccountController extends Controller
             $this->moveSalaryTransactionsToAccount($userId, (int) $salaryAccount->id);
         }
 
-        // -----------------------------
-        // Periodo: usa le colonne REALI budget_start_date / budget_end_date
-        // -----------------------------
-        $period = null;
+        $period      = null;
         $periodStart = null;
-        $periodEnd = null;
+        $periodEnd   = null;
 
         $latestPeriod = $this->getLatestBudgetPeriodForUser($userId);
         if ($latestPeriod) {
@@ -122,9 +104,6 @@ class CustomerBankAccountController extends Controller
             $period      = [$periodStart, $periodEnd];
         }
 
-        // -----------------------------
-        // Subquery: entrate (no internal_transfer)
-        // -----------------------------
         $incomeSub = Transaction::query()
             ->selectRaw('COALESCE(SUM(amount),0)')
             ->whereColumn('bank_account_id', 'bank_accounts.id')
@@ -138,9 +117,6 @@ class CustomerBankAccountController extends Controller
             $incomeSub->whereBetween('date', $period);
         }
 
-        // -----------------------------
-        // Subquery: uscite (no internal_transfer) in ABS
-        // -----------------------------
         $expenseSub = Transaction::query()
             ->selectRaw('COALESCE(SUM(ABS(amount)),0)')
             ->whereColumn('bank_account_id', 'bank_accounts.id')
@@ -154,9 +130,6 @@ class CustomerBankAccountController extends Controller
             $expenseSub->whereBetween('date', $period);
         }
 
-        // -----------------------------
-        // Conti + transazioni (preview)
-        // -----------------------------
         $bankAccounts = BankAccount::query()
             ->where('user_id', $userId)
             ->select('bank_accounts.*')
@@ -164,11 +137,9 @@ class CustomerBankAccountController extends Controller
             ->selectSub($expenseSub, 'expense_sum')
             ->with(['transactions' => function ($q) use ($userId, $period) {
                 $q->where('user_id', $userId);
-
                 if ($period) {
                     $q->whereBetween('date', $period);
                 }
-
                 $q->orderBy('date', 'desc')->limit(10);
             }])
             ->orderByDesc('is_salary_account')
@@ -178,10 +149,10 @@ class CustomerBankAccountController extends Controller
                 $in  = (float) ($acc->income_sum ?? 0);
                 $out = (float) ($acc->expense_sum ?? 0);
 
-                $acc->opening_balance = (float) $acc->starting_balance;
-                $acc->current_balance = (float) $acc->starting_balance + $in - $out;
-                $acc->recentTransactions = $acc->transactions ?? collect();
-                $acc->period_start_for_ui = $periodStart;
+                $acc->opening_balance       = (float) $acc->starting_balance;
+                $acc->current_balance       = (float) $acc->starting_balance + $in - $out;
+                $acc->recentTransactions    = $acc->transactions ?? collect();
+                $acc->period_start_for_ui   = $periodStart;
 
                 return $acc;
             });
@@ -195,12 +166,13 @@ class CustomerBankAccountController extends Controller
             'name_of_bank_account'          => ['required', 'string'],
             'bank_account_type'             => ['required', 'string'],
             'bank_account_starting_balance' => ['required', 'numeric'],
+            'currency'                      => ['required', 'string', 'size:3'],
             'is_salary_account'             => ['nullable'],
         ]);
 
-        $userId = Auth::id();
+        $userId      = Auth::id();
         $accountType = $this->normalizeAccountType($validated['bank_account_type']);
-        $isSalary = $request->boolean('is_salary_account');
+        $isSalary    = $request->boolean('is_salary_account');
 
         DB::transaction(function () use ($validated, $userId, $accountType, $isSalary) {
 
@@ -212,6 +184,7 @@ class CustomerBankAccountController extends Controller
                 'account_name'      => $validated['name_of_bank_account'],
                 'account_type'      => $accountType,
                 'starting_balance'  => $validated['bank_account_starting_balance'],
+                'currency'          => strtoupper($validated['currency']),
                 'is_salary_account' => $isSalary,
                 'user_id'           => $userId,
             ]);
@@ -234,12 +207,13 @@ class CustomerBankAccountController extends Controller
             'name_of_bank_account'          => ['required', 'string'],
             'bank_account_type'             => ['required', 'string'],
             'bank_account_starting_balance' => ['required', 'numeric'],
+            'currency'                      => ['required', 'string', 'size:3'],
             'is_salary_account'             => ['nullable'],
         ]);
 
-        $userId = Auth::id();
+        $userId      = Auth::id();
         $accountType = $this->normalizeAccountType($validated['bank_account_type']);
-        $isSalary = $request->boolean('is_salary_account');
+        $isSalary    = $request->boolean('is_salary_account');
 
         DB::transaction(function () use ($account, $validated, $userId, $accountType, $isSalary) {
 
@@ -253,6 +227,7 @@ class CustomerBankAccountController extends Controller
                 'account_name'      => $validated['name_of_bank_account'],
                 'account_type'      => $accountType,
                 'starting_balance'  => $validated['bank_account_starting_balance'],
+                'currency'          => strtoupper($validated['currency']),
                 'is_salary_account' => $isSalary,
             ]);
 
@@ -270,12 +245,13 @@ class CustomerBankAccountController extends Controller
             'name_of_bank_account'          => ['required', 'string'],
             'bank_account_type'             => ['required', 'string'],
             'bank_account_starting_balance' => ['required', 'numeric'],
+            'currency'                      => ['required', 'string', 'size:3'],
             'is_salary_account'             => ['nullable'],
         ]);
 
-        $userId = Auth::id();
+        $userId      = Auth::id();
         $accountType = $this->normalizeAccountType($validated['bank_account_type']);
-        $isSalary = $request->boolean('is_salary_account');
+        $isSalary    = $request->boolean('is_salary_account');
 
         DB::transaction(function () use ($validated, $userId, $accountType, $isSalary) {
 
@@ -287,6 +263,7 @@ class CustomerBankAccountController extends Controller
                 'account_name'      => $validated['name_of_bank_account'],
                 'account_type'      => $accountType,
                 'starting_balance'  => $validated['bank_account_starting_balance'],
+                'currency'          => strtoupper($validated['currency']),
                 'is_salary_account' => $isSalary,
                 'user_id'           => $userId,
             ]);

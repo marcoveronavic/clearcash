@@ -12,13 +12,17 @@ use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerMyAccountController;
 use App\Http\Controllers\Customer\CustomerRecurringPayments;
 use App\Http\Controllers\Customer\CustomerTransactionController;
-use App\Http\Controllers\PlaidController;
+use App\Http\Controllers\Customer\SavingGoalController;
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\PowensController;
+use App\Http\Controllers\PowensWebhookController;
 use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,22 +40,33 @@ Route::redirect('/home', '/dashboard', 301)->name('home');
 
 /*
 |--------------------------------------------------------------------------
-| Plaid
+| Language Switcher
 |--------------------------------------------------------------------------
 */
 
-Route::get('/plaid-link', function () {
-    return view('plaid-link');
-})->name('plaid.link.page');
+Route::get('/language/{locale}', [LanguageController::class, 'switchLocale'])->name('language.switch');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('/plaid-link-demo', 'plaid.demo')->name('plaid.demo');
+/*
+|--------------------------------------------------------------------------
+| Powens
+|--------------------------------------------------------------------------
+*/
 
-    Route::post('/plaid/link-token', [PlaidController::class, 'createLinkToken'])->name('plaid.link-token');
-    Route::post('/plaid/exchange',    [PlaidController::class, 'exchangePublicToken'])->name('plaid.exchange');
-
-    Route::view('/plaid/oauth-return', 'plaid.oauth-return')->name('plaid.oauth.return');
+Route::middleware(['auth', 'verified'])->prefix('powens')->name('powens.')->group(function () {
+    Route::get('connect',            [PowensController::class, 'connect'])->name('connect');
+    Route::get('callback',           [PowensController::class, 'callback'])->name('callback');
+    Route::post('sync-transactions', [PowensController::class, 'syncTransactions'])->name('sync-transactions');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Powens Webhooks (no auth - called by Powens servers)
+|--------------------------------------------------------------------------
+*/
+
+Route::post('api/powens/webhook', [PowensWebhookController::class, 'handle'])
+    ->name('powens.webhook')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
 /*
 |--------------------------------------------------------------------------
@@ -59,25 +74,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('account-setup-step-one',  [AccountSetupController::class, 'index'])->name('account-setup.step-one');
+    Route::get('account-setup-step-one',   [AccountSetupController::class, 'index'])->name('account-setup.step-one');
     Route::post('account-setup-step-one-store', [AccountSetupController::class, 'indexStore'])->name('account-setup.step-one-store');
 
-    Route::get('account-setup-step-two',  [AccountSetupController::class, 'stepTwoShow'])->name('account-setup.step-two');
-    Route::post('account-setup-step-two-store', [AccountSetupController::class, 'stepTwoStore'])->name('account-setup-step-two-store');
+    Route::get('account-setup-step-two',   [AccountSetupController::class, 'stepTwoShow'])->name('account-setup.step-two');
+    Route::post('account-setup-step-two-store', [AccountSetupController::class, 'stepTwoStore'])->name('account-setup.step-two-store');
 
     Route::get('account-setup-step-three', [AccountSetupController::class, 'stepThreeShow'])->name('account-setup.step-three');
-    Route::post('account-setup-step-three-store', [AccountSetupController::class, 'stepThreeStore'])->name('account-setup-step-three-store');
+    Route::post('account-setup-step-three-store', [AccountSetupController::class, 'stepThreeStore'])->name('account-setup.step-three-store');
 
-    Route::get('account-setup-step-four', [AccountSetupController::class, 'stepFourShow'])->name('account-setup.step-four');
-    Route::post('account-setup-step-four-store', [AccountSetupController::class, 'stepFourStore'])->name('account-setup-step-four-store');
+    Route::get('account-setup-step-four',  [AccountSetupController::class, 'stepFourShow'])->name('account-setup.step-four');
+    Route::post('account-setup-step-four-store', [AccountSetupController::class, 'stepFourStore'])->name('account-setup.step-four-store');
 
-    Route::get('account-setup-step-five', [AccountSetupController::class, 'stepFiveShow'])->name('account-setup.step-five');
+    Route::get('account-setup-step-five',  [AccountSetupController::class, 'stepFiveShow'])->name('account-setup.step-five');
     Route::post('account-setup-step-five-store', [AccountSetupController::class, 'stepFiveStore'])->name('account-setup.step-five-store');
 
-    // Step 6 (bank accounts)
-    Route::get('account-setup-step-six', [AccountSetupController::class, 'stepSixShow'])->name('account-setup.step-six');
+    Route::get('account-setup-step-six',   [AccountSetupController::class, 'stepSixShow'])->name('account-setup.step-six');
 
-    // Step 6 (investments & pensions) - controller dedicato
     Route::get('account-setup-step-six-investments', [AccountSetupInvestmentsController::class, 'index'])
         ->name('account-setup.step-six-investments');
 
@@ -103,6 +116,9 @@ Route::middleware(['auth', 'role:super admin|customer', 'verified'])->group(func
     Route::post('reset-account', [CustomerMyAccountController::class, 'resetAccount'])->name('reset-account');
 
     Route::get('dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/saving-goals', [SavingGoalController::class, 'store'])->name('saving-goals.store');
+    Route::put('/saving-goals/{id}', [SavingGoalController::class, 'update'])->name('saving-goals.update');
+    Route::delete('/saving-goals/{id}', [SavingGoalController::class, 'destroy'])->name('saving-goals.destroy');
 
     // Bank Accounts
     Route::resource('bank-accounts', CustomerBankAccountController::class);
@@ -112,6 +128,8 @@ Route::middleware(['auth', 'role:super admin|customer', 'verified'])->group(func
     // Budget
     Route::prefix('budget')->name('budget.')->group(function () {
         Route::get('/', [CustomerBudgetController::class, 'index'])->name('index');
+        Route::get('period-summary', [CustomerBudgetController::class, 'periodSummary'])->name('period-summary');
+        Route::post('renew-period', [CustomerBudgetController::class, 'renewPeriod'])->name('renew-period');
         Route::put('update/{id}', [CustomerBudgetController::class, 'update'])->name('update');
         Route::put('reset-budget/{id}', [CustomerBudgetController::class, 'resetBudget'])->name('reset-budget');
         Route::get('edit-category-list', [CustomerBudgetController::class, 'editCategoryList'])->name('edit-category-list');
@@ -135,6 +153,8 @@ Route::middleware(['auth', 'role:super admin|customer', 'verified'])->group(func
 
     // Transactions
     Route::resource('transactions', CustomerTransactionController::class);
+    Route::post('transactions/{id}/receipt', [CustomerTransactionController::class, 'uploadReceipt'])->name('transactions.upload-receipt');
+    Route::delete('transactions/{id}/receipt', [CustomerTransactionController::class, 'deleteReceipt'])->name('transactions.delete-receipt');
     Route::post('transactions/global-add-transaction', [CustomerTransactionController::class, 'globalAddTransaction'])->name('transactions.global-add-transaction');
     Route::post('transactions/global-fund-transfer', [CustomerTransactionController::class, 'globalFundTransfer'])->name('transactions.global-fund-transfer');
     Route::get('transactions-filter-by-bank/{bank}', [CustomerTransactionController::class, 'filterByBank'])->name('transactions.filter-by-bank');
@@ -148,7 +168,7 @@ Route::middleware(['auth', 'role:super admin|customer', 'verified'])->group(func
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:super admin|admin'])->name('admin.')->prefix('admin')->group(function () {
-    Route::get('dashboard', [AdminDashboardController::class,'index'])->name('dashboard');
+    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::name('activity-log.')->prefix('activity-log')->group(function () {
         Route::get('/', [AdminActivityLogController::class, 'index'])->name('index');
@@ -193,3 +213,4 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
 })->middleware(['signed'])->name('verification.verify');
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/check-php', function () { phpinfo(); });

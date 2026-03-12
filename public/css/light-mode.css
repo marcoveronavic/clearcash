@@ -1,0 +1,524 @@
+/* ===== ClearCash Light Mode ===== */
+
+/* Logo swap */
+.logo-dark { display: none !important; }
+.logo-light { display: block !important; }
+body.light-mode .logo-dark { display: block !important; }
+body.light-mode .logo-light { display: none !important; }
+
+/* Base */
+body.light-mode,
+body.light-mode main.dashboardMain {
+    background-color: #f5f7fa !important;
+}
+
+/* Sidebar */
+body.light-mode aside.sidebar {
+    background-color: #ffffff !important;
+    border-right: 1px solid #e5e7eb !important;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.06) !important;
+}
+body.light-mode aside.sidebar *:not(i):not(.theme-icon-moon):not(.theme-icon-sun) {
+    color: #111827 !important;
+}
+body.light-mode aside.sidebar ul.sidebar-nav li a i {
+    color: #0d9488 !important;
+}
+body.light-mode aside.sidebar ul.sidebar-nav li a:hover,
+body.light-mode aside.sidebar ul.sidebar-nav li a:hover i,
+body.light-mode aside.sidebar ul.sidebar-nav li a.active,
+body.light-mode aside.sidebar ul.sidebar-nav li a.active i {
+    color: #0891b2 !important;
+}
+
+/* Nuclear text: force ALL text in main to dark */
+body.light-mode main.dashboardMain,
+body.light-mode main.dashboardMain *:not(svg):not(path):not(circle):not(rect):not(line):not(canvas) {
+    color: #111827 !important;
+}
+
+/* Re-apply accent colors */
+body.light-mode main.dashboardMain .success .amountBig { color: #10b981 !important; }
+body.light-mode main.dashboardMain .fail .amountBig { color: #dc2626 !important; }
+body.light-mode main.dashboardMain [style*="color:#44E0AC"],
+body.light-mode main.dashboardMain [style*="color: #44E0AC"],
+body.light-mode main.dashboardMain [style*="color:#2DD4BF"],
+body.light-mode main.dashboardMain [style*="color: #2DD4BF"] { color: #0d9488 !important; }
+body.light-mode main.dashboardMain [style*="color:#ef4444"],
+body.light-mode main.dashboardMain [style*="color: #ef4444"],
+body.light-mode main.dashboardMain [style*="color:#F87171"],
+body.light-mode main.dashboardMain [style*="color: #F87171"],
+body.light-mode main.dashboardMain [style*="color:#EF4444"] { color: #dc2626 !important; }
+body.light-mode main.dashboardMain [style*="color:#FBBF24"],
+body.light-mode main.dashboardMain [style*="color: #FBBF24"] { color: #d97706 !important; }
+body.light-mode main.dashboardMain [style*="color:#31D2F7"],
+body.light-mode main.dashboardMain [style*="color: #31D2F7"] { color: #0891b2 !important; }
+
+/* Muted text */
+body.light-mode main.dashboardMain small,
+body.light-mode main.dashboardMain .text-muted { color: #6b7280 !important; }
+
+/* Dark backgrounds -> white cards */
+body.light-mode main.dashboardMain [style*="background"][style*="#1D373B"],
+body.light-mode main.dashboardMain [style*="background"][style*="#1d373b"],
+body.light-mode main.dashboardMain [style*="background"][style*="#0D2020"],
+body.light-mode main.dashboardMain [style*="background"][style*="#0d2020"],
+body.light-mode main.dashboardMain [style*="background"][style*="#061d21"],
+body.light-mode main.dashboardMain [style*="background"][style*="#112828"],
+body.light-mode main.dashboardMain [style*="background"][style*="rgb(29, 55, 59)"],
+body.light-mode main.dashboardMain [style*="background"][style*="rgb(13, 32, 32)"],
+body.light-mode main.dashboardMain [style*="background"][style*="rgb(6, 29, 33)"],
+body.light-mode main.dashboardMain [style*="background"][style*="rgb(17, 40, 40)"] {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Transparent dark bgs */
+body.light-mode main.dashboardMain [style*="background"][style*="rgba(209, 249, 255"] {
+    background-color: #ffffff !important;
+}
+
+/* Cards */
+body.light-mode .transaction,
+body.light-mode .budgetItem,
+body.light-mode .bankAccountCard,
+body.light-mode .card,
+body.light-mode .summaryCard {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Modals */
+body.light-mode .modal-content {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+}
+body.light-mode .modal-content *:not(svg):not(path):not(i) {
+    color: #111827 !important;
+}
+
+/* Forms */
+body.light-mode input[type="text"],
+body.light-mode input[type="number"],
+body.light-mode input[type="date"],
+body.light-mode input[type="email"],
+body.light-mode input[type="password"],
+body.light-mode input[type="tel"],
+body.light-mode textarea,
+body.light-mode select {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #d1d5db !important;
+}
+body.light-mode select option {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+}
+
+/* Dropdowns */
+body.light-mode .dropdown-menu {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* SweetAlert */
+body.light-mode .swal2-popup {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+}
+body.light-mode .swal2-title { color: #111827 !important; }
+body.light-mode .swal2-html-container,
+body.light-mode .swal2-content,
+body.light-mode .swal2-text { color: #374151 !important; }
+
+/* Period summary */
+body.light-mode .summaryCard .summaryDesc { color: #374151 !important; }
+body.light-mode .summaryCard .amountLabel,
+body.light-mode .summaryCard .statLabel { color: #6b7280 !important; }
+body.light-mode .resetBtn {
+    color: #374151 !important;
+    border-color: #e5e7eb !important;
+    background: transparent !important;
+}
+
+/* Toggle switch */
+.theme-toggle-wrap {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; margin-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+body.light-mode .theme-toggle-wrap { border-top-color: #e5e7eb; }
+.theme-toggle-label { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; }
+body.light-mode .theme-toggle-label { color: #6b7280 !important; }
+.theme-toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+.theme-toggle input { display: none; }
+.theme-toggle .slider {
+    position: absolute; inset: 0; background: rgba(255,255,255,0.1);
+    border-radius: 24px; transition: all 0.3s ease;
+}
+.theme-toggle .slider::before {
+    content: ''; position: absolute; width: 18px; height: 18px;
+    left: 3px; top: 3px; background: #2DD4BF;
+    border-radius: 50%; transition: all 0.3s ease;
+}
+.theme-toggle input:checked + .slider { background: rgba(13,148,136,0.2); }
+.theme-toggle input:checked + .slider::before { transform: translateX(20px); background: #0d9488; }
+.theme-icon { font-size: 14px; }
+.theme-icon-moon { color: #fbbf24; }
+.theme-icon-sun { color: #f59e0b; display: none; }
+body.light-mode .theme-icon-moon { display: none; }
+body.light-mode .theme-icon-sun { display: inline; color: #f59e0b !important; }
+/* Chart.js legend fix */
+body.light-mode li span,
+body.light-mode ul li,
+body.light-mode [class*="chartjs"] * {
+    color: #111827 !important;
+}
+/* Budget category cards */
+body.light-mode main.dashboardMain .budgetCategoryItem,
+body.light-mode main.dashboardMain [style*="border-radius"][style*="padding"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+}
+
+/* Give the page a slightly different bg so white cards stand out */
+body.light-mode main.dashboardMain {
+    background-color: #eef1f5 !important;
+}
+/* Budget category wrapper and items */
+body.light-mode .categoryBudgetsWrapper .inner {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+    margin-bottom: 12px !important;
+}
+
+body.light-mode .categoryBudgetsWrapper .catItem {
+    background-color: #ffffff !important;
+}
+
+/* Budget total banner */
+body.light-mode .budgetTotalBudgetBanner,
+body.light-mode section.budgetTotalBudgetBanner {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+
+/* Page title banner */
+body.light-mode .pageTitleBanner,
+body.light-mode section.pageTitleBanner {
+    background-color: #ffffff !important;
+}
+/* Budget total progress bar */
+body.light-mode .budgetTotalBudgetBanner .progress,
+body.light-mode .budgetTotalBudgetBanner [style*="background"] {
+    background-color: #e2e8f0 !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+}
+/* Budget reset box / progress bar */
+body.light-mode .resetBox {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+}
+/* Dashboard next steps banner */
+body.light-mode .dashboardNextStepsBanner .nextStepsBox,
+body.light-mode .nextStepsBox {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+
+/* Dashboard info boxes (Saldi attuali, Patrimonio netto) */
+body.light-mode .dashboardInfoBoxesBanner [style*="background"],
+body.light-mode .dashboardInfoBoxesBanner .col-md-6 > div,
+body.light-mode .dashboardInfoBoxesBanner .col-md-4 > div,
+body.light-mode .dashboardInfoBoxesBanner .col-lg-6 > div,
+body.light-mode .dashboardInfoBoxesBanner .col-lg-4 > div {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+}
+
+/* Saving goals widget */
+body.light-mode .sg-widget [style*="background"],
+body.light-mode section.sg-widget [style*="background"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+}
+
+/* Generic dark containers on dashboard */
+body.light-mode .dashboardNextStepsBanner,
+body.light-mode .dashboardInfoBoxesBanner {
+    background-color: transparent !important;
+}
+/* Saving goals cards */
+body.light-mode .sg-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+}
+
+body.light-mode .sg-bar-bg {
+    background-color: #e2e8f0 !important;
+}
+/* Bank accounts list items */
+body.light-mode .bankAccountsMainList .col-12 > div {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    margin-bottom: 8px !important;
+}
+
+/* Add banner */
+body.light-mode .addBanner,
+body.light-mode section.addBanner {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+}
+/* Remove white boxes from page title and button banners */
+body.light-mode .pageTitleBanner,
+body.light-mode section.pageTitleBanner,
+body.light-mode .pageTitleBanner > .container > .row > div,
+body.light-mode section.addBanner,
+body.light-mode .addBanner,
+body.light-mode .addBanner > .container > .row > div {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+/* Rounded corners for all cards in light mode (match dark mode) */
+body.light-mode .transaction {
+    border-radius: 12px !important;
+    margin-bottom: 8px !important;
+}
+
+body.light-mode .transaction .modalBtn {
+    border-radius: 12px !important;
+}
+
+body.light-mode .categoryBudgetsWrapper .inner {
+    border-radius: 12px !important;
+}
+
+body.light-mode .bankAccountsMainList .col-12 > div {
+    border-radius: 12px !important;
+}
+
+body.light-mode .modal-content {
+    border-radius: 16px !important;
+}
+
+body.light-mode .sg-card {
+    border-radius: 12px !important;
+}
+
+body.light-mode .nextStepsBox {
+    border-radius: 12px !important;
+}
+
+body.light-mode .resetBox {
+    border-radius: 12px !important;
+}
+
+/* Search bar */
+body.light-mode .searchBar,
+body.light-mode input[type="search"],
+body.light-mode input[type="text"][placeholder*="Cerca"] {
+    border-radius: 12px !important;
+}
+
+/* Day group container */
+body.light-mode .dayGroup,
+body.light-mode .transactionGroup {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+/* Budget total section - remove gray bar, round corners */
+body.light-mode .budgetTotalBudgetBanner {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 16px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    overflow: hidden !important;
+}
+
+body.light-mode .budgetTotalBudgetBanner .resetBox {
+    background: #f0f4f7 !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+}
+
+/* Category budget items rounded */
+body.light-mode .categoryBudgetsWrapper {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 16px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    overflow: hidden !important;
+    padding: 16px !important;
+}
+/* Budget category individual items - alternate shading */
+body.light-mode .categoryBudgetsWrapper .catItem {
+    background-color: #f8fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    margin-bottom: 8px !important;
+    padding: 12px 16px !important;
+}
+
+body.light-mode .categoryBudgetsWrapper .catItem:nth-child(even) {
+    background-color: #f1f5f8 !important;
+}
+/* Edit budget page */
+body.light-mode .editBudgetList input,
+body.light-mode main.dashboardMain input[type="text"],
+body.light-mode main.dashboardMain input[type="number"] {
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 10px !important;
+    color: #111827 !important;
+    padding: 10px 14px !important;
+}
+
+body.light-mode main.dashboardMain .row > div > .row {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    margin-bottom: 8px !important;
+    padding: 8px !important;
+}
+/* Account setup page */
+body.light-mode .setupSteps,
+body.light-mode .setup-container,
+body.light-mode .account-setup {
+    background-color: #f5f7fa !important;
+}
+
+body.light-mode .setupSteps .card,
+body.light-mode .setupSteps .option,
+body.light-mode .setupSteps label,
+body.light-mode .setupSteps .periodOption,
+body.light-mode .setupSteps [class*="option"],
+body.light-mode .setupSteps [class*="Option"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    margin-bottom: 8px !important;
+}
+
+body.light-mode .setupSteps .card:hover,
+body.light-mode .setupSteps label:hover,
+body.light-mode .setupSteps [class*="option"]:hover {
+    border-color: #0d9488 !important;
+    box-shadow: 0 2px 8px rgba(13,148,136,0.1) !important;
+}
+/* Account setup inputWrap cards */
+body.light-mode .inputWrap {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+body.light-mode .inputWrap:hover {
+    border-color: #0d9488 !important;
+    background-color: #f0fdf9 !important;
+}
+body.light-mode .inputWrap.active {
+    border-color: #0d9488 !important;
+    background-color: #f0fdf9 !important;
+}
+
+/* Setup steps wrapper */
+body.light-mode .setupStepsWrapper {
+    background-color: #f5f7fa !important;
+}
+body.light-mode .setupStepsWrap .titles .item {
+    color: #6b7280 !important;
+}
+body.light-mode .setupStepsWrap .titles .item.active {
+    color: #111827 !important;
+}
+/* Floating theme toggle - force visible */
+#floatingThemeToggle {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 99999 !important;
+}
+/* Setup expenses/summary wraps */
+body.light-mode .expensesWrap,
+body.light-mode .setupStepsWrapper .expensesWrap {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+/* Setup confirmation/summary boxes */
+body.light-mode .setupStepsWrapper .summaryWrap,
+body.light-mode .setupStepsWrapper .confirmWrap,
+body.light-mode .setupStepsWrapper .budgetSummary,
+body.light-mode .setupStepsWrapper [style*="background"],
+body.light-mode .setupStepsWrapper .container > .row > .col-12 > div > div[style],
+body.light-mode .setupStepsWrapper table,
+body.light-mode .setupStepsWrapper .table {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+/* Setup confirmation cards */
+body.light-mode .cardish {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+
+body.light-mode .cardish .rowItem {
+    border-bottom-color: #e5e7eb !important;
+}
+/* Cardish text darker */
+body.light-mode .cardish * {
+    color: #111827 !important;
+}
+body.light-mode .cardish .rowItem div:last-child {
+    color: #374151 !important;
+}
+/* Cardish labels and values - force dark */
+body.light-mode .cardish .label,
+body.light-mode .cardish span.label,
+body.light-mode .cardish .value,
+body.light-mode .cardish span.value,
+body.light-mode .setupStepsWrapper .cardish *,
+body.light-mode .setupStepsWrapper .cardish .label,
+body.light-mode .setupStepsWrapper .cardish .value {
+    color: #111827 !important;
+}
+/* Date input calendar icons */
+body.light-mode input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0) !important;
+}
+body.light-mode input[type="date"] {
+    color-scheme: light !important;
+}

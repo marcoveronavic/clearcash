@@ -288,3 +288,188 @@
         }
     }
 }
+
+/* ══════════════════════════════════════════
+   LIGHT MODE – Transactions page
+   ══════════════════════════════════════════ */
+body.light-mode {
+
+    /* ── Filter banner & dropdown ── */
+    .addTransactionFilterBanner {
+        .btn-group {
+            .dropdown {
+                a.dropdown-toggle {
+                    background-color: #ffffff;
+                    border: 1px solid #E2E8F0;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                    color: #1E293B;
+
+                    &:hover, &:focus, &.show {
+                        border-color: #2DD4BF;
+                    }
+                }
+                .dropdown-menu {
+                    background-color: #ffffff;
+                    border: 1px solid #E2E8F0;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                    color: #1E293B;
+
+                    h6 { color: #1E293B; }
+
+                    .item a {
+                        color: #1E293B;
+
+                        .square {
+                            background: #F1F5F9;
+                            border: 1px solid #CBD5E1;
+                        }
+
+                        &:hover, &.active {
+                            .square {
+                                color: #ffffff;
+                                &:before { color: #ffffff; }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /* ── Period pills (Tutte, Questo mese, etc.) ── */
+    .periodFilterPills,
+    .typeFilterPills,
+    .btn-group-pills {
+        .btn, a, button {
+            background-color: #F1F5F9 !important;
+            border: 1px solid #E2E8F0 !important;
+            color: #475569 !important;
+
+            &:hover {
+                background-color: #E2E8F0 !important;
+                color: #1E293B !important;
+            }
+
+            &.active, &.selected {
+                background-color: #0D9488 !important;
+                border-color: #0D9488 !important;
+                color: #ffffff !important;
+            }
+        }
+    }
+
+    /* ── Search input by ID (matches dark mode inline styles exactly) ── */
+    #transactionSearch {
+        background-color: #ffffff !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 10px !important;
+        color: #1E293B !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+        padding: 12px 44px !important;
+        width: 100% !important;
+        font-size: 14px !important;
+
+        &::placeholder {
+            color: #94A3B8 !important;
+        }
+
+        &:focus {
+            border-color: #2DD4BF !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(45,212,191,0.1) !important;
+        }
+    }
+
+    /* ── Search icon colour ── */
+    .addTransactionFilterBanner .fa-search,
+    .addTransactionFilterBanner .fa-magnifying-glass {
+        color: #94A3B8 !important;
+    }
+
+    /* ── CSV / PDF download buttons ── */
+    .exportBtn,
+    a[href*="export"],
+    button[onclick*="export"],
+    .downloadBtn {
+        background-color: #F1F5F9 !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        color: #475569 !important;
+
+        &:hover {
+            background-color: #E2E8F0 !important;
+            color: #1E293B !important;
+        }
+    }
+
+    /* ── Transaction groups ── */
+    .transactionGroup {
+        h4 { color: #1E293B; }
+
+        .transactionList {
+            background-color: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+            .transaction {
+                button.modalBtn {
+                    border-radius: 8px;
+
+                    &:hover {
+                        background-color: #F1F5F9;
+                    }
+                }
+
+                h5 { color: #1E293B; }
+                h6 { color: #64748B; }
+
+                .amount span { color: #1E293B; }
+                .accountType { color: #64748B; }
+            }
+        }
+    }
+
+    /* ── Empty state ── */
+    .transactionsMainBanner {
+        .inner {
+            background-color: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+            i.fa-right-left { color: #94A3B8; }
+            h2 { color: #1E293B; }
+            p { color: #64748B; }
+        }
+    }
+
+    /* ── Create transaction form ── */
+    .createTransactionsMainWrap {
+        background-color: #ffffff;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+        form {
+            .row {
+                label { color: #1E293B; }
+
+                input[type='text'],
+                input[type='number'],
+                input[type='date'],
+                select {
+                    background-color: #F8FAFC;
+                    border: 1px solid #E2E8F0;
+                    color: #1E293B;
+
+                    &:focus {
+                        border-color: #2DD4BF;
+                        box-shadow: 0 0 0 3px rgba(45,212,191,0.1);
+                    }
+                }
+            }
+        }
+    }
+}

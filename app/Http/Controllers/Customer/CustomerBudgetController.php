@@ -16,7 +16,6 @@ class CustomerBudgetController extends Controller
     {
         $userId = Auth::id();
 
-        // 1) Periodo di riferimento (se non esiste un budget, usa mese corrente)
         $periodBudget = Budget::where('user_id', $userId)
             ->whereNotIn('category_name', ['uncategorised', 'salary'])
             ->orderByDesc('budget_end_date')
@@ -30,7 +29,20 @@ class CustomerBudgetController extends Controller
             ? Carbon::parse($periodBudget->budget_end_date)->endOfDay()
             : Carbon::now()->endOfMonth();
 
-        // 2) Budget attivi nel periodo (overlap)
+        $now = Carbon::now();
+        if ($now->gt($budgetEndDate->copy()->endOfDay())) {
+            $hasBudget = Budget::where('user_id', $userId)
+                ->whereDate('budget_end_date', $budgetEndDate->toDateString())
+                ->where('category_name', '!=', 'salary')
+                ->where('category_name', '!=', 'uncategorised')
+                ->where('amount', '>', 0)
+                ->exists();
+
+            if ($hasBudget && !request()->has('skip_summary')) {
+                return redirect()->route('budget.period-summary');
+            }
+        }
+
         $budgetItems = Budget::where('user_id', $userId)
             ->whereNotIn('category_name', ['salary', 'uncategorised'])
             ->whereDate('budget_start_date', '<=', $budgetEndDate)
@@ -38,25 +50,20 @@ class CustomerBudgetController extends Controller
             ->orderBy('category_name')
             ->get();
 
-        // Categorie cash-sink: includono anche internal_transfer
         $cashSinkIds = $budgetItems->where('include_internal_transfers', true)
             ->pluck('category_id')->filter()->unique()->values()->all();
 
         $cashSinkNames = $budgetItems->where('include_internal_transfers', true)
             ->pluck('category_name')->filter()->map(fn ($n) => mb_strtolower($n))->unique()->values()->all();
 
-        // 3) Totali periodo — SPESA NETTA (outflow - refunds)
-        // >>> CONVENZIONE: expense outflow = amount > 0 ; refund = amount < 0 <<<
         $expenseAgg = Transaction::query()
             ->where('user_id', $userId)
             ->whereBetween('date', [$budgetStartDate, $budgetEndDate])
             ->where('transaction_type', 'expense')
             ->where(function ($q) use ($cashSinkIds, $cashSinkNames) {
-                // (A) tutte le non-internal
                 $q->whereNull('internal_transfer')
                     ->orWhere('internal_transfer', false);
 
-                // (B) + internal transfer SOLO per categorie flagged (cash-sink)
                 if (!empty($cashSinkIds) || !empty($cashSinkNames)) {
                     $q->orWhere(function ($qq) use ($cashSinkIds, $cashSinkNames) {
                         $qq->where('internal_transfer', true)
@@ -80,14 +87,14 @@ class CustomerBudgetController extends Controller
 
         $totalOutflow = (float) ($expenseAgg->outflow ?? 0);
         $totalRefunds = (float) ($expenseAgg->refunds ?? 0);
-        $amountSpent  = max(0.0, $totalOutflow - $totalRefunds); // SPESA NETTA
+        $amountSpent  = max(0.0, $totalOutflow - $totalRefunds);
 
         $totalBudget     = (float) $budgetItems->sum('amount');
         $remainingBudget = max(0.0, $totalBudget - $amountSpent);
 
-        // 4) Dettaglio categorie (spesa netta per categoria)
         $categoryDetails = [];
         $totalOverspend  = 0.0;
+        $totalBudgetedSpent = 0.0;
 
         foreach ($budgetItems as $budgetItem) {
             $includeInternal = (bool) ($budgetItem->include_internal_transfers ?? false);
@@ -119,6 +126,8 @@ class CustomerBudgetController extends Controller
             $netSpent     = max(0.0, $outflow - $refunds);
             $budgetAmount = (float) $budgetItem->amount;
 
+            $totalBudgetedSpent += $netSpent;
+
             $remainingAmount = max(0.0, $budgetAmount - $netSpent);
             $spentPercentage = $budgetAmount > 0 ? min(100, round(($netSpent / $budgetAmount) * 100, 2)) : 0.0;
 
@@ -130,7 +139,6 @@ class CustomerBudgetController extends Controller
                 ->orderBy('date', 'desc')
                 ->get()
                 ->map(function ($t) {
-                    // Refund = expense con importo NEGATIVO (convenzione)
                     $t->kind = ($t->transaction_type === 'expense' && (float)$t->amount < 0)
                         ? 'refund'
                         : 'expense';
@@ -142,7 +150,7 @@ class CustomerBudgetController extends Controller
                 'transactions'         => $transactions,
                 'outflow'              => $outflow,
                 'refunds'              => $refunds,
-                'totalSpent'           => $netSpent, // spesa netta
+                'totalSpent'           => $netSpent,
                 'startingBudgetAmount' => $budgetAmount,
                 'remainingAmount'      => $remainingAmount,
                 'spentPercentage'      => $spentPercentage,
@@ -150,7 +158,6 @@ class CustomerBudgetController extends Controller
             ];
         }
 
-        // 5) INCOME del periodo (esclude internal) — SOLO income
         $incomeStrict = (float) Transaction::where('user_id', $userId)
             ->whereBetween('date', [$budgetStartDate, $budgetEndDate])
             ->where('transaction_type', 'income')
@@ -159,7 +166,6 @@ class CustomerBudgetController extends Controller
             })
             ->sum(DB::raw('CASE WHEN amount > 0 THEN amount ELSE 0 END'));
 
-        // Carry-over stipendio (ultimo giorno mese precedente), esclude internal
         $prevDay = $budgetStartDate->copy()->subDay()->toDateString();
         $salaryCarry = (float) Transaction::where('user_id', $userId)
             ->whereDate('date', $prevDay)
@@ -175,13 +181,22 @@ class CustomerBudgetController extends Controller
 
         $income = $incomeStrict + $salaryCarry;
 
-        // Clear Cash Balance "pianificato": Income - Budgeted
-        $clearCashBalance = $income - $totalBudget;
+        // Tutte le spese del periodo
+        $totalAllExpenses = (float) Transaction::where('user_id', $userId)
+            ->whereBetween('date', [$budgetStartDate, $budgetEndDate])
+            ->where('transaction_type', 'expense')
+            ->where(function ($q) {
+                $q->whereNull('internal_transfer')->orWhere('internal_transfer', false);
+            })
+            ->sum(\DB::raw('ABS(amount)'));
 
-        // 6) Giorni rimasti
+        // Spese extra = totale spese - spese nelle categorie budget (così torna sempre)
+        $extraExpenses = max(0, $totalAllExpenses - $totalBudgetedSpent);
+
+        $clearCashBalance = $income - $totalAllExpenses;
+
         $daysLeft = Carbon::now()->diffInDays(Carbon::parse($budgetEndDate), false);
 
-        // 7) Uncategorised del periodo — spesa netta (esclude internal)
         $uncatAgg = Transaction::query()
             ->where('user_id', $userId)
             ->where('transaction_type', 'expense')
@@ -204,7 +219,6 @@ class CustomerBudgetController extends Controller
         );
         $showUncategorised = $uncategorisedSpent > 0;
 
-        // 8) Transazioni del periodo (per tabella generale) — esclude internal
         $allTransactions = Transaction::query()
             ->where('user_id', $userId)
             ->whereBetween('date', [$budgetStartDate, $budgetEndDate])
@@ -237,7 +251,9 @@ class CustomerBudgetController extends Controller
             'showUncategorised',
             'uncategorisedSpent',
             'totalOverspend',
-            'allTransactions'
+            'allTransactions',
+            'extraExpenses',
+            'totalBudgetedSpent'
         ));
     }
 
@@ -306,9 +322,23 @@ class CustomerBudgetController extends Controller
 
     public function editCategoryList()
     {
-        $budgetItems = Budget::where('user_id', Auth::user()->id)
+        $userId = Auth::user()->id;
+
+        $latestBudget = Budget::where('user_id', $userId)
+            ->whereNotIn('category_name', ['uncategorised', 'salary'])
             ->where('amount', '>', 0)
-            ->whereDate('budget_end_date', '>=', Carbon::today()->toDateString())
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$latestBudget) {
+            return redirect()->route('budget.index');
+        }
+
+        $budgetItems = Budget::where('user_id', $userId)
+            ->whereNotIn('category_name', ['uncategorised', 'salary'])
+            ->where('amount', '>', 0)
+            ->whereDate('budget_start_date', $latestBudget->budget_start_date)
+            ->whereDate('budget_end_date', $latestBudget->budget_end_date)
             ->orderBy('category_name', 'asc')
             ->get();
 
@@ -362,5 +392,116 @@ class CustomerBudgetController extends Controller
         return redirect()->route('budget.index')->with('success', 'Budget updated.');
     }
 
+    public function periodSummary()
+    {
+        $userId = Auth::id();
+        $tz = config('app.timezone');
+        $now = Carbon::now($tz);
+
+        $latestBudget = Budget::where('user_id', $userId)
+            ->whereNotIn('category_name', ['uncategorised', 'salary'])
+            ->where('amount', '>', 0)
+            ->whereNotNull('budget_start_date')
+            ->whereNotNull('budget_end_date')
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$latestBudget) {
+            return redirect()->route('budget.index');
+        }
+
+        $startDate = $latestBudget->budget_start_date;
+        $endDate   = $latestBudget->budget_end_date;
+
+        $totalBudget = Budget::where('user_id', $userId)
+            ->whereDate('budget_start_date', $startDate)
+            ->whereDate('budget_end_date', $endDate)
+            ->where('category_name', '!=', 'salary')
+            ->where('category_name', '!=', 'uncategorised')
+            ->sum('amount');
+
+        $income = Transaction::where('user_id', $userId)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('transaction_type', 'income')
+            ->sum('amount');
+
+        $totalSpent = Transaction::where('user_id', $userId)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('transaction_type', 'expense')
+            ->where('category_name', '!=', 'salary')
+            ->sum(\DB::raw('ABS(amount)'));
+
+        $saved = $totalBudget - $totalSpent;
+        $isSuccess = $saved >= 0;
+        $periodEnded = $now->gt(Carbon::parse($endDate, $tz)->endOfDay());
+
+        return view('customer.pages.budget.period-summary', compact(
+            'totalBudget',
+            'totalSpent',
+            'income',
+            'saved',
+            'isSuccess',
+            'startDate',
+            'endDate',
+            'periodEnded'
+        ));
+    }
+
+    public function renewPeriod(Request $request)
+    {
+        $userId = Auth::id();
+        $tz = config('app.timezone');
+
+        $latestBudget = Budget::where('user_id', $userId)
+            ->whereNotIn('category_name', ['uncategorised', 'salary'])
+            ->where('amount', '>', 0)
+            ->whereNotNull('budget_start_date')
+            ->whereNotNull('budget_end_date')
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$latestBudget) {
+            return redirect()->route('budget.index');
+        }
+
+        $oldStart = Carbon::parse($latestBudget->budget_start_date, $tz);
+        $oldEnd   = Carbon::parse($latestBudget->budget_end_date, $tz);
+
+        $newStart = $oldEnd->copy()->addDay()->startOfDay();
+        $newEnd   = $newStart->copy()->addDays($oldStart->diffInDays($oldEnd))->endOfDay();
+
+        $newStartDate = $newStart->toDateString();
+        $newEndDate   = $newEnd->toDateString();
+
+        $oldBudgets = Budget::where('user_id', $userId)
+            ->whereDate('budget_start_date', $latestBudget->budget_start_date)
+            ->whereDate('budget_end_date', $latestBudget->budget_end_date)
+            ->get();
+
+        foreach ($oldBudgets as $old) {
+            Budget::updateOrCreate(
+                [
+                    'user_id'           => $userId,
+                    'category_name'     => $old->category_name,
+                    'budget_start_date' => $newStartDate,
+                    'budget_end_date'   => $newEndDate,
+                ],
+                [
+                    'amount'      => $old->amount,
+                    'category_id' => $old->category_id,
+                ]
+            );
+        }
+
+        return redirect()->route('budget.index')
+            ->with('success', 'Budget rinnovato per il nuovo periodo!');
+    }
+
+    public function restartPeriod(Request $request)
+    {
+        return redirect()->route('account-setup.step-one');
+    }
+
     public function destroy(string $id) {}
 }
+

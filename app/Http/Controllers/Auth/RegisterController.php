@@ -9,35 +9,13 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use function Symfony\Component\String\s;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
     protected $redirectTo = '/email/verify';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest');
@@ -51,62 +29,45 @@ class RegisterController extends Controller
 
         $user->assignRole('customer');
 
-        event(new Registered($user)); // Fire the veri email
+        event(new Registered($user));
 
         return redirect()->route('verification.notice');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'first_name'  => ['required', 'string', 'max:255'],
+            'last_name'   => ['required', 'string', 'max:255'],
+            'email'       => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password'    => ['required', 'string', 'min:8', 'confirmed'],
+            'country'     => ['required', 'string', 'in:GB,EU'],
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
     protected function create(array $data)
     {
-
         $username = strtolower($data['first_name'] . $data['last_name']);
         $originalUsername = $username;
         $counter = 1;
 
-        // Check until unique username is found
         while (User::where('username', $username)->exists()) {
             $username = $originalUsername . $counter;
             $counter++;
         }
 
+        // Determina base_currency dal paese selezionato
+        $baseCurrency = ($data['country'] ?? 'GB') === 'GB' ? 'GBP' : 'EUR';
+
         $user = User::create([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'full_name' => $data['first_name'] . ' ' . $data['last_name'],
-            'username' => $username,
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'first_name'    => $data['first_name'],
+            'last_name'     => $data['last_name'],
+            'full_name'     => $data['first_name'] . ' ' . $data['last_name'],
+            'username'      => $username,
+            'email'         => $data['email'],
+            'password'      => Hash::make($data['password']),
+            'base_currency' => $baseCurrency,
         ]);
-        // $user = User::create([
-        //     'first_name' => $data['first_name'],
-        //     'last_name' => $data['last_name'],
-        //     'full_name' => $data['first_name'] . ' ' . $data['last_name'],
-        //     'username' => $data['first_name'] . $data['last_name'],
-        //     'email' => $data['email'],
-        //     'password' => Hash::make($data['password']),
-        // ]);
 
         $user->assignRole('customer');
 

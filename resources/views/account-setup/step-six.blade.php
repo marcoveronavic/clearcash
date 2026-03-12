@@ -1,6 +1,5 @@
 @extends('layouts.customer')
 @section('styles_in_head')
-    {{-- Add your link below --}}
     <link rel="stylesheet" href="{{asset('build/assets/account-setup.css')}}">
 @endsection
 @section('content')
@@ -62,4 +61,22 @@
             </div>
         </div>
     </section>
+    <script>
+        (function(){
+            var btn = document.createElement('button');
+            var ico = document.createElement('i'); ico.className = document.body.classList.contains('light-mode') ? 'fa-solid fa-moon' : 'fa-solid fa-sun'; ico.style.marginRight = '6px'; ico.style.color = document.body.classList.contains('light-mode') ? '#fbbf24' : '#f59e0b'; btn.appendChild(ico); btn.appendChild(document.createTextNode(document.body.classList.contains('light-mode') ? ' Dark' : ' Light'));
+            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+            document.body.appendChild(btn);
+            btn.addEventListener('click', function(){
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.remove('light-mode');
+                    localStorage.setItem('cc-theme','dark');
+                } else {
+                    document.body.classList.add('light-mode');
+                    localStorage.setItem('cc-theme','light');
+                }
+                window.location.reload();
+            });
+        })();
+    </script>
 @endsection

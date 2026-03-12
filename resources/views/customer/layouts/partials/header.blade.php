@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <!-- CSRF Token -->
@@ -25,7 +25,7 @@
     <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('images/favicons/apple-icon-152x152.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicons/apple-icon-180x180.png') }}">
     <link rel="icon" type="image/png" sizes="192x192"
-        href="{{ asset('images/favicons/android-icon-192x192.png') }}">
+          href="{{ asset('images/favicons/android-icon-192x192.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicons/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/favicons/favicon-96x96.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicons/favicon-16x16.png') }}">
@@ -36,12 +36,11 @@
     <!-- Stylesheets -->
     @stack('page-styles')
 
-
-
     <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>if(localStorage.getItem('cc-theme')==='light' && typeof Chart!=='undefined')Chart.defaults.color='#374151';</script>
     @stack('page-scripts')
 
     @vite(['resources/sass/app.scss', 'resources/sass/customer.scss', 'resources/js/app.js', 'resources/js/customer.js'])
@@ -49,52 +48,33 @@
     <link rel="manifest" href="{{ asset('manifest.json') }}">
 
     @yield('styles_in_head')
+
+    <!-- Light mode CSS (external file) -->
+    <link rel="stylesheet" href="{{ asset('css/light-mode.css') }}">
+    <script>if(localStorage.getItem('cc-theme')==='light')document.documentElement.classList.add('light-mode');</script>
 </head>
 
 <body>
+<script>if(localStorage.getItem('cc-theme')==='light')document.body.classList.add('light-mode');</script>
 
-    {{-- <style>
-        .modal-content {
-            margin-top: 25px;
-        }
-
-        @media (max-width:768px) {
-            .modal-content {
-                margin-top: 175px !important;
-            }
-
-            .modal .modal-dialog .modal-content .modal-body form .row input[type="text"],
-            .modal .modal-dialog .modal-content .modal-body form .row input[type="date"],
-            .modal .modal-dialog .modal-content .modal-body form .row input[type="number"],
-            .modal .modal-dialog .modal-content .modal-body form .row input[type="tel"] {
-                height: 40px !important;
-
-            }
-            .modal .modal-dialog .modal-content .modal-body form .row {
-                margin-bottom: 1rem;
-            }
-
-        }
-    </style> --}}
-
-    @include('sweetalert::alert')
-    <div class="app-main-container">
-        @include('customer.layouts.partials.sidebar')
-        <main class="dashboardMain">
-            <header class="d-sm-block d-md-block d-lg-none d-xl-none">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-12">
-                            <div class="headWrap">
-                                <button type="button" class="sidebarMenuToggler">
-                                    <i class="fas fa-bars"></i>
-                                </button>
-                                <a href="{{ route('dashboard') }}" class="brand">
-                                    <img src="{{ asset('images/logo/clear-cash-logo.svg') }}" alt=""
-                                        class="img-fluid">
-                                </a>
-                            </div>
+@include('sweetalert::alert')
+<div class="app-main-container">
+    @include('customer.layouts.partials.sidebar')
+    <main class="dashboardMain">
+        <header class="d-sm-block d-md-block d-lg-none d-xl-none">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-12">
+                        <div class="headWrap">
+                            <button type="button" class="sidebarMenuToggler">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                            <a href="{{ route('dashboard') }}" class="brand">
+                                <img src="{{ asset('images/logo/clear-cash-logo.svg') }}" alt="" class="img-fluid logo-light">
+                                <img src="{{ asset('images/logo/clear-cash-logo-dark.svg') }}" alt="" class="img-fluid logo-dark">
+                            </a>
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
+        </header>

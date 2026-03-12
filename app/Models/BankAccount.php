@@ -11,7 +11,20 @@ class BankAccount extends Model
 
     protected $guarded = [];
 
-    public function user(){
+    public function currencySymbol(): string
+    {
+        return match($this->currency ?? 'GBP') {
+            'GBP'   => '£',
+            'EUR'   => '€',
+            'USD'   => '$',
+            'CHF'   => 'CHF',
+            'JPY'   => '¥',
+            default => $this->currency ?? 'GBP',
+        };
+    }
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 

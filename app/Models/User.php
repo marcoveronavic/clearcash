@@ -13,7 +13,6 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    // 🔐 Spatie: forza il guard corretto per ruoli/permessi
     protected $guard_name = 'web';
 
     protected $fillable = [
@@ -25,17 +24,33 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'avatar',
         'has_completed_setup',
+        'powens_user_id',
+        'powens_user_token',
+        'base_currency',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'powens_user_token',
     ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'password'          => 'hashed',
     ];
+
+    public function currencySymbol(): string
+    {
+        return match($this->base_currency ?? 'GBP') {
+            'GBP'   => '£',
+            'EUR'   => '€',
+            'USD'   => '$',
+            'CHF'   => 'CHF',
+            'JPY'   => '¥',
+            default => $this->base_currency ?? 'GBP',
+        };
+    }
 
     public function customerDetails()
     {

@@ -14,12 +14,21 @@ class Transaction extends Model
     protected $casts = [
         'internal_transfer' => 'boolean',
         'date'              => 'date',
+        'exchange_rate'     => 'decimal:6',
+        'amount_native'     => 'decimal:4',
     ];
+
+    /**
+     * True se la transazione è in valuta diversa dalla base currency dell'utente.
+     */
+    public function isForeign(): bool
+    {
+        $baseCurrency = $this->bankAccount?->user?->base_currency ?? 'GBP';
+        return ($this->currency ?? 'GBP') !== $baseCurrency;
+    }
 
     public function category()
     {
-        // Nota: in molti progetti questo punterebbe a BudgetCategory,
-        // ma lasciamo Budget per compatibilità con il resto della tua app.
         return $this->belongsTo(Budget::class, 'category_id');
     }
 

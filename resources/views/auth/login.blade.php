@@ -21,11 +21,11 @@
                                 @csrf
                                 <div class="row">
                                     <div class="col-12">
-                                        <label for="email">{{ __('Email Address') }}</label>
+                                        <label for="email">Indirizzo email</label>
                                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                                         @error('email')
-                                            <span class="invalid-feedback" role="alert">
+                                        <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
@@ -33,12 +33,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
-                                        <label for="password">{{ __('Password') }}</label>
+                                        <label for="password">Password</label>
 
                                         <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
                                         @error('password')
-                                            <span class="invalid-feedback" role="alert">
+                                        <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
@@ -48,7 +48,7 @@
                                     <div class="col-lg-6">
                                         @if (Route::has('password.request'))
                                             <a class="btn btn-link passwordResetLink" href="{{ route('password.request') }}">
-                                                {{ __('Forgot Your Password?') }}
+                                                Password dimenticata?
                                             </a>
                                         @endif
                                     </div>
@@ -56,16 +56,16 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-primary loginBtn">
-                                            {{ __('Login') }}
+                                            Accedi
                                         </button>
                                     </div>
                                 </div>
                             </form>
-                                <hr>
+                            <hr>
                         </div>
                         <div class="card-footer">
                             <p>
-                                Don't have an account? <a href="{{ route('register') }}">Sign up</a>
+                                Non hai un account? <a href="{{ route('register') }}">Registrati</a>
                             </p>
                         </div>
                     </div>

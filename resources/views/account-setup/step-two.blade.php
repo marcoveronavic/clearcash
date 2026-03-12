@@ -9,7 +9,6 @@
         main.dashboardMain.full { padding-top: 2rem; }
         .singleDateSelect .input-group-text{ border:none; }
 
-        /* ✅ FIX: testi grigi invisibili su sfondo scuro (palette app) */
         .setupStepsWrapper h4{
             color: rgba(255,255,255,0.75) !important;
         }
@@ -24,7 +23,6 @@
             color: #ffffff !important;
         }
 
-        /* ✅ FIX: input date leggibile */
         .setupStepsWrapper .form-control,
         .setupStepsWrapper .form-select{
             background: rgba(255,255,255,0.06) !important;
@@ -43,12 +41,10 @@
             cursor: pointer;
         }
 
-        /* ✅ error text leggibile */
         .errorsBanner li { color: #ffffff !important; }
     </style>
 
     @php
-        // Protezione lato view: se manca, fallback a null
         $selection = $accSetup['period_selection'] ?? null;
     @endphp
 
@@ -58,13 +54,13 @@
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
-                            <div class="item active">Create your budget</div>
+                            <div class="item active">Crea il tuo budget</div>
                             <div class="sep"></div>
-                            <div class="item">Add bank accounts</div>
+                            <div class="item">Aggiungi conti bancari</div>
                             <div class="sep"></div>
-                            <div class="item">Add your investments and pensions</div>
+                            <div class="item">Investimenti e pensioni</div>
                             <div class="sep"></div>
-                            <div class="item">Done</div>
+                            <div class="item">Fatto</div>
                         </div>
                         <div class="boxes">
                             <div class="box active"></div>
@@ -82,28 +78,28 @@
             <div class="mt-md-4 mt-0">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
                     <h4>
-                        @if($selection === 'first_day') First to last day of the month
-                        @elseif($selection === 'last_working') Last Working Day of the month
-                        @elseif($selection === 'fixed_date') Fixed Monthly Date
-                        @elseif($selection === 'weekly') Weekly period
-                        @elseif($selection === 'custom') Custom period
-                        @else Select your period @endif
+                        @if($selection === 'first_day') Dal primo all'ultimo giorno del mese
+                        @elseif($selection === 'last_working') Ultimo giorno lavorativo del mese
+                        @elseif($selection === 'fixed_date') Data fissa mensile
+                        @elseif($selection === 'weekly') Periodo settimanale
+                        @elseif($selection === 'custom') Periodo personalizzato
+                        @else Seleziona il tuo periodo @endif
                     </h4>
 
                     <h1>
-                        @if($selection === 'fixed_date') Select the date
-                        @elseif($selection === 'weekly') Select the weekday
-                        @elseif($selection === 'custom') Select the range
-                        @else Select the date @endif
+                        @if($selection === 'fixed_date') Seleziona il giorno
+                        @elseif($selection === 'weekly') Seleziona il giorno della settimana
+                        @elseif($selection === 'custom') Seleziona l'intervallo
+                        @else Seleziona la data @endif
                     </h1>
 
                     <p>
                         @if($selection === 'fixed_date')
-                            Choose the day of the month you would like your budgeting and reporting period to start.
+                            Scegli il giorno del mese in cui vuoi che inizi il tuo periodo di budget.
                         @elseif($selection === 'weekly')
-                            Choose which weekday your budgeting week starts.
+                            Scegli il giorno della settimana in cui inizia la tua settimana di budget.
                         @elseif($selection === 'custom')
-                            Pick the exact start and end dates for your budgeting window.
+                            Seleziona le date esatte di inizio e fine del tuo periodo di budget.
                         @endif
                     </p>
                 </div>
@@ -130,7 +126,6 @@
                     <form id="stepTwoForm" action="/account-setup-step-two-store" method="post">
                         @csrf
 
-                        {{-- FIXED DATE --}}
                         @if($selection === 'fixed_date')
                             <div class="dateSelectMainWrapper mb-4">
                                 <div class="input-group singleDateSelect">
@@ -141,58 +136,53 @@
                                     </div>
                                     <?php endfor; ?>
                                 </div>
-                                <p>Your period will reset on the <strong>Date Selected</strong></p>
+                                <p>Il tuo periodo si resetterà il <strong>giorno selezionato</strong></p>
                             </div>
                         @endif
 
-                        {{-- WEEKLY --}}
                         @if($selection === 'weekly')
                             <div class="mb-4">
-                                <label for="weekday" class="form-label">Week starts on</label>
+                                <label for="weekday" class="form-label">La settimana inizia il</label>
                                 <select id="weekday" name="weekday" class="form-select">
-                                    <option value="1">Monday</option>
-                                    <option value="2">Tuesday</option>
-                                    <option value="3">Wednesday</option>
-                                    <option value="4">Thursday</option>
-                                    <option value="5">Friday</option>
-                                    <option value="6">Saturday</option>
-                                    <option value="7">Sunday</option>
+                                    <option value="1">Lunedì</option>
+                                    <option value="2">Martedì</option>
+                                    <option value="3">Mercoledì</option>
+                                    <option value="4">Giovedì</option>
+                                    <option value="5">Venerdì</option>
+                                    <option value="6">Sabato</option>
+                                    <option value="7">Domenica</option>
                                 </select>
-                                <p class="mt-2 text-muted">Your period will cover 7 days starting from this weekday.</p>
+                                <p class="mt-2 text-muted">Il tuo periodo coprirà 7 giorni a partire dal giorno selezionato.</p>
                             </div>
                         @endif
 
-                        {{-- CUSTOM --}}
                         @if($selection === 'custom')
                             <div class="mb-4">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label for="custom_start_date" class="form-label">Start date</label>
+                                        <label for="custom_start_date" class="form-label">Data di inizio</label>
                                         <input type="date" id="custom_start_date" name="custom_start_date" class="form-control" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="custom_end_date" class="form-label">End date</label>
+                                        <label for="custom_end_date" class="form-label">Data di fine</label>
                                         <input type="date" id="custom_end_date" name="custom_end_date" class="form-control" required>
                                     </div>
                                 </div>
 
-                                {{-- ✅ compatibilità con validazioni diverse --}}
                                 <input type="hidden" id="start_date" name="start_date" value="">
                                 <input type="hidden" id="end_date" name="end_date" value="">
-
-                                {{-- ✅ IMPORTANT: controller si aspetta "date" come giorno 1-31 --}}
                                 <input type="hidden" id="dateField" name="date" value="">
 
-                                <p class="mt-2 text-muted">End date must be the same or after the start date.</p>
+                                <p class="mt-2 text-muted">La data di fine deve essere uguale o successiva alla data di inizio.</p>
                             </div>
                         @endif
 
                         <div class="row align-items-center my-4">
                             <div class="col-6 d-flex justify-content-start">
-                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-one') }}">Back</a>
+                                <a class="setupStepsBackButton" href="{{ route('account-setup.step-one') }}">Indietro</a>
                             </div>
                             <div class="col-6 d-flex justify-content-end">
-                                <button type="submit" class="twoToneBlueGreenBtn">Continue</button>
+                                <button type="submit" class="twoToneBlueGreenBtn">Continua</button>
                             </div>
                         </div>
 
@@ -210,11 +200,7 @@
                 const strong = document.querySelector('p strong');
                 radios.forEach(r => r.addEventListener('change', function(){
                     const day = parseInt(this.value, 10);
-                    let suffix = 'th';
-                    if (day % 10 === 1 && day !== 11) suffix = 'st';
-                    else if (day % 10 === 2 && day !== 12) suffix = 'nd';
-                    else if (day % 10 === 3 && day !== 13) suffix = 'rd';
-                    if (strong) strong.textContent = `${day}${suffix} of each month`;
+                    if (strong) strong.textContent = `${day} di ogni mese`;
                 }));
             });
         </script>
@@ -238,11 +224,10 @@
                     if (hiddenStart) hiddenStart.value = s;
                     if (hiddenEnd) hiddenEnd.value = en;
 
-                    // date deve essere un numero 1-31: prendo il giorno dalla start date YYYY-MM-DD
                     if (dateField) {
                         if (s && s.includes('-')) {
-                            const parts = s.split('-'); // [YYYY, MM, DD]
-                            const day = parseInt(parts[2], 10); // 1..31
+                            const parts = s.split('-');
+                            const day = parseInt(parts[2], 10);
                             dateField.value = isNaN(day) ? '' : String(day);
                         } else {
                             dateField.value = '';
@@ -261,23 +246,41 @@
 
                     if (!s || !en) {
                         e.preventDefault();
-                        alert('Please select both start and end dates.');
+                        alert('Seleziona entrambe le date di inizio e fine.');
                         return false;
                     }
                     if (en < s) {
                         e.preventDefault();
-                        alert('End date must be the same or after the start date.');
+                        alert('La data di fine deve essere uguale o successiva alla data di inizio.');
                         return false;
                     }
 
-                    // ultima sicurezza: se dateField è vuoto, blocco
                     if (!dateField || !dateField.value) {
                         e.preventDefault();
-                        alert('Please select a valid start date.');
+                        alert('Seleziona una data di inizio valida.');
                         return false;
                     }
                 });
             });
         </script>
     @endif
+    <script>
+        (function(){
+            var btn = document.createElement('button');
+            btn.innerHTML = document.body.classList.contains('light-mode') ? '🌙 Dark' : '☀️ Light';
+            btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;padding:10px 18px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+            document.body.appendChild(btn);
+            btn.addEventListener('click', function(){
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.remove('light-mode');
+                    localStorage.setItem('cc-theme','dark');
+                } else {
+                    document.body.classList.add('light-mode');
+                    localStorage.setItem('cc-theme','light');
+                }
+                window.location.reload();
+            });
+        })();
+    </script>
 @endsection
+

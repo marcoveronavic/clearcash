@@ -25,7 +25,6 @@ class AccountSetupController extends Controller
     {
         $accSetup = $request->session()->get('accSetup', []);
         if (!is_array($accSetup)) $accSetup = [];
-        // ricomincia la scelta
         unset($accSetup['period_selection']);
         $request->session()->put('accSetup', $accSetup);
 
@@ -62,7 +61,7 @@ class AccountSetupController extends Controller
                 $request->session()->put('accSetup', $accSetup);
                 return redirect()->route('account-setup.step-three');
 
-            default: // fixed_date | weekly | custom
+            default:
                 $accSetup = array_merge($accSetup, $validated);
                 $request->session()->put('accSetup', $accSetup);
                 return redirect()->route('account-setup.step-two');
@@ -70,7 +69,7 @@ class AccountSetupController extends Controller
     }
 
     /* =========================
-     * STEP 2 – Parametri aggiuntivi (es. day per fixed_date)
+     * STEP 2 – Parametri aggiuntivi
      * ========================= */
     public function stepTwoShow(Request $request)
     {
@@ -90,7 +89,6 @@ class AccountSetupController extends Controller
 
         $selection = $accSetup['period_selection'];
 
-        // ✅ validate based on selected period
         if ($selection === 'fixed_date') {
             $validated = $request->validate([
                 'date' => ['required', 'integer', 'between:1,31'],
@@ -105,24 +103,18 @@ class AccountSetupController extends Controller
                 'custom_end_date'   => ['required', 'date', 'after_or_equal:custom_start_date'],
             ]);
 
-            // ✅ keep both naming conventions used across the app
             $accSetup['custom_start_date'] = $validated['custom_start_date'];
             $accSetup['custom_end_date']   = $validated['custom_end_date'];
             $accSetup['custom_start']      = $validated['custom_start_date'];
             $accSetup['custom_end']        = $validated['custom_end_date'];
 
-            // ✅ compatibility: store "date" as day-of-month (1..31) from custom_start
             try {
                 $accSetup['date'] = (int) Carbon::parse($validated['custom_start_date'])->format('d');
-            } catch (\Throwable $e) {
-                // no-op
-            }
+            } catch (\Throwable $e) {}
 
             $request->session()->put('accSetup', $accSetup);
-
             return redirect()->route('account-setup.step-three');
         } else {
-            // first_day / last_working: no step-two params needed
             $validated = [];
         }
 
@@ -142,7 +134,6 @@ class AccountSetupController extends Controller
             return redirect()->route('account-setup.step-one');
         }
 
-        // seed di comodo se tabella vuota (solo in dev/locale)
         if (DefaultBudgetCategories::count() === 0) {
             (new \Database\Seeders\DefaultBudgetCategoriesSeeder())->run();
         }
@@ -162,6 +153,10 @@ class AccountSetupController extends Controller
             '*_amount'        => ['nullable','numeric'],
             'other_name.*'    => ['nullable','string'],
             'other_amounts.*' => ['nullable','numeric'],
+        ], [
+            'salary_date.required'   => 'La data dello stipendio è obbligatoria.',
+            'salary_amount.required' => "L'importo dello stipendio è obbligatorio.",
+            'salary_amount.numeric'  => "L'importo dello stipendio deve essere un numero.",
         ]);
 
         $accSetup = $request->session()->get('accSetup', []);
@@ -169,8 +164,57 @@ class AccountSetupController extends Controller
             return redirect()->route('account-setup.step-one');
         }
 
+        // Salva base_currency se inviata dal form
+        $baseCurrency = strtoupper($request->input('base_currency', 'GBP'));
+        $allowedCurrencies = ['GBP', 'EUR', 'USD', 'CHF'];
+        if (!in_array($baseCurrency, $allowedCurrencies)) {
+            $baseCurrency = 'GBP';
+        }
+        Auth::user()->update(['base_currency' => $baseCurrency]);
+
         $accSetup = array_merge($accSetup, $validated);
         $request->session()->put('accSetup', $accSetup);
+
+        // Crea categorie di default con icone per l'utente
+        $user = Auth::user();
+        $defaultCategories = [
+            'stipendio'          => 'fa-solid fa-wallet',
+            'affitto'            => 'fa-solid fa-house',
+            'mutuo'              => 'fa-solid fa-building-columns',
+            'bollette'           => 'fa-solid fa-bolt',
+            'spesa_alimentare'   => 'fa-solid fa-cart-shopping',
+            'ristoranti'         => 'fa-solid fa-utensils',
+            'trasporti'          => 'fa-solid fa-bus',
+            'carburante'         => 'fa-solid fa-gas-pump',
+            'abbigliamento'      => 'fa-solid fa-shirt',
+            'salute'             => 'fa-solid fa-heart-pulse',
+            'farmacia'           => 'fa-solid fa-prescription-bottle-medical',
+            'assicurazioni'      => 'fa-solid fa-shield-halved',
+            'telefono_internet'  => 'fa-solid fa-wifi',
+            'abbonamenti'        => 'fa-solid fa-rotate',
+            'intrattenimento'    => 'fa-solid fa-film',
+            'viaggi'             => 'fa-solid fa-plane',
+            'istruzione'         => 'fa-solid fa-graduation-cap',
+            'cura_personale'     => 'fa-solid fa-spa',
+            'casa_manutenzione'  => 'fa-solid fa-screwdriver-wrench',
+            'regali'             => 'fa-solid fa-gift',
+            'donazioni'          => 'fa-solid fa-hand-holding-heart',
+            'tasse'              => 'fa-solid fa-file-invoice-dollar',
+            'risparmi'           => 'fa-solid fa-piggy-bank',
+            'investimenti'       => 'fa-solid fa-chart-line',
+            'animali_domestici'  => 'fa-solid fa-paw',
+            'figli'              => 'fa-solid fa-baby',
+            'sport_fitness'      => 'fa-solid fa-dumbbell',
+            'altro'              => 'fa-solid fa-ellipsis',
+            'non_categorizzato'  => 'fa-solid fa-question',
+        ];
+
+        foreach ($defaultCategories as $catName => $catIcon) {
+            BudgetCategory::firstOrCreate(
+                ['user_id' => $user->id, 'name' => $catName],
+                ['icon' => $catIcon]
+            );
+        }
 
         return redirect()->route('account-setup.step-four');
     }
@@ -222,15 +266,8 @@ class AccountSetupController extends Controller
         return view('account-setup.step-five', ['accSetup' => $accSetup]);
     }
 
-    /**
-     * STEP 5 – Salva conti manuali (supporta più card).
-     * - Se "skip_manual" o "go_next": prosegue allo step 6.
-     * - Altrimenti salva e resta nello step 5 (così aggiungi altre banche).
-     */
     public function stepFiveStore(Request $request)
     {
-        // ✅ SE VAI AVANTI MA HAI COMPILATO UNA BANCA, SALVA COMUNQUE.
-        // (Se invece clicchi skip/go_next senza aver compilato nulla, allora vai avanti senza salvare.)
         $hasAnyBankInput =
             $request->has('name_of_bank_account') ||
             $request->has('bank_account_type') ||
@@ -241,7 +278,6 @@ class AccountSetupController extends Controller
             return redirect()->route('account-setup.step-six-investments');
         }
 
-        // Valida e salva
         $validated = $request->validate([
             'name_of_bank_account'            => ['required','array','min:1'],
             'name_of_bank_account.*'          => ['required','string','max:255'],
@@ -249,8 +285,6 @@ class AccountSetupController extends Controller
             'bank_account_type.*'             => ['required','string','in:current_account,savings_account,isa_account,investment_account,credit_card'],
             'bank_account_starting_balance'   => ['required','array'],
             'bank_account_starting_balance.*' => ['required','numeric'],
-
-            // ✅ NEW: salary flags (0/1)
             'is_salary_account'               => ['nullable','array'],
             'is_salary_account.*'             => ['nullable','in:0,1'],
         ]);
@@ -306,11 +340,9 @@ class AccountSetupController extends Controller
                 if ($salaryIndex !== null) {
                     DB::table('bank_accounts')->where('user_id', $userId)->update(['is_salary_account' => 0]);
                 }
-
                 DB::table('bank_accounts')->insert($rowsForInsert);
             }
 
-            // stato in sessione (solo per coerenza UI)
             $accSetup = $request->session()->get('accSetup', []);
             $accSetup['bank_accounts'] = $rowsForSession;
             $request->session()->put('accSetup', $accSetup);
@@ -322,15 +354,13 @@ class AccountSetupController extends Controller
             return back()->withErrors(['general' => 'Could not save bank accounts: '.$e->getMessage()])->withInput();
         }
 
-        // ✅ Se avevi cliccato Next/Skip, ora prosegui dopo aver salvato
         if ($request->boolean('skip_manual') || $request->boolean('go_next')) {
             return redirect()->route('account-setup.step-six-investments');
         }
 
-        // Resta nello step 5 per aggiungere altre banche
         return redirect()
             ->route('account-setup.step-five')
-            ->with('success', 'Bank account saved. You can add more.');
+            ->with('success', 'Conto bancario salvato. Puoi aggiungerne altri.');
     }
 
     /* =========================
@@ -407,7 +437,7 @@ class AccountSetupController extends Controller
         $budget_start_date = $periodStart->toDateString();
         $budgetExpiryDate  = $periodEnd->toDateString();
 
-        // 2) CustomerAccountDetails – mappa sul campo presente (avoid NOT NULL error)
+        // 2) CustomerAccountDetails
         $payload = [
             'period_selection' => $accSetup['period_selection'] ?? 'first_day',
         ];
@@ -436,7 +466,6 @@ class AccountSetupController extends Controller
         // 3) Spese (default + custom "Other") -> Budget
         $items = [];
 
-        // Default expense_*_amount
         foreach ($accSetup as $k => $v) {
             if (preg_match('/^expense_(.+)_amount$/', (string)$k, $m)) {
                 $name   = str_replace('_', ' ', strtolower($m[1]));
@@ -444,7 +473,7 @@ class AccountSetupController extends Controller
                 if ($amount > 0) $items[$name] = $amount;
             }
         }
-        // Custom (other_name[] + other_amounts[])
+
         $otherNames = $accSetup['other_name'] ?? [];
         $otherAmts  = $accSetup['other_amounts'] ?? [];
         if (is_array($otherNames) && is_array($otherAmts)) {
@@ -470,13 +499,13 @@ class AccountSetupController extends Controller
                     'budget_end_date'   => $budgetExpiryDate,
                 ],
                 [
-                    'category_name'     => $cat->name,
-                    'amount'            => $amount,
+                    'category_name' => $cat->name,
+                    'amount'        => $amount,
                 ]
             );
         }
 
-        // 4) Stipendio (budget + recurring + prima transazione)
+        // 4) Stipendio
         if (!empty($accSetup['salary_amount'])) {
             Budget::updateOrCreate(
                 [
@@ -494,7 +523,6 @@ class AccountSetupController extends Controller
                 ->first();
 
             if ($bank) {
-                // ✅ FIX ROBUSTO: sposta Salary su qualunque valore (case-insensitive + trim)
                 RecurringPayment::where('user_id', $user->id)
                     ->whereRaw('LOWER(TRIM(COALESCE(transaction_type,""))) = ?', ['income'])
                     ->whereRaw('LOWER(TRIM(COALESCE(name,""))) = ?', ['salary'])
@@ -510,10 +538,10 @@ class AccountSetupController extends Controller
 
                 RecurringPayment::updateOrCreate(
                     [
-                        'user_id'         => $user->id,
-                        'name'            => 'Salary',
-                        'bank_account_id' => $bank->id,
-                        'transaction_type'=> 'income',
+                        'user_id'          => $user->id,
+                        'name'             => 'Salary',
+                        'bank_account_id'  => $bank->id,
+                        'transaction_type' => 'income',
                     ],
                     [
                         'repeat'     => 'monthly',
@@ -521,19 +549,6 @@ class AccountSetupController extends Controller
                         'amount'     => (float)$accSetup['salary_amount'],
                     ]
                 );
-
-                Transaction::create([
-                    'user_id'         => $user->id,
-                    'name'            => 'Salary',
-                    'date'            => $accSetup['salary_date'] ?? $now->toDateString(),
-                    'category_name'   => 'salary',
-                    'bank_account_id' => $bank->id,
-                    'amount'          => (float)$accSetup['salary_amount'],
-                    'transaction_type'=> 'income',
-                ]);
-
-                $bank->starting_balance = (float)$bank->starting_balance + (float)$accSetup['salary_amount'];
-                $bank->save();
             }
         }
 

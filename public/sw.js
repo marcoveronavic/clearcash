@@ -47,6 +47,11 @@ const returnFromCache = function (request) {
 };
 
 self.addEventListener("fetch", function (event) {
+    // Non intercettare le richieste POST (upload file, form submit, ecc.)
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     event.respondWith(checkResponse(event.request).catch(function () {
         return returnFromCache(event.request);
     }));

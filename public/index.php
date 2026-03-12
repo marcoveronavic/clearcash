@@ -1,10 +1,12 @@
 <?php
+ini_set('upload_max_filesize', '10M');
+ini_set('post_max_size', '20M');
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
-    
+
 /*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance
