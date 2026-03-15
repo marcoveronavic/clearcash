@@ -18,10 +18,10 @@
                 <div class="col-12">
                     <div class="setupStepsWrap">
                         <div class="titles">
-                            <div class="item">Crea il tuo budget</div><div class="sep"></div>
-                            <div class="item">Aggiungi conti bancari</div><div class="sep"></div>
-                            <div class="item">Investimenti e pensioni</div><div class="sep"></div>
-                            <div class="item active">Fatto</div>
+                            <div class="item">{{ __('messages.setup_step_budget') }}</div><div class="sep"></div>
+                            <div class="item">{{ __('messages.setup_step_banks') }}</div><div class="sep"></div>
+                            <div class="item">{{ __('messages.setup_step_investments') }}</div><div class="sep"></div>
+                            <div class="item active">{{ __('messages.setup_step_done') }}</div>
                         </div>
                         <div class="boxes">
                             <div class="box active"></div><div class="box active"></div><div class="box active"></div>
@@ -32,11 +32,11 @@
             </div>
             <div class="row mb-4">
                 <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-                    <h1 class="mb-4">Tutto pronto! Il tuo account è configurato</h1>
-                    <p>Il tuo account ClearCash è ora attivo e pronto all'uso.</p>
-                    <p>Il prossimo passo è impostare i pagamenti ricorrenti e iniziare ad aggiungere le transazioni.</p>
+                    <h1 class="mb-4">{{ __('messages.setup_done_title') }}</h1>
+                    <p>{{ __('messages.setup_done_desc') }}</p>
+                    <p>{{ __('messages.setup_done_next') }}</p>
                     <a href="{{ route('dashboard', ['from_setup' => 1]) }}" class="twoToneBlueGreenBtn">
-                        Vai alla dashboard
+                        {{ __('messages.setup_done_go_dashboard') }}
                     </a>
                 </div>
             </div>

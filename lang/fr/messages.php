@@ -359,4 +359,9 @@ return [
 
     'connect_bank_btn'  => 'Connecter ma banque',
     'connect_bank_hint' => 'Connectez votre compte via Open Banking.',
+
+    'setup_done_title' => 'Tout est prêt ! Votre compte est configuré',
+    'setup_done_desc' => 'Votre compte ClearCash est maintenant actif et prêt à l\'emploi.',
+    'setup_done_next' => 'Prochaine étape : configurez vos paiements récurrents et commencez à ajouter des transactions.',
+    'setup_done_go_dashboard' => 'Aller au tableau de bord',
     ];
