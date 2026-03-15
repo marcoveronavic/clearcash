@@ -64,10 +64,10 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h3 class="sg-section-title" style="color:#fff;font-size:18px;font-weight:600;margin:0">
                     <i class="fa-solid fa-piggy-bank" style="color:#2DD4BF;margin-right:8px"></i>
-                    Obiettivi di risparmio
+                    {{ __('messages.sg_title') }}
                 </h3>
                 <button type="button" class="twoToneBlueGreenBtn" data-bs-toggle="modal" data-bs-target="#addSavingGoalModal" style="padding:6px 16px;font-size:13px">
-                    <i class="fa-solid fa-plus"></i> Nuovo
+                    <i class="fa-solid fa-plus"></i> {{ __('messages.sg_new') }}
                 </button>
             </div>
 
@@ -98,7 +98,7 @@
                                     <ul class="dropdown-menu dropdown-menu-end" style="background:#1A3535;border:1px solid #1D3838">
                                         <li>
                                             <button type="button" class="dropdown-item" style="color:#fff;font-size:13px" data-bs-toggle="modal" data-bs-target="#editGoal_{{ $goal->id }}">
-                                                <i class="fa-solid fa-pen me-2" style="color:#2DD4BF"></i> Modifica
+                                                <i class="fa-solid fa-pen me-2" style="color:#2DD4BF"></i> {{ __('messages.sg_edit') }}
                                             </button>
                                         </li>
                                         <li>
@@ -106,7 +106,7 @@
                                                 @csrf @method('DELETE')
                                                 <button type="button" class="dropdown-item sg-delete" style="color:#F87171;font-size:13px"
                                                         onclick="confirmDelete(document.getElementById('deleteGoal_{{ $goal->id }}'))">
-                                                    <i class="fa-solid fa-trash me-2"></i> Elimina
+                                                    <i class="fa-solid fa-trash me-2"></i> {{ __('messages.sg_delete') }}
                                                 </button>
                                             </form>
                                         </li>
@@ -120,12 +120,12 @@
                             <div class="sg-bar-bg"><div class="sg-bar" style="width:{{ $pct }}%;background:linear-gradient(90deg,{{ $barColor }}CC,{{ $barColor }})"></div></div>
                             <div class="d-flex align-items-center justify-content-between">
                                 <span style="font-size:13px;font-weight:600;color:{{ $done ? '#10B981' : $barColor }}">
-                                    @if($done)<i class="fa-solid fa-circle-check me-1"></i>Raggiunto!@else{{ $pct }}%@endif
+                                    @if($done)<i class="fa-solid fa-circle-check me-1"></i>{{ __('messages.sg_reached') }}@else{{ $pct }}%@endif
                                 </span>
-                                @if(!$done)<span class="sg-remaining" style="color:#5A9090;font-size:12px">Mancano €{{ number_format($remaining, 2, ',', '.') }}</span>@endif
+                                @if(!$done)<span class="sg-remaining" style="color:#5A9090;font-size:12px">{{ __('messages.sg_remaining', ['amount' => number_format($remaining, 2, ',', '.')]) }}</span>@endif
                             </div>
                             @if($daysLeft !== null && !$done)
-                                <div style="margin-top:8px"><span class="sg-days" style="color:#5A9090;font-size:11px"><i class="fa-regular fa-calendar me-1"></i>{{ $daysLeft > 0 ? $daysLeft.' giorni' : 'Scaduto' }}</span></div>
+                                <div style="margin-top:8px"><span class="sg-days" style="color:#5A9090;font-size:11px"><i class="fa-regular fa-calendar me-1"></i>{{ $daysLeft > 0 ? __('messages.sg_days_left', ['days' => $daysLeft]) : __('messages.sg_expired') }}</span></div>
                             @endif
                         </div>
                     </div>
@@ -136,18 +136,18 @@
                             <div class="modal-content" style="margin-top:168px">
                                 <div class="modal-header"><button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fas fa-times"></i></button></div>
                                 <div class="modal-body">
-                                    <h1 class="mb-3">Modifica obiettivo</h1>
+                                    <h1 class="mb-3">{{ __('messages.sg_edit_goal') }}</h1>
                                     <form action="{{ route('saving-goals.update', $goal->id) }}" method="POST">
                                         @csrf @method('PUT')
-                                        <div class="row"><div class="col-12"><label>Nome</label><input type="text" name="name" value="{{ $goal->name }}" required></div></div>
-                                        <div class="row"><div class="col-12"><label>Importo (€)</label><input type="number" name="target_amount" step="0.01" min="1" value="{{ $goal->target_amount }}" required></div></div>
-                                        <div class="row"><div class="col-12"><label>Conto risparmio</label>
+                                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_name') }}</label><input type="text" name="name" value="{{ $goal->name }}" required></div></div>
+                                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_amount') }}</label><input type="number" name="target_amount" step="0.01" min="1" value="{{ $goal->target_amount }}" required></div></div>
+                                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_savings_account') }}</label>
                                                 <select name="bank_account_id" required>
                                                     @foreach($savingsOnly as $acc)<option value="{{ $acc->id }}" {{ (int)$acc->id===(int)$goal->bank_account_id?'selected':'' }}>{{ $acc->account_name }}</option>@endforeach
                                                 </select>
                                             </div></div>
-                                        <div class="row"><div class="col-12"><label>Scadenza</label><input type="date" name="deadline" value="{{ $goal->deadline?->format('Y-m-d') }}"></div></div>
-                                        <div class="row"><div class="col-12"><button type="submit" class="twoToneBlueGreenBtn">Salva</button></div></div>
+                                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_deadline') }}</label><input type="date" name="deadline" value="{{ $goal->deadline?->format('Y-m-d') }}"></div></div>
+                                        <div class="row"><div class="col-12"><button type="submit" class="twoToneBlueGreenBtn">{{ __('messages.sg_save') }}</button></div></div>
                                     </form>
                                 </div>
                             </div>
@@ -165,25 +165,26 @@
                             <div style="width:52px;height:52px;border-radius:14px;background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                                 <i class="fa-solid fa-piggy-bank" style="color:#2DD4BF;font-size:22px"></i>
                             </div>
-                            <h3 class="sg-empty-title" style="color:#fff;font-size:18px;font-weight:600;margin:0">Hai un obiettivo di risparmio?</h3>
+                            <h3 class="sg-empty-title" style="color:#fff;font-size:18px;font-weight:600;margin:0">{{ __('messages.sg_empty_title') }}</h3>
                         </div>
                         <p class="sg-empty-desc" style="color:#8BAFAF;font-size:14px;line-height:1.7;margin:0 0 8px;max-width:520px">
-                            Che si tratti di una <strong style="color:#C8E6E6">vacanza da sogno</strong>,
-                            una <strong style="color:#C8E6E6">TV nuova</strong> o un
-                            <strong style="color:#C8E6E6">fondo emergenza</strong> —
-                            crea un obiettivo e collega un <strong class="sg-accent" style="color:#2DD4BF">conto risparmio dedicato</strong>.
-                            Vedrai in tempo reale quanto sei vicino al traguardo.
+                            {!! __('messages.sg_empty_desc', [
+                                'holiday' => '<strong style="color:#C8E6E6">'.__('messages.sg_dream_holiday').'</strong>',
+                                'tv' => '<strong style="color:#C8E6E6">'.__('messages.sg_new_tv').'</strong>',
+                                'emergency' => '<strong style="color:#C8E6E6">'.__('messages.sg_emergency_fund').'</strong>',
+                                'savings' => '<strong class="sg-accent" style="color:#2DD4BF">'.__('messages.sg_dedicated_savings').'</strong>',
+                            ]) !!}
                         </p>
                         <div class="d-flex flex-wrap gap-2 mt-3 mb-4 mb-md-0">
-                            <span class="sg-tag sg-tag-teal" style="background:rgba(45,212,191,0.06);border:1px solid rgba(45,212,191,0.15);color:#2DD4BF"><i class="fa-solid fa-umbrella-beach" style="font-size:11px"></i> Vacanze</span>
-                            <span class="sg-tag sg-tag-yellow" style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);color:#FBBF24"><i class="fa-solid fa-car" style="font-size:11px"></i> Auto</span>
-                            <span class="sg-tag sg-tag-purple" style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.15);color:#A78BFA"><i class="fa-solid fa-shield-halved" style="font-size:11px"></i> Emergenza</span>
-                            <span class="sg-tag sg-tag-red" style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.15);color:#F87171"><i class="fa-solid fa-laptop" style="font-size:11px"></i> Tech</span>
+                            <span class="sg-tag sg-tag-teal" style="background:rgba(45,212,191,0.06);border:1px solid rgba(45,212,191,0.15);color:#2DD4BF"><i class="fa-solid fa-umbrella-beach" style="font-size:11px"></i> {{ __('messages.sg_tag_holidays') }}</span>
+                            <span class="sg-tag sg-tag-yellow" style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);color:#FBBF24"><i class="fa-solid fa-car" style="font-size:11px"></i> {{ __('messages.sg_tag_car') }}</span>
+                            <span class="sg-tag sg-tag-purple" style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.15);color:#A78BFA"><i class="fa-solid fa-shield-halved" style="font-size:11px"></i> {{ __('messages.sg_tag_emergency') }}</span>
+                            <span class="sg-tag sg-tag-red" style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.15);color:#F87171"><i class="fa-solid fa-laptop" style="font-size:11px"></i> {{ __('messages.sg_tag_tech') }}</span>
                         </div>
                     </div>
                     <div class="col-md-4 text-md-end">
                         <button type="button" class="twoToneBlueGreenBtn" data-bs-toggle="modal" data-bs-target="#addSavingGoalModal" style="padding:12px 28px;font-size:14px;font-weight:600">
-                            <i class="fa-solid fa-plus" style="margin-right:6px"></i> Crea il tuo primo obiettivo
+                            <i class="fa-solid fa-plus" style="margin-right:6px"></i> {{ __('messages.sg_create_first') }}
                         </button>
                     </div>
                 </div>
@@ -200,49 +201,49 @@
         <div class="modal-content" style="margin-top:168px">
             <div class="modal-header"><button type="button" class="btn-close" data-bs-dismiss="modal"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
-                <h1 class="mb-2">Nuovo obiettivo di risparmio</h1>
+                <h1 class="mb-2">{{ __('messages.sg_new_goal') }}</h1>
                 <div class="sg-info">
                     <i class="fa-solid fa-circle-info" style="color:#2DD4BF;margin-right:6px"></i>
-                    <span style="color:#8BAFAF;font-size:13px">Collega l'obiettivo a un <strong style="color:#C8E6E6">conto risparmio dedicato</strong> (non un conto corrente) per monitorare i tuoi risparmi.</span>
+                    <span style="color:#8BAFAF;font-size:13px">{!! __('messages.sg_info_text', ['savings' => '<strong style="color:#C8E6E6">'.__('messages.sg_dedicated_savings').'</strong>']) !!}</span>
                 </div>
                 @if($savingsOnly->isEmpty())
                     <div class="sg-no-savings">
                         <i class="fa-solid fa-vault" style="font-size:28px;color:#5A9090;margin-bottom:12px"></i>
-                        <p style="color:#C8E6E6;font-size:14px;font-weight:600;margin:0 0 6px">Nessun conto risparmio trovato</p>
-                        <p style="color:#5A9090;font-size:13px;margin:0 0 16px">Devi prima aggiungere un conto di tipo "Savings". I conti correnti non sono supportati.</p>
+                        <p style="color:#C8E6E6;font-size:14px;font-weight:600;margin:0 0 6px">{{ __('messages.sg_no_savings_title') }}</p>
+                        <p style="color:#5A9090;font-size:13px;margin:0 0 16px">{{ __('messages.sg_no_savings_desc') }}</p>
                         <a href="{{ route('bank-accounts.index') }}" class="twoToneBlueGreenBtn" style="display:inline-block;padding:10px 24px;font-size:13px;text-decoration:none">
-                            <i class="fa-solid fa-plus me-1"></i> Aggiungi conto risparmio
+                            <i class="fa-solid fa-plus me-1"></i> {{ __('messages.sg_add_savings_account') }}
                         </a>
                     </div>
                 @else
                     <form action="{{ route('saving-goals.store') }}" method="POST">
                         @csrf
-                        <div class="row"><div class="col-12"><label>Nome obiettivo *</label><input type="text" name="name" placeholder="es. Vacanze, Auto nuova…" required></div></div>
-                        <div class="row"><div class="col-12"><label>Importo obiettivo (€) *</label><input type="number" name="target_amount" step="0.01" min="1" placeholder="5000" required></div></div>
+                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_goal_name') }} *</label><input type="text" name="name" placeholder="{{ __('messages.sg_placeholder_name') }}" required></div></div>
+                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_target_amount') }} *</label><input type="number" name="target_amount" step="0.01" min="1" placeholder="5000" required></div></div>
                         <div class="row"><div class="col-12">
-                                <label>Conto risparmio dedicato * <i class="fa-solid fa-lock" style="color:#2DD4BF;font-size:11px" title="Solo conti risparmio"></i></label>
+                                <label>{{ __('messages.sg_label_dedicated_account') }} * <i class="fa-solid fa-lock" style="color:#2DD4BF;font-size:11px" title="{{ __('messages.sg_only_savings') }}"></i></label>
                                 <select name="bank_account_id" required>
-                                    <option value="" disabled selected>Seleziona un conto risparmio…</option>
+                                    <option value="" disabled selected>{{ __('messages.sg_select_savings') }}</option>
                                     @foreach($savingsOnly as $acc)<option value="{{ $acc->id }}">{{ $acc->account_name }} (€{{ number_format($acc->current_balance ?? $acc->starting_balance ?? 0, 2, ',', '.') }})</option>@endforeach
                                 </select>
-                                <small style="color:#5A9090;font-size:11px;display:block;margin-top:4px">Solo conti di tipo "Savings". Il saldo determina il progresso.</small>
+                                <small style="color:#5A9090;font-size:11px;display:block;margin-top:4px">{{ __('messages.sg_savings_hint') }}</small>
                             </div></div>
-                        <div class="row"><div class="col-12"><label>Scadenza (opzionale)</label><input type="date" name="deadline"></div></div>
-                        <div class="row"><div class="col-12"><label>Icona</label>
+                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_deadline_optional') }}</label><input type="date" name="deadline"></div></div>
+                        <div class="row"><div class="col-12"><label>{{ __('messages.sg_label_icon') }}</label>
                                 <select name="icon">
-                                    <option value="fa-bullseye">🎯 Obiettivo</option>
-                                    <option value="fa-umbrella-beach">🏖️ Vacanze</option>
-                                    <option value="fa-car">🚗 Auto</option>
-                                    <option value="fa-house">🏠 Casa</option>
-                                    <option value="fa-graduation-cap">🎓 Istruzione</option>
-                                    <option value="fa-laptop">💻 Tech</option>
-                                    <option value="fa-heart">❤️ Salute</option>
-                                    <option value="fa-gift">🎁 Regalo</option>
-                                    <option value="fa-piggy-bank">🐷 Risparmi</option>
-                                    <option value="fa-shield-halved">🛡️ Emergenza</option>
+                                    <option value="fa-bullseye">🎯 {{ __('messages.sg_icon_goal') }}</option>
+                                    <option value="fa-umbrella-beach">🏖️ {{ __('messages.sg_tag_holidays') }}</option>
+                                    <option value="fa-car">🚗 {{ __('messages.sg_tag_car') }}</option>
+                                    <option value="fa-house">🏠 {{ __('messages.sg_icon_house') }}</option>
+                                    <option value="fa-graduation-cap">🎓 {{ __('messages.sg_icon_education') }}</option>
+                                    <option value="fa-laptop">💻 {{ __('messages.sg_tag_tech') }}</option>
+                                    <option value="fa-heart">❤️ {{ __('messages.sg_icon_health') }}</option>
+                                    <option value="fa-gift">🎁 {{ __('messages.sg_icon_gift') }}</option>
+                                    <option value="fa-piggy-bank">🐷 {{ __('messages.sg_icon_savings') }}</option>
+                                    <option value="fa-shield-halved">🛡️ {{ __('messages.sg_tag_emergency') }}</option>
                                 </select>
                             </div></div>
-                        <div class="row"><div class="col-12"><button type="submit" class="twoToneBlueGreenBtn">Crea obiettivo</button></div></div>
+                        <div class="row"><div class="col-12"><button type="submit" class="twoToneBlueGreenBtn">{{ __('messages.sg_create_goal') }}</button></div></div>
                     </form>
                 @endif
             </div>
