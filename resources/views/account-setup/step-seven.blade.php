@@ -1,4 +1,4 @@
-@extends('layouts.customer')
+@extends('customer.layouts.main')
 @section('styles_in_head')
     <link rel="stylesheet" href="{{asset('build/assets/account-setup.css')}}">
 @endsection
