@@ -39,12 +39,6 @@
 
     @php
         $hasInvestmentsOrPensions = (($investmentAccounts ?? collect())->isNotEmpty());
-        $tInv = [
-            'fill_required' => @json(__('messages.fill_required_fields')),
-            'saved'         => @json(__('messages.saved')),
-            'pension'       => @json(__('messages.pension')),
-            'investment'    => @json(__('messages.investment')),
-        ];
     @endphp
 
     <section class="setupStepsWrapper">

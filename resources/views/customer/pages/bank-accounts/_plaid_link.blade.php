@@ -3,7 +3,7 @@
     $fromSetup = $fromSetup ?? false;
 @endphp
 
-<a href="{{ route('powens.connect', $fromSetup ? ['from_setup' => 1] : []) }}" class="twoToneBlueGreenBtn cta-btn" id="connectBankBtn">
+<a href="{{ route('powens.connect', $fromSetup ? ['from_setup' => 1] : []) }}" class="twoToneBlueGreenBtn cta-btn" id="connectBankBtn" style="width:100%;text-align:center;display:block;">
     Collega la tua banca
 </a>
 @if ($showHint)

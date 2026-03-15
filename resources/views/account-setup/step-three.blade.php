@@ -1,27 +1,12 @@
 @extends('layouts.customer')
-
 @section('styles_in_head')
     <link rel="stylesheet" href="{{ asset('build/assets/account-setup.css') }}">
 @endsection
-
 @section('content')
     <style>
-        header, aside.sidebar { display:none; }
-        main.dashboardMain { padding-top:2rem; width:100%; }
-        main.dashboardMain.full { padding-top:2rem; }
-        .setupStepsWrapper h1 { font-size:32px; }
-        @media (min-width: 1200px) { h1,.h1 { font-size:2.25rem; } }
-        .setupStepsWrapper form .expensesWrap {
-            background-color:#d1f9ff0d;border-radius:8px;margin-bottom:1.5rem;padding:1.8rem 3.5rem;
-        }
-        .cat-icon { color:#44E0AC; margin-right:8px; width:20px; text-align:center; }
-        .alert-danger {
-            background: rgba(210,20,20,0.15) !important;
-            border: 1px solid rgba(210,20,20,0.3) !important;
-            color: #ff6b6b !important;
-            border-radius: 8px;
-        }
-        .errorsBanner ul li, .errorsBanner ul { color:#ff6b6b !important; font-weight:600; font-size:1rem; }
+        header, aside.sidebar { display: none; }
+        main.dashboardMain { padding-top: 2rem; width: 100%; }
+        main.dashboardMain.full { padding-top: 2rem; }
         .errorsBanner { background:rgba(210,20,20,0.12); border-radius:10px; padding:12px 16px; margin-bottom:1rem; }
         @media only screen and (max-width:767px) {
             main.dashboardMain { padding:3rem; }
@@ -32,6 +17,29 @@
             main.dashboardMain { padding:2.5rem; }
             .setupStepsWrapper h1 { font-size:22px; }
             .setupStepsWrapper p { font-size:.85rem; }
+        }
+
+        /* ── Category label fix ── */
+        .cat-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cat-label .cat-icon {
+            flex-shrink: 0;
+            width: 16px;
+            text-align: center;
+        }
+        /* Compact rows */
+        .cat-row {
+            padding: 6px 0;
+        }
+        .cat-row .input-group {
+            max-width: 140px;
+            margin-left: auto;
         }
 
         /* ── Currency overlay – dark (default) ── */
@@ -116,32 +124,29 @@
 
     @php
         $iconMap = [
-            'affitto'            => 'fa-solid fa-house',
-            'mutuo'              => 'fa-solid fa-building-columns',
-            'bollette'           => 'fa-solid fa-bolt',
-            'spesa alimentare'   => 'fa-solid fa-cart-shopping',
-            'ristoranti'         => 'fa-solid fa-utensils',
-            'trasporti'          => 'fa-solid fa-bus',
-            'carburante'         => 'fa-solid fa-gas-pump',
-            'abbigliamento'      => 'fa-solid fa-shirt',
-            'salute'             => 'fa-solid fa-heart-pulse',
-            'farmacia'           => 'fa-solid fa-prescription-bottle-medical',
-            'assicurazioni'      => 'fa-solid fa-shield-halved',
-            'telefono e internet'=> 'fa-solid fa-wifi',
-            'abbonamenti'        => 'fa-solid fa-rotate',
-            'intrattenimento'    => 'fa-solid fa-film',
-            'viaggi'             => 'fa-solid fa-plane',
-            'istruzione'         => 'fa-solid fa-graduation-cap',
-            'cura personale'     => 'fa-solid fa-spa',
-            'casa e manutenzione'=> 'fa-solid fa-screwdriver-wrench',
-            'regali'             => 'fa-solid fa-gift',
-            'donazioni'          => 'fa-solid fa-hand-holding-heart',
-            'tasse'              => 'fa-solid fa-file-invoice-dollar',
-            'risparmi'           => 'fa-solid fa-piggy-bank',
-            'investimenti'       => 'fa-solid fa-chart-line',
-            'animali domestici'  => 'fa-solid fa-paw',
-            'figli'              => 'fa-solid fa-baby',
-            'sport e fitness'    => 'fa-solid fa-dumbbell',
+            'rent'          => 'fa-solid fa-house',
+            'mortgage'      => 'fa-solid fa-building-columns',
+            'utilities'     => 'fa-solid fa-bolt',
+            'groceries'     => 'fa-solid fa-cart-shopping',
+            'grocery'       => 'fa-solid fa-cart-shopping',
+            'eating_out'    => 'fa-solid fa-utensils',
+            'drinking_out'  => 'fa-solid fa-beer-mug-empty',
+            'transport'     => 'fa-solid fa-bus',
+            'car'           => 'fa-solid fa-car',
+            'insurance'     => 'fa-solid fa-shield-halved',
+            'subscriptions' => 'fa-solid fa-rotate',
+            'entertainment' => 'fa-solid fa-film',
+            'travel'        => 'fa-solid fa-plane',
+            'holiday'       => 'fa-solid fa-umbrella-beach',
+            'education'     => 'fa-solid fa-graduation-cap',
+            'home_family'   => 'fa-solid fa-screwdriver-wrench',
+            'family'        => 'fa-solid fa-baby',
+            'gifts'         => 'fa-solid fa-gift',
+            'charity'       => 'fa-solid fa-hand-holding-heart',
+            'shopping'      => 'fa-solid fa-bag-shopping',
+            'loans'         => 'fa-solid fa-file-invoice-dollar',
+            'credit_card'   => 'fa-solid fa-credit-card',
+            'other'         => 'fa-solid fa-ellipsis',
         ];
         $savedCurrency = auth()->user()->base_currency ?? 'GBP';
         $savedSymbol   = match($savedCurrency) { 'GBP' => '£', 'USD' => '$', 'CHF' => 'Fr', default => '€' };
@@ -265,30 +270,27 @@
                         <div class="row"><div class="col-12"><h6 class="formSectionTitle">{{ __('messages.expenses') }}</h6></div></div>
                         <div class="expensesWrap">
                             <div class="expenseItem">
-                                <div class="row align-items-center gy-md-2 gy-1 gx-5">
+                                <div class="row gy-0 gx-4">
                                     @foreach ($defaultBudgetCategories as $dCat)
                                         @php
                                             $slug    = $dCat->slug ?? strtolower(preg_replace('/[^A-Za-z0-9_]/', '', str_replace(' ', '_', $dCat->name)));
                                             $name    = "expense_{$slug}_amount";
                                             $val     = old($name, $accSetup[$name] ?? '');
-                                            $iconKey = strtolower($dCat->name);
+                                            $iconKey = strtolower($dCat->slug);
                                             $icon    = $iconMap[$iconKey] ?? 'fa-solid fa-ellipsis';
                                         @endphp
-                                        <div class="col-lg-6">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-8 col-6">
-                                                    <label class="mb-0" for="{{ $name }}">
-                                                        <i class="{{ $icon }} cat-icon"></i>{{ $dCat->name }}
-                                                    </label>
-                                                </div>
-                                                <div class="col-md-4 col-6 d-flex justify-content-end">
-                                                    <div class="input-group">
-                                                        <label class="input-group-text currencySymbolLabel" for="{{ $name }}">{{ $savedSymbol }}</label>
-                                                        <input type="number" class="form-control text-end"
-                                                               id="{{ $name }}" name="{{ $name }}"
-                                                               placeholder="0.00" min="0" step="any"
-                                                               value="{{ $val }}">
-                                                    </div>
+                                        <div class="col-lg-6 cat-row">
+                                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                                <label class="cat-label mb-0" for="{{ $name }}">
+                                                    <i class="{{ $icon }} cat-icon"></i>
+                                                    <span>{{ __('messages.cat_' . $dCat->slug) }}</span>
+                                                </label>
+                                                <div class="input-group">
+                                                    <label class="input-group-text currencySymbolLabel" for="{{ $name }}">{{ $savedSymbol }}</label>
+                                                    <input type="number" class="form-control text-end"
+                                                           id="{{ $name }}" name="{{ $name }}"
+                                                           placeholder="0.00" min="0" step="any"
+                                                           value="{{ $val }}">
                                                 </div>
                                             </div>
                                         </div>

@@ -55,6 +55,13 @@
                 min-width:0;
                 height:54px;
             }
+            #connectBankBtn {
+                width:100% !important;
+                display:block !important;
+                text-align:center !important;
+                box-sizing:border-box !important;
+                white-space:nowrap !important;
+            }
         }
 
         .sep-title { margin:18px 0 8px; color: rgba(88,240,168,0.85); font-weight:800; letter-spacing:.2px; }
@@ -122,6 +129,7 @@
         .swal2-actions .swal2-confirm, .swal2-actions .swal2-cancel { font-weight: 900 !important; }
         .swal2-actions .swal2-confirm { color: #052026 !important; background: linear-gradient(90deg,#58f0a8,#43caff) !important; border: 0 !important; }
         .swal2-actions .swal2-cancel { background: rgba(255,255,255,0.12) !important; border: 1px solid rgba(255,255,255,0.18) !important; color: rgba(255,255,255,0.92) !important; }
+        .floatingQuickAddDropUp{display:none!important;}
     </style>
 
     <section class="setupStepsWrapper">
@@ -263,7 +271,6 @@
             const connectedSection  = document.getElementById('connectedAccountsSection');
             const connectedList     = document.getElementById('connectedAccountsList');
 
-            // ── Translated strings ───────────────────────────────────────
             const t = {
                 saved:            @json(__('messages.saved')),
                 ok:               'OK',
