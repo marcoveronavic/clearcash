@@ -84,7 +84,7 @@
     </style>
 
     {{-- ── Language overlay ── --}}
-    <div id="langOverlay" style="display:{{ session()->has('locale') ? 'none' : 'flex' }}">
+    <div id="langOverlay" style="display:{{ session()->has('locale_chosen') ? 'none' : 'flex' }}">
         <div id="langCard">
             <div id="langCardHeader">
                 <i class="fa-solid fa-globe"></i>
