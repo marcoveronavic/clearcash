@@ -365,4 +365,7 @@ return [
     'step6inv_add_btn'      => 'Add investment or pension manually',
     'step6inv_account_name' => 'Account name',
     'step6inv_skip'         => 'Skip and continue',
+
+    'connect_bank_btn'  => 'Connect your bank',
+    'connect_bank_hint' => 'Connect your account via Open Banking.',
     ];

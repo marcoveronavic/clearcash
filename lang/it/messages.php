@@ -366,4 +366,7 @@ return [
     'step6inv_add_btn'      => 'Aggiungi investimento o pensione manualmente',
     'step6inv_account_name' => 'Nome del conto',
     'step6inv_skip'         => 'Salta e continua',
+
+    'connect_bank_btn'  => 'Collega la tua banca',
+    'connect_bank_hint' => 'Collega il conto via Open Banking.',
     ];
